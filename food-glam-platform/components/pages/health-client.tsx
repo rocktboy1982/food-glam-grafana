@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useFeatureFlags } from "@/components/feature-flags-provider";
 
@@ -74,13 +74,42 @@ export default function HealthClient() {
   const [newWeightInput, setNewWeightInput] = useState("");
 
   // Calories state
-  const [calorieTarget, setCalorieTarget] = useState("2100");
-  const [calorieGoal, setCalorieGoal] = useState<"lose" | "maintain" | "gain">("lose");
+  // Calories state — persisted to localStorage so meal planner can read them
+  const [calorieTarget, setCalorieTargetRaw] = useState(() => {
+    if (typeof window === "undefined") return "2100"
+    return localStorage.getItem("health-calorie-target") ?? "2100"
+  });
+  const [calorieGoal, setCalorieGoalRaw] = useState<"lose" | "maintain" | "gain">(() => {
+    if (typeof window === "undefined") return "lose"
+    return (localStorage.getItem("health-calorie-goal") as "lose" | "maintain" | "gain") ?? "lose"
+  });
 
-  // Macros state
-  const [macroProtein, setMacroProtein] = useState("35");
-  const [macroCarbs, setMacroCarbs] = useState("40");
-  const [macroFat, setMacroFat] = useState("25");
+  // Macros state — persisted to localStorage
+  const [macroProtein, setMacroProteinRaw] = useState(() => {
+    if (typeof window === "undefined") return "35"
+    return localStorage.getItem("health-macro-protein") ?? "35"
+  });
+  const [macroCarbs, setMacroCarbsRaw] = useState(() => {
+    if (typeof window === "undefined") return "40"
+    return localStorage.getItem("health-macro-carbs") ?? "40"
+  });
+  const [macroFat, setMacroFatRaw] = useState(() => {
+    if (typeof window === "undefined") return "25"
+    return localStorage.getItem("health-macro-fat") ?? "25"
+  });
+
+  // Persist health goals whenever they change
+  useEffect(() => { localStorage.setItem("health-calorie-target", calorieTarget) }, [calorieTarget])
+  useEffect(() => { localStorage.setItem("health-calorie-goal", calorieGoal) }, [calorieGoal])
+  useEffect(() => { localStorage.setItem("health-macro-protein", macroProtein) }, [macroProtein])
+  useEffect(() => { localStorage.setItem("health-macro-carbs", macroCarbs) }, [macroCarbs])
+  useEffect(() => { localStorage.setItem("health-macro-fat", macroFat) }, [macroFat])
+
+  const setCalorieTarget = (v: string) => setCalorieTargetRaw(v)
+  const setCalorieGoal = (v: "lose" | "maintain" | "gain") => setCalorieGoalRaw(v)
+  const setMacroProtein = (v: string) => setMacroProteinRaw(v)
+  const setMacroCarbs = (v: string) => setMacroCarbsRaw(v)
+  const setMacroFat = (v: string) => setMacroFatRaw(v)
 
   if (loading) {
     return <div className="container mx-auto px-4 py-8">Loading...</div>;
