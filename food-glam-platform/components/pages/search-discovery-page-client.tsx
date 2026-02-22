@@ -16,6 +16,7 @@ import {
   SearchX,
 } from 'lucide-react'
 import RecipeCard from '@/components/RecipeCard'
+import { REGION_META } from '@/lib/recipe-taxonomy'
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -71,16 +72,66 @@ interface SearchResponse {
 /*  Constants                                                          */
 /* ------------------------------------------------------------------ */
 
-const APPROACHES = [
-  { slug: '', label: 'All Approaches' },
-  { slug: 'asian', label: 'Asian' },
-  { slug: 'european', label: 'European' },
-  { slug: 'african', label: 'African' },
-  { slug: 'latin-american', label: 'Latin American' },
-  { slug: 'middle-eastern', label: 'Middle Eastern' },
-  { slug: 'south-asian', label: 'South Asian' },
-  { slug: 'american', label: 'American' },
-  { slug: 'mediterranean', label: 'Mediterranean' },
+const REGION_GROUPS = [
+  {
+    continent: 'Europe',
+    regions: ['western-europe', 'northern-europe', 'eastern-europe'],
+  },
+  {
+    continent: 'Middle East & Central Asia',
+    regions: ['middle-east', 'central-asia'],
+  },
+  {
+    continent: 'Asia',
+    regions: ['east-asia', 'southeast-asia', 'south-asia'],
+  },
+  {
+    continent: 'Africa',
+    regions: ['north-africa', 'west-africa', 'east-africa', 'southern-africa'],
+  },
+  {
+    continent: 'Americas',
+    regions: ['north-america', 'south-america'],
+  },
+  {
+    continent: 'Oceania & International',
+    regions: ['oceania', 'international'],
+  },
+]
+
+// Flat list kept for lookups (active filter label, etc.)
+const REGIONS = [
+  { slug: '', label: 'All Regions', emoji: '\u{1F30D}' },
+  ...REGION_GROUPS.flatMap(g => g.regions.map(id => ({ slug: id, label: REGION_META[id].label, emoji: REGION_META[id].emoji }))),
+]
+const APPROACHES = REGIONS // Alias for backwards compatibility
+
+const FOOD_TAG_GROUPS = [
+  {
+    label: 'Dish',
+    tags: ['pizza', 'noodles', 'sushi', 'pastry', 'tacos', 'curry', 'paella', 'rice', 'bowl', 'stew', 'casserole'],
+  },
+  {
+    label: 'Protein',
+    tags: ['seafood', 'chicken', 'lamb', 'pork', 'beef', 'tofu'],
+  },
+  {
+    label: 'Character',
+    tags: ['spicy', 'sweet', 'smoky', 'crispy', 'healthy', 'street-food', 'breakfast', 'dessert', 'comfort'],
+  },
+]
+
+// Flat list derived from groups — used for active-filter lookups
+const FOOD_TAGS = FOOD_TAG_GROUPS.flatMap(g => g.tags)
+
+const STATUS_TAGS = ['Popular', 'Trending', 'New', 'Tested']
+
+const QUALITY_OPTIONS = [
+  { value: 0, label: 'Any' },
+  { value: 4.0, label: '4.0+' },
+  { value: 4.3, label: '4.3+' },
+  { value: 4.5, label: '4.5+' },
+  { value: 4.7, label: '4.7+' },
 ]
 
 const DIET_TAGS = [
@@ -129,16 +180,16 @@ function SearchDiscoveryPageClientContent() {
   const [type, setType] = useState(searchParams.get('type') || 'recipe')
   const [sort, setSort] = useState(searchParams.get('sort') || 'relevance')
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1', 10) || 1)
+  const [foodTags, setFoodTags] = useState<string[]>(() => {
+    const raw = searchParams.get('food_tags')
+    return raw ? raw.split(',').filter(Boolean) : []
+  })
+  const [isTested, setIsTested] = useState(searchParams.get('is_tested') === 'true')
+  const [tagFilter, setTagFilter] = useState(searchParams.get('tag') || '')
+  const [qualityMin, setQualityMin] = useState(parseFloat(searchParams.get('quality_min') || '0') || 0)
   const [cuisineId, setCuisineId] = useState(searchParams.get('cuisine_id') || '')
-  const [foodStyleId, setFoodStyleId] = useState(searchParams.get('food_style_id') || '')
-  const [cuisines, setCuisines] = useState<{ id: string; name: string; slug: string }[]>([])
-  const [foodStyles, setFoodStyles] = useState<{ id: string; name: string; slug: string }[]>([])
-  const [loadingCuisines, setLoadingCuisines] = useState(false)
   const [cookbookId, setCookbookId] = useState(searchParams.get('cookbook_id') || '')
   const [chapterId, setChapterId] = useState(searchParams.get('chapter_id') || '')
-  const [cookbooks, setCookbooks] = useState<{ id: string; name: string }[]>([])
-  const [chapters, setChapters] = useState<{ id: string; name: string }[]>([])
-  const [loadingCookbooks, setLoadingCookbooks] = useState(false)
 
   // ---- UI state ----
   const [recipes, setRecipes] = useState<Recipe[]>([])
@@ -169,8 +220,10 @@ function SearchDiscoveryPageClientContent() {
     searchType: string,
     searchSort: string,
     searchPage: number,
-    searchCuisineId = '',
-    searchFoodStyleId = '',
+    searchFoodTags: string[],
+    searchIsTested: boolean,
+    searchTagFilter: string,
+    searchQualityMin: number,
   ) => {
     abortRef.current?.abort()
     abortRef.current = new AbortController()
@@ -183,8 +236,10 @@ function SearchDiscoveryPageClientContent() {
     if (searchDietTags.length > 0) params.set('diet_tags', searchDietTags.join(','))
     if (searchType) params.set('type', searchType)
     if (searchSort) params.set('sort', searchSort)
-    if (searchCuisineId) params.set('cuisine_id', searchCuisineId)
-    if (searchFoodStyleId) params.set('food_style_id', searchFoodStyleId)
+    if (searchFoodTags.length > 0) params.set('food_tags', searchFoodTags.join(','))
+    if (searchIsTested) params.set('is_tested', 'true')
+    if (searchTagFilter) params.set('tag', searchTagFilter)
+    if (searchQualityMin > 0) params.set('quality_min', String(searchQualityMin))
     params.set('page', String(searchPage))
     params.set('per_page', String(PER_PAGE))
 
@@ -219,8 +274,10 @@ function SearchDiscoveryPageClientContent() {
     newType?: string,
     newSort?: string,
     newPage?: number,
-    newCuisineId?: string,
-    newFoodStyleId?: string,
+    newFoodTags?: string[],
+    newIsTested?: boolean,
+    newTagFilter?: string,
+    newQualityMin?: number,
   ) => {
     const q = newQuery ?? query
     const a = newApproach ?? approach
@@ -228,8 +285,10 @@ function SearchDiscoveryPageClientContent() {
     const t = newType ?? type
     const s = newSort ?? sort
     const p = newPage ?? 1
-    const ci = newCuisineId ?? cuisineId
-    const fi = newFoodStyleId ?? foodStyleId
+    const ft = newFoodTags ?? foodTags
+    const it = newIsTested ?? isTested
+    const tf = newTagFilter ?? tagFilter
+    const qm = newQualityMin ?? qualityMin
 
     // Update URL
     updateURL({
@@ -238,13 +297,15 @@ function SearchDiscoveryPageClientContent() {
       diet_tags: d.join(','),
       type: t !== 'recipe' ? t : '',
       sort: s !== 'relevance' ? s : '',
-      cuisine_id: ci,
-      food_style_id: fi,
+      food_tags: ft.join(','),
+      is_tested: it ? 'true' : '',
+      tag: tf,
+      quality_min: qm > 0 ? String(qm) : '',
       page: p > 1 ? String(p) : '',
     })
 
-    fetchResults(q, a, d, t, s, p, ci, fi)
-  }, [query, approach, dietTags, type, sort, cuisineId, foodStyleId, fetchResults, updateURL])
+    fetchResults(q, a, d, t, s, p, ft, it, tf, qm)
+  }, [query, approach, dietTags, type, sort, foodTags, isTested, tagFilter, qualityMin, fetchResults, updateURL])
 
   // ---- Debounced search for text input ----
   const handleQueryChange = (value: string) => {
@@ -272,6 +333,33 @@ function SearchDiscoveryPageClientContent() {
     triggerSearch(undefined, undefined, next, undefined, undefined, 1)
   }
 
+  const handleFoodTagToggle = (tag: string) => {
+    const next = foodTags.includes(tag) ? foodTags.filter(t => t !== tag) : [...foodTags, tag]
+    setFoodTags(next)
+    setPage(1)
+    triggerSearch(undefined, undefined, undefined, undefined, undefined, 1, next)
+  }
+
+  const handleTestedToggle = () => {
+    const next = !isTested
+    setIsTested(next)
+    setPage(1)
+    triggerSearch(undefined, undefined, undefined, undefined, undefined, 1, undefined, next)
+  }
+
+  const handleTagFilterChange = (val: string) => {
+    const next = tagFilter === val ? '' : val
+    setTagFilter(next)
+    setPage(1)
+    triggerSearch(undefined, undefined, undefined, undefined, undefined, 1, undefined, undefined, next)
+  }
+
+  const handleQualityMinChange = (val: number) => {
+    setQualityMin(val)
+    setPage(1)
+    triggerSearch(undefined, undefined, undefined, undefined, undefined, 1, undefined, undefined, undefined, val)
+  }
+
   const handleTypeChange = (val: string) => {
     setType(val)
     setPage(1)
@@ -290,63 +378,37 @@ function SearchDiscoveryPageClientContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const handleCuisineChange = (val: string) => {
-    setCuisineId(val)
-    setFoodStyleId('')
-    setPage(1)
-    triggerSearch(undefined, undefined, undefined, undefined, undefined, 1, val, '')
-  }
-
-  const handleFoodStyleChange = (val: string) => {
-    setFoodStyleId(val)
-    setPage(1)
-    triggerSearch(undefined, undefined, undefined, undefined, undefined, 1, undefined, val)
-  }
-
   const clearAllFilters = () => {
     setQuery('')
     setApproach('')
     setDietTags([])
     setType('recipe')
     setSort('relevance')
-    setCuisineId('')
-    setFoodStyleId('')
+    setFoodTags([])
+    setIsTested(false)
+    setTagFilter('')
+    setQualityMin(0)
     setPage(1)
-    triggerSearch('', '', [], 'recipe', 'relevance', 1, '', '')
+    triggerSearch('', '', [], 'recipe', 'relevance', 1, [], false, '', 0)
   }
 
-  const hasActiveFilters = query || approach || dietTags.length > 0 || type !== 'recipe' || sort !== 'relevance' || cuisineId || foodStyleId || cookbookId || chapterId
+  const hasActiveFilters = query || approach || dietTags.length > 0 || type !== 'recipe' || sort !== 'relevance' || foodTags.length > 0 || isTested || tagFilter || qualityMin > 0 || cookbookId || chapterId
 
   // ---- Initial load ----
   useEffect(() => {
-    fetchResults(query, approach, dietTags, type, sort, page, cuisineId, foodStyleId)
+    fetchResults(query, approach, dietTags, type, sort, page, foodTags, isTested, tagFilter, qualityMin)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  // ---- Load cuisines on mount ----
-  useEffect(() => {
-    setLoadingCuisines(true)
-    fetch('/api/cuisines')
-      .then(r => r.json())
-      .then(d => setCuisines(d.data || []))
-      .catch(() => {})
-      .finally(() => setLoadingCuisines(false))
-  }, [])
-
-  // ---- Load food styles when cuisine changes ----
-  useEffect(() => {
-    if (!cuisineId) { setFoodStyles([]); setFoodStyleId(''); return }
-    fetch(`/api/cuisines/${cuisineId}/food-styles`)
-      .then(r => r.json())
-      .then(d => setFoodStyles(d.data || []))
-      .catch(() => setFoodStyles([]))
-  }, [cuisineId])
 
   // ---- Active filter count ----
   const activeFilterCount = [
     approach ? 1 : 0,
     dietTags.length > 0 ? 1 : 0,
     type !== 'recipe' ? 1 : 0,
+    foodTags.length > 0 ? 1 : 0,
+    isTested ? 1 : 0,
+    tagFilter ? 1 : 0,
+    qualityMin > 0 ? 1 : 0,
   ].reduce((a, b) => a + b, 0)
 
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE))
@@ -459,64 +521,69 @@ function SearchDiscoveryPageClientContent() {
                 )}
               </div>
 
-              {/* Cuisine dropdown */}
-              <div>
-                <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">
-                  Cuisine
-                </label>
-                <div className="relative">
-                  <select
-                    value={cuisineId}
-                    onChange={(e) => handleCuisineChange(e.target.value)}
-                    className="w-full appearance-none pl-3 pr-8 py-2.5 rounded-xl border border-stone-200 bg-stone-50 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-400 transition-colors cursor-pointer"
-                  >
-                    <option value="">All Cuisines</option>
-                    {cuisines.map(c => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 pointer-events-none" />
-                </div>
-              </div>
+              {/* Region pills — continent grouped */}
+<div>
+  <div className="flex items-center justify-between mb-2">
+    <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider">Region</label>
+  </div>
+  <div className="space-y-3">
+    {/* All Regions pill */}
+    <button
+      onClick={() => handleApproachChange('')}
+      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${ approach === '' ? 'bg-amber-500 text-white shadow-sm' : 'bg-stone-100 text-stone-600 hover:bg-stone-200' }`}
+    >
+      🌍 All Regions
+    </button>
+    {/* Continent rows */}
+    {REGION_GROUPS.map(group => (
+      <div key={group.continent}>
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-stone-400 mb-1.5">{group.continent}</p>
+        <div className="flex flex-wrap gap-1">
+          {group.regions.map(id => {
+            const r = { slug: id, ...REGION_META[id] }
+            return (
+              <button
+                key={r.slug}
+                onClick={() => handleApproachChange(r.slug)}
+                className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${ approach === r.slug ? 'bg-amber-500 text-white shadow-sm' : 'bg-stone-100 text-stone-600 hover:bg-stone-200' }`}
+              >
+                {r.emoji} {r.label}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
 
-              {/* Food Style dropdown */}
-              {foodStyles.length > 0 && (
-                <div>
-                  <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">
-                    Food Style
-                  </label>
-                  <div className="relative">
-                    <select
-                      value={foodStyleId}
-                      onChange={(e) => handleFoodStyleChange(e.target.value)}
-                      className="w-full appearance-none pl-3 pr-8 py-2.5 rounded-xl border border-stone-200 bg-stone-50 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-400 transition-colors cursor-pointer"
-                    >
-                      <option value="">All Styles</option>
-                      {foodStyles.map(s => (
-                        <option key={s.id} value={s.id}>{s.name}</option>
-                      ))}
-                    </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 pointer-events-none" />
-                  </div>
-                </div>
-              )}
-
-              {/* Approach dropdown */}
+              {/* Food Tags — grouped */}
               <div>
-                <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">
-                  Approach
-                </label>
-                <div className="relative">
-                  <select
-                    value={approach}
-                    onChange={(e) => handleApproachChange(e.target.value)}
-                    className="w-full appearance-none pl-3 pr-8 py-2.5 rounded-xl border border-stone-200 bg-stone-50 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-400 transition-colors cursor-pointer"
-                  >
-                    {APPROACHES.map(a => (
-                      <option key={a.slug} value={a.slug}>{a.label}</option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 pointer-events-none" />
+                <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">Food Tags</label>
+                <div className="space-y-3 max-h-52 overflow-y-auto pr-1">
+                  {FOOD_TAG_GROUPS.map(group => (
+                    <div key={group.label}>
+                      <p className="text-[10px] font-semibold uppercase tracking-widest text-stone-400 mb-1.5">{group.label}</p>
+                      <div className="flex flex-wrap gap-1">
+                        {group.tags.map(tag => {
+                          const isActive = foodTags.includes(tag)
+                          return (
+                            <button
+                              key={tag}
+                              onClick={() => handleFoodTagToggle(tag)}
+                              className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize transition-all ${
+                                isActive
+                                  ? 'bg-orange-500 text-white shadow-sm'
+                                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                              }`}
+                            >
+                              {tag}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -550,6 +617,61 @@ function SearchDiscoveryPageClientContent() {
                       </label>
                     )
                   })}
+                </div>
+              </div>
+
+              {/* Status pills */}
+              <div>
+                <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">Status</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {STATUS_TAGS.map(tag => (
+                    <button
+                      key={tag}
+                      onClick={() => handleTagFilterChange(tag)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                        tagFilter === tag
+                          ? 'bg-violet-500 text-white shadow-sm'
+                          : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                      }`}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tested Only toggle */}
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-stone-700 flex items-center gap-1.5">
+                  <ChefHat className="w-3.5 h-3.5 text-amber-600" />
+                  Tested Recipes Only
+                </span>
+                <button
+                  onClick={handleTestedToggle}
+                  className={`relative w-10 h-5.5 rounded-full transition-colors ${isTested ? 'bg-amber-500' : 'bg-stone-200'}`}
+                  style={{ height: '22px', width: '40px' }}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${isTested ? 'translate-x-[18px]' : 'translate-x-0'}`} />
+                </button>
+              </div>
+
+              {/* Quality pills */}
+              <div>
+                <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">Min Quality</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {QUALITY_OPTIONS.map(opt => (
+                    <button
+                      key={opt.value}
+                      onClick={() => handleQualityMinChange(opt.value)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                        qualityMin === opt.value
+                          ? 'bg-emerald-500 text-white shadow-sm'
+                          : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -606,11 +728,11 @@ function SearchDiscoveryPageClientContent() {
                 </p>
 
                 {/* Active filter pills */}
-                {(approach || dietTags.length > 0) && (
+                {(approach || dietTags.length > 0 || foodTags.length > 0 || tagFilter || isTested || qualityMin > 0) && (
                   <div className="hidden md:flex items-center gap-1.5 flex-wrap">
                     {approach && (
                       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-medium">
-                        {APPROACHES.find(a => a.slug === approach)?.label}
+                        {REGIONS.find(a => a.slug === approach)?.label}
                         <button onClick={() => handleApproachChange('')} className="hover:text-amber-900">
                           <X className="w-3 h-3" />
                         </button>
@@ -624,6 +746,38 @@ function SearchDiscoveryPageClientContent() {
                         </button>
                       </span>
                     ))}
+                    {foodTags.map(tag => (
+                      <span key={tag} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-100 text-orange-800 text-xs font-medium capitalize">
+                        {tag}
+                        <button onClick={() => handleFoodTagToggle(tag)} className="hover:text-orange-900">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                    {tagFilter && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-violet-100 text-violet-800 text-xs font-medium">
+                        {tagFilter}
+                        <button onClick={() => handleTagFilterChange(tagFilter)} className="hover:text-violet-900">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    )}
+                    {isTested && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-medium">
+                        Tested Only
+                        <button onClick={handleTestedToggle} className="hover:text-amber-900">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    )}
+                    {qualityMin > 0 && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-medium">
+                        ≥{qualityMin} quality
+                        <button onClick={() => handleQualityMinChange(0)} className="hover:text-emerald-900">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
