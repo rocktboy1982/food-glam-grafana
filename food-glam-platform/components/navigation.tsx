@@ -12,6 +12,7 @@ const navItems = [
   { href: "/cookbooks", label: "Cookbooks" },
   { href: "/plan", label: "Plan" },
   { href: "/me/cookbook", label: "My Cookbook" },
+  { href: "/me/preferred", label: "⭐ Preferred" },
   { href: "/me/watchlist", label: "Watch" },
   { href: "/me", label: "Me" },
   { href: "/submit", label: "+ Add Recipe" },

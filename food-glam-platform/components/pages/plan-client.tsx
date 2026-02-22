@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useCallback, useId } from "react"
 import Link from "next/link"
 import { MOCK_RECIPES } from "@/lib/mock-data"
+import { usePreferredRecipes, type PreferredRecipe } from "@/lib/preferred-recipes"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -367,6 +368,8 @@ export default function PlanClient() {
   const [expandedSlot, setExpandedSlot] = useState<{ day: DayKey; meal: MealKey } | null>(null)
   const [pickingFor, setPickingFor] = useState<{ day: DayKey; meal: MealKey } | null>(null)
   const [view, setView] = useState<"planner" | "shopping">("planner")
+  const [pickerSearch, setPickerSearch] = useState("")
+  const { preferred, hydrated: prefHydrated } = usePreferredRecipes()
 
   // Shopping list state
   const [shopScope, setShopScope] = useState<ShoppingScope>({ type: "week", weekIndex: 0 })
@@ -663,38 +666,110 @@ export default function PlanClient() {
           {/* Recipe picker panel */}
           {pickingFor && (
             <section className="mb-10 rounded-2xl border border-amber-200 bg-amber-50/30 p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-base font-semibold">
-                  Adding dish to{" "}
-                  <span className="text-amber-600">{pickingFor.day} — {pickingFor.meal}</span>
-                </h2>
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h2 className="text-base font-semibold">
+                    Adding dish to{" "}
+                    <span className="text-amber-600">{pickingFor.day} — {pickingFor.meal}</span>
+                  </h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Picking from your{" "}
+                    <a href="/me/preferred" className="underline hover:text-amber-600">Preferred Recipes</a>
+                    {preferred.length === 0 && " — none added yet"} 
+                  </p>
+                </div>
                 <button
-                  onClick={() => setPickingFor(null)}
+                  onClick={() => { setPickingFor(null); setPickerSearch("") }}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Cancel ✕
                 </button>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                {MOCK_RECIPES.map((recipe) => (
-                  <button
-                    key={recipe.id}
-                    onClick={() => addDish(pickingFor.day, pickingFor.meal, recipe)}
-                    className="text-left rounded-xl overflow-hidden border border-border bg-card hover:shadow-md hover:border-amber-400 transition-all group"
+
+              {/* Search bar */}
+              <input
+                type="search"
+                value={pickerSearch}
+                onChange={(e) => setPickerSearch(e.target.value)}
+                placeholder="Search preferred recipes…"
+                className="w-full border border-input rounded-xl px-4 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-amber-300 mb-4"
+              />
+
+              {!prefHydrated ? (
+                <p className="text-sm text-muted-foreground text-center py-8">Loading…</p>
+              ) : preferred.length === 0 ? (
+                <div className="text-center py-10">
+                  <p className="text-muted-foreground text-sm mb-3">You have no preferred recipes yet.</p>
+                  <a
+                    href="/me/preferred"
+                    className="text-sm px-4 py-2 bg-amber-500 text-white rounded-xl hover:bg-amber-600 transition-colors"
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={recipe.hero_image_url}
-                      alt={recipe.title}
-                      className="w-full h-20 object-cover group-hover:scale-105 transition-transform duration-200"
-                    />
-                    <div className="p-2">
-                      <p className="text-xs font-medium line-clamp-2 leading-snug">{recipe.title}</p>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">{recipe.region}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
+                    ⭐ Go to Preferred Recipes
+                  </a>
+                </div>
+              ) : (() => {
+                const q = pickerSearch.trim().toLowerCase()
+                const filtered: PreferredRecipe[] = q
+                  ? preferred.filter((p) =>
+                      p.title.toLowerCase().includes(q) ||
+                      p.region?.toLowerCase().includes(q) ||
+                      p.chefName?.toLowerCase().includes(q) ||
+                      p.dietTags?.some((t) => t.toLowerCase().includes(q))
+                    )
+                  : preferred
+                if (filtered.length === 0) return (
+                  <p className="text-sm text-muted-foreground text-center py-6">No recipes match your search.</p>
+                )
+                return (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                    {filtered.map((recipe) => {
+                      const mockMatch = MOCK_RECIPES.find((r) => r.id === recipe.id)
+                      const recipeObj: Recipe = mockMatch ?? {
+                        id: recipe.id,
+                        slug: recipe.slug,
+                        title: recipe.title,
+                        summary: "",
+                        hero_image_url: recipe.hero_image_url ?? "",
+                        region: recipe.region ?? "",
+                        votes: 0,
+                        comments: 0,
+                        tag: "",
+                        badges: [],
+                        dietTags: recipe.dietTags ?? [],
+                        foodTags: recipe.foodTags ?? [],
+                        is_tested: false,
+                        quality_score: 0,
+                        created_by: {
+                          id: recipe.chefId ?? "",
+                          display_name: recipe.chefName ?? "",
+                          handle: recipe.chefHandle ?? "",
+                          avatar_url: "",
+                        },
+                        is_saved: false,
+                      }
+                      return (
+                        <button
+                          key={recipe.id}
+                          onClick={() => { addDish(pickingFor!.day, pickingFor!.meal, recipeObj); setPickerSearch("") }}
+                          className="text-left rounded-xl overflow-hidden border border-border bg-card hover:shadow-md hover:border-amber-400 transition-all group"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={recipe.hero_image_url ?? ""}
+                            alt={recipe.title}
+                            className="w-full h-20 object-cover group-hover:scale-105 transition-transform duration-200"
+                          />
+                          <div className="p-2">
+                            <p className="text-xs font-medium line-clamp-2 leading-snug">{recipe.title}</p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">{recipe.region}</p>
+                            {recipe.chefName && <p className="text-[10px] text-muted-foreground">by {recipe.chefName}</p>}
+                          </div>
+                        </button>
+                      )
+                    })}
+                  </div>
+                )
+              })()}
             </section>
           )}
         </>

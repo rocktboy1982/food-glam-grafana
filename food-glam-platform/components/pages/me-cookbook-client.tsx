@@ -6,6 +6,7 @@ import { useToast } from "@/components/ui/toast"
 import SaveButton from "@/components/collections/save-button"
 import CollectionPickerModal from "@/components/collections/collection-picker-modal"
 import Link from "next/link"
+import { usePreferredRecipes } from "@/lib/preferred-recipes"
 
 type Post = {
   id: string
@@ -32,6 +33,7 @@ type SortMode = "date_added" | "name" | "newest"
 
 export default function MeCookbookClient() {
   const { push } = useToast()
+  const { addRecipe: addToPreferred, removeRecipe: removeFromPreferred, isPreferred } = usePreferredRecipes()
   const [items, setItems] = useState<CollectionItem[]>([])
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<{ id: string } | null>(null)
@@ -303,12 +305,42 @@ export default function MeCookbookClient() {
                     <span className="text-xs text-gray-400">
                       Saved {new Date(item.created_at).toLocaleDateString()}
                     </span>
-                    <Link
-                      href={`/recipes/${post.slug || post.id}`}
-                      className="text-xs font-medium text-primary hover:underline"
-                    >
-                      View Recipe
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          if (isPreferred(post.id)) {
+                            removeFromPreferred(post.id)
+                            push({ message: "Removed from Preferred", type: "success" })
+                          } else {
+                            addToPreferred(
+                              {
+                                id: post.id,
+                                slug: post.slug,
+                                title: post.title,
+                                hero_image_url: post.hero_image_url,
+                                dietTags: post.diet_tags ?? [],
+                              },
+                              "cookbook"
+                            )
+                            push({ message: "Added to Preferred Recipes", type: "success" })
+                          }
+                        }}
+                        className={`text-xs px-2 py-1 rounded-lg border transition-colors ${
+                          isPreferred(post.id)
+                            ? "bg-amber-100 border-amber-300 text-amber-700 hover:bg-red-50 hover:border-red-300 hover:text-red-500"
+                            : "border-amber-300 text-amber-600 hover:bg-amber-50"
+                        }`}
+                        title={isPreferred(post.id) ? "Remove from Preferred" : "Add to Preferred Recipes"}
+                      >
+                        {isPreferred(post.id) ? "⭐ Preferred" : "☆ Prefer"}
+                      </button>
+                      <Link
+                        href={`/recipes/${post.slug || post.id}`}
+                        className="text-xs font-medium text-primary hover:underline"
+                      >
+                        View Recipe
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
