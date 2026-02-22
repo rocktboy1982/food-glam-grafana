@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase-client'
 import { useToast } from '@/components/ui/toast'
 import { Button } from '@/components/ui/button'
 import { REGION_META } from '@/lib/recipe-taxonomy'
+import { IngredientInput } from '@/components/ui/ingredient-input'
 
 /* ── Derive flat country list from taxonomy ──────────────── */
 const ALL_REGIONS = Object.entries(REGION_META).map(([id, r]) => ({
@@ -825,10 +826,9 @@ function SubmitRecipePageContent() {
             {form.ingredients.map((ing, idx) => (
               <div key={idx} className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground w-5 text-right flex-shrink-0">{idx + 1}.</span>
-                <input
-                  type="text"
+                <IngredientInput
                   value={ing}
-                  onChange={e => updateListItem('ingredients', idx, e.target.value)}
+                  onChange={val => updateListItem('ingredients', idx, val)}
                   className={`flex-1 ${inputCls}`}
                   placeholder={idx === 0 ? '2 cups all-purpose flour' : idx === 1 ? '1 tsp salt' : ''}
                 />
