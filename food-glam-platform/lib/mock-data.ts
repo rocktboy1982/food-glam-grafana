@@ -3,6 +3,13 @@
  * Used as fallback in API endpoints
  */
 
+export type NutritionInfo = {
+  calories: number
+  protein: number
+  carbs: number
+  fat: number
+}
+
 export const MOCK_RECIPES = [
   {
     id: 'mock-1',
@@ -25,7 +32,9 @@ export const MOCK_RECIPES = [
       handle: '@chef_mario',
       avatar_url: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=200&q=80'
     },
-    is_saved: false
+    is_saved: false,
+    servings: 4,
+    nutrition_per_serving: { calories: 480, protein: 22, carbs: 58, fat: 18 }
   },
   {
     id: 'mock-2',
@@ -48,7 +57,9 @@ export const MOCK_RECIPES = [
       handle: '@thai_kitchen',
       avatar_url: 'https://images.unsplash.com/photo-1595273670150-bd0c3c392e46?auto=format&fit=crop&w=200&q=80'
     },
-    is_saved: false
+    is_saved: false,
+    servings: 2,
+    nutrition_per_serving: { calories: 520, protein: 32, carbs: 65, fat: 14 }
   },
   {
     id: 'mock-3',
@@ -71,7 +82,9 @@ export const MOCK_RECIPES = [
       handle: '@sahara_spice',
       avatar_url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80'
     },
-    is_saved: false
+    is_saved: false,
+    servings: 6,
+    nutrition_per_serving: { calories: 620, protein: 45, carbs: 38, fat: 28 }
   },
   {
     id: 'mock-4',
@@ -94,7 +107,9 @@ export const MOCK_RECIPES = [
       handle: '@sushi_master',
       avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80'
     },
-    is_saved: false
+    is_saved: false,
+    servings: 2,
+    nutrition_per_serving: { calories: 580, protein: 22, carbs: 72, fat: 24 }
   },
   {
     id: 'mock-5',
@@ -117,7 +132,9 @@ export const MOCK_RECIPES = [
       handle: '@plant_power',
       avatar_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80'
     },
-    is_saved: false
+    is_saved: false,
+    servings: 4,
+    nutrition_per_serving: { calories: 540, protein: 42, carbs: 18, fat: 32 }
   },
   {
     id: 'mock-6',
@@ -140,7 +157,9 @@ export const MOCK_RECIPES = [
       handle: '@parisian_baker',
       avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80'
     },
-    is_saved: false
+    is_saved: false,
+    servings: 8,
+    nutrition_per_serving: { calories: 390, protein: 12, carbs: 48, fat: 18 }
   },
   {
     id: 'mock-7',
@@ -163,7 +182,9 @@ export const MOCK_RECIPES = [
       handle: '@taqueria_luna',
       avatar_url: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=200&q=80'
     },
-    is_saved: false
+    is_saved: false,
+    servings: 3,
+    nutrition_per_serving: { calories: 400, protein: 18, carbs: 45, fat: 16 }
   },
   {
     id: 'mock-8',
@@ -186,7 +207,9 @@ export const MOCK_RECIPES = [
       handle: '@athens_kitchen',
       avatar_url: 'https://images.unsplash.com/photo-1463453091185-61582044d556?auto=format&fit=crop&w=200&q=80'
     },
-    is_saved: false
+    is_saved: false,
+    servings: 4,
+    nutrition_per_serving: { calories: 560, protein: 28, carbs: 38, fat: 34 }
   },
   {
     id: 'mock-9',
@@ -209,7 +232,9 @@ export const MOCK_RECIPES = [
       handle: '@spice_route',
       avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80'
     },
-    is_saved: false
+    is_saved: false,
+    servings: 4,
+    nutrition_per_serving: { calories: 480, protein: 22, carbs: 28, fat: 32 }
   },
   {
     id: 'mock-10',
@@ -232,7 +257,9 @@ export const MOCK_RECIPES = [
       handle: '@sweet_tooth',
       avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80'
     },
-    is_saved: false
+    is_saved: false,
+    servings: 8,
+    nutrition_per_serving: { calories: 520, protein: 18, carbs: 68, fat: 22 }
   },
   {
     id: 'mock-11',
@@ -255,7 +282,9 @@ export const MOCK_RECIPES = [
       handle: '@seoul_food',
       avatar_url: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=200&q=80'
     },
-    is_saved: false
+    is_saved: false,
+    servings: 4,
+    nutrition_per_serving: { calories: 460, protein: 26, carbs: 52, fat: 14 }
   },
   {
     id: 'mock-12',
@@ -278,7 +307,9 @@ export const MOCK_RECIPES = [
       handle: '@valencia_kitchen',
       avatar_url: 'https://images.unsplash.com/photo-1502378735452-bc7d86632805?auto=format&fit=crop&w=200&q=80'
     },
-    is_saved: false
+    is_saved: false,
+    servings: 4,
+    nutrition_per_serving: { calories: 480, protein: 34, carbs: 55, fat: 16 }
   }
 ];
 

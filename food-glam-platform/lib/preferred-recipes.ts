@@ -25,6 +25,8 @@ export type PreferredRecipe = {
   region?: string | null
   dietTags?: string[]
   foodTags?: string[]
+  nutrition_per_serving?: { calories: number; protein: number; carbs: number; fat: number } | null
+  servings?: number
   source: "manual" | "chef" | "cookbook"
   chefId?: string
   chefName?: string
@@ -41,6 +43,8 @@ export type RecipeInput = {
   region?: string | null
   dietTags?: string[]
   foodTags?: string[]
+  servings?: number
+  nutrition_per_serving?: { calories: number; protein: number; carbs: number; fat: number } | null
   created_by?: {
     id: string
     display_name: string
@@ -102,6 +106,8 @@ export function usePreferredRecipes() {
           region: recipe.region ?? null,
           dietTags: recipe.dietTags ?? [],
           foodTags: recipe.foodTags ?? [],
+          servings: recipe.servings,
+          nutrition_per_serving: recipe.nutrition_per_serving ?? null,
           source,
           chefId: recipe.created_by?.id,
           chefName: recipe.created_by?.display_name,
@@ -129,6 +135,8 @@ export function usePreferredRecipes() {
             region: recipe.region ?? null,
             dietTags: recipe.dietTags ?? [],
             foodTags: recipe.foodTags ?? [],
+            servings: recipe.servings,
+            nutrition_per_serving: recipe.nutrition_per_serving ?? null,
             source: "chef" as const,
             chefId: chef.id,
             chefName: chef.display_name,
