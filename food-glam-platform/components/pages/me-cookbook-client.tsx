@@ -39,6 +39,7 @@ export default function MeCookbookClient() {
   const [user, setUser] = useState<{ id: string } | null>(null)
   const [sortBy, setSortBy] = useState<SortMode>("date_added")
   const [filterTag, setFilterTag] = useState("")
+  const [filterFoodTag, setFilterFoodTag] = useState("")
   const [pickerPostId, setPickerPostId] = useState<string | null>(null)
 
   const fetchSavedItems = useCallback(async () => {
@@ -79,6 +80,15 @@ export default function MeCookbookClient() {
     return Array.from(tags).sort()
   }, [items])
 
+  // Collect all unique food tags for filter
+  const allFoodTags = useMemo(() => {
+    const tags = new Set<string>()
+    items.forEach((item) => {
+      item.posts?.food_tags?.forEach((t) => tags.add(t))
+    })
+    return Array.from(tags).sort()
+  }, [items])
+
   // Filtered + sorted items
   const displayItems = useMemo(() => {
     let filtered = items
@@ -87,7 +97,11 @@ export default function MeCookbookClient() {
         item.posts?.diet_tags?.includes(filterTag)
       )
     }
-
+    if (filterFoodTag) {
+      filtered = filtered.filter((item) =>
+        item.posts?.food_tags?.includes(filterFoodTag)
+      )
+    }
     const sorted = [...filtered]
     switch (sortBy) {
       case "name":
@@ -108,7 +122,7 @@ export default function MeCookbookClient() {
         break
     }
     return sorted
-  }, [items, filterTag, sortBy])
+  }, [items, filterTag, filterFoodTag, sortBy])
 
   const handleUnsave = async (postId: string) => {
     setItems((prev) => prev.filter((i) => i.post_id !== postId))
@@ -180,12 +194,31 @@ export default function MeCookbookClient() {
             </div>
           )}
 
-          {filterTag && (
+          {/* Food tag filter */}
+          {allFoodTags.length > 0 && (
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Food</label>
+              <select
+                value={filterFoodTag}
+                onChange={(e) => setFilterFoodTag(e.target.value)}
+                className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-primary/20"
+              >
+                <option value="">All</option>
+                {allFoodTags.map((tag) => (
+                  <option key={tag} value={tag}>
+                    {tag}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {(filterTag || filterFoodTag) && (
             <button
-              onClick={() => setFilterTag("")}
+              onClick={() => { setFilterTag(""); setFilterFoodTag("") }}
               className="text-xs text-gray-500 hover:text-gray-700 underline"
             >
-              Clear filter
+              Clear filters
             </button>
           )}
         </div>
