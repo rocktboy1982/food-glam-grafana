@@ -1,0 +1,75 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { validateRecipe } from '@/lib/recipe-validator';
+import { SubmissionResponse, RecipeSubmission } from '@/types/submission';
+
+// In-memory store for dev (resets on server restart)
+// In production this would be Supabase
+const submissionsStore: RecipeSubmission[] = [];
+
+export async function POST(req: NextRequest): Promise<NextResponse<SubmissionResponse>> {
+  try {
+    const body = await req.json();
+
+    // Validate input
+    const validation = validateRecipe(body);
+    if (!validation.valid) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Validation failed',
+          errors: validation.errors,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Create submission object
+    const submission: RecipeSubmission = {
+      id: `recipe_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      title: body.title,
+      description: body.description,
+      ingredients: body.ingredients,
+      instructions: body.instructions,
+      prepTime: body.prepTime,
+      cookTime: body.cookTime,
+      servings: body.servings,
+      difficulty: body.difficulty,
+      tags: body.tags,
+      cuisine: body.cuisine,
+      coverImage: body.coverImage,
+      status: 'pending',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    // Save to in-memory store (dev) — swap for Supabase insert when ready
+    submissionsStore.push(submission);
+
+    console.log(`[submit/recipe] Saved submission: ${submission.id} — "${submission.title}"`);
+    console.log(`[submit/recipe] Total submissions in store: ${submissionsStore.length}`);
+
+    return NextResponse.json(
+      {
+        success: true,
+        id: submission.id,
+        status: submission.status,
+        message: 'Recipe submitted successfully and is pending approval',
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error('Recipe submission error:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Failed to submit recipe',
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(): Promise<NextResponse> {
+  // Dev endpoint to inspect submitted recipes
+  return NextResponse.json({ submissions: submissionsStore, count: submissionsStore.length });
+}
