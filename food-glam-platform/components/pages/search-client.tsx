@@ -49,13 +49,6 @@ export default function SearchClient() {
 
   const search = useCallback(
     async (pageNum = 1) => {
-      if (!q.trim() && activeRegion === null && activeCourse === "all") {
-        setResults([]);
-        setTotal(null);
-        setHasMore(false);
-        setExpandedTerms(null);
-        return;
-      }
       setLoading(true);
       abortRef.current?.abort();
       abortRef.current = new AbortController();
