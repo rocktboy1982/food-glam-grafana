@@ -20,66 +20,91 @@ export async function GET(req: NextRequest) {
     const q = url.searchParams.get('q')?.trim() || ''
     const approach = url.searchParams.get('approach')?.trim() || ''
     const dietTagsRaw = url.searchParams.get('diet_tags')?.trim() || ''
+    const foodTagsRaw = url.searchParams.get('food_tags')?.trim() || ''
     const type = url.searchParams.get('type')?.trim() || ''
     const sort = url.searchParams.get('sort')?.trim() || 'relevance'
     const cuisine_id = url.searchParams.get('cuisine_id')?.trim() || ''
     const food_style_id = url.searchParams.get('food_style_id')?.trim() || ''
     const cookbook_id = url.searchParams.get('cookbook_id')?.trim() || ''
     const chapter_id = url.searchParams.get('chapter_id')?.trim() || ''
+    const is_tested = url.searchParams.get('is_tested') === 'true'
+    const tag_filter = url.searchParams.get('tag')?.trim() || ''
+    const quality_min = parseFloat(url.searchParams.get('quality_min') || '0') || 0
     const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10) || 1)
     const perPage = Math.min(48, Math.max(1, parseInt(url.searchParams.get('per_page') || '12', 10) || 12))
-
+    const foodTags = foodTagsRaw ? foodTagsRaw.split(',').map(t => t.trim()).filter(Boolean) : []
     const dietTags = dietTagsRaw ? dietTagsRaw.split(',').map(t => t.trim()).filter(Boolean) : []
 
+    // ── Shared mock filter helper ──────────────────────────────────────────────
+    type MockRecipe = typeof import('@/lib/mock-data').MOCK_RECIPES[number]
+    const applyMockFilters = (recipes: MockRecipe[]): MockRecipe[] => {
+      let filtered = [...recipes]
+      if (q) {
+        const lowerQ = q.toLowerCase()
+        filtered = filtered.filter(r =>
+          r.title.toLowerCase().includes(lowerQ) ||
+          r.summary?.toLowerCase().includes(lowerQ)
+        )
+      }
+      if (approach) {
+        filtered = filtered.filter(r => r.region?.toLowerCase().replace(/\s+/g, '-') === approach.toLowerCase())
+      }
+      if (dietTags.length > 0) {
+        filtered = filtered.filter(r => dietTags.some(tag => r.dietTags?.includes(tag)))
+      }
+      if (foodTags.length > 0) {
+        filtered = filtered.filter(r => foodTags.some(tag => r.foodTags?.includes(tag)))
+      }
+      if (is_tested) {
+        filtered = filtered.filter(r => r.is_tested)
+      }
+      if (tag_filter) {
+        filtered = filtered.filter(r => r.tag?.toLowerCase() === tag_filter.toLowerCase())
+      }
+      if (quality_min > 0) {
+        filtered = filtered.filter(r => (r.quality_score ?? 0) >= quality_min)
+      }
+      // Sort
+      if (sort === 'trending') {
+        filtered.sort((a, b) => b.votes - a.votes)
+      } else if (sort !== 'newest') {
+        filtered.sort((a, b) => (b.quality_score ?? 0) - (a.quality_score ?? 0))
+      }
+      return filtered
+    }
     // Check if local Supabase is running
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const isLocalSupabase = supabaseUrl?.includes('127.0.0.1') || supabaseUrl?.includes('localhost')
-    
     if (isLocalSupabase) {
       try {
         const healthCheck = await fetch(`${supabaseUrl}/health`, { signal: AbortSignal.timeout(2000) })
         if (!healthCheck.ok) {
           console.log('Local Supabase not responding, using mock search results')
           const { MOCK_RECIPES } = await import('@/lib/mock-data')
-          
-          // Filter mock recipes based on search criteria
-          let filtered = MOCK_RECIPES
-          if (q) {
-            const lowerQ = q.toLowerCase()
-            filtered = filtered.filter(r => 
-              r.title.toLowerCase().includes(lowerQ) || 
-              r.summary?.toLowerCase().includes(lowerQ)
-            )
-          }
-          if (approach) {
-            filtered = filtered.filter(r => r.region?.toLowerCase() === approach.toLowerCase())
-          }
-          if (dietTags.length > 0) {
-            filtered = filtered.filter(r => 
-              dietTags.some(tag => r.dietTags?.includes(tag))
-            )
-          }
-          
+          const filtered = applyMockFilters(MOCK_RECIPES)
+          const paginated = filtered.slice((page - 1) * perPage, page * perPage)
           return NextResponse.json({
-            recipes: filtered.slice(0, perPage),
+            recipes: paginated,
             total: filtered.length,
             page,
             per_page: perPage,
-            has_more: filtered.length > perPage,
-            filters: { q, approach, diet_tags: dietTags, type: type || 'recipe', sort, cuisine_id, food_style_id, cookbook_id, chapter_id },
+            has_more: page * perPage < filtered.length,
+            filters: { q, approach, diet_tags: dietTags, food_tags: foodTags, type: type || 'recipe', sort, cuisine_id, food_style_id, cookbook_id, chapter_id, is_tested, tag: tag_filter, quality_min },
             _note: 'Using mock data - Local Supabase not running'
           })
         }
-      } catch (err) {
+      } catch {
         console.log('Local Supabase health check failed, using mock search results')
         const { MOCK_RECIPES } = await import('@/lib/mock-data')
+        const filtered = applyMockFilters(MOCK_RECIPES)
+        const paginated = filtered.slice((page - 1) * perPage, page * perPage)
         return NextResponse.json({
-          recipes: MOCK_RECIPES.slice(0, perPage),
-          total: MOCK_RECIPES.length,
+          recipes: paginated,
+          total: filtered.length,
           page,
           per_page: perPage,
-          has_more: MOCK_RECIPES.length > perPage,
-          filters: { q, approach, diet_tags: dietTags, type: type || 'recipe', sort, cuisine_id, food_style_id, cookbook_id, chapter_id },
+          has_more: page * perPage < filtered.length,
+          filters: { q, approach, diet_tags: dietTags, food_tags: foodTags, type: type || 'recipe', sort, cuisine_id, food_style_id, cookbook_id, chapter_id, is_tested, tag: tag_filter, quality_min },
           _note: 'Using mock data - Local Supabase not running'
         })
       }
