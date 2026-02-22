@@ -272,6 +272,17 @@ export default async function RecipePage({ params }: RecipePageProps) {
                 </Card>
               )}
 
+              {/* Action bar */}
+              <Card className="shadow-lg border-0 bg-card/95 backdrop-blur-sm">
+                <CardContent className="p-5">
+                  <RecipeActionsClient
+                    recipeId={mockRecipe.id}
+                    slug={slug}
+                    title={mockRecipe.title}
+                  />
+                </CardContent>
+              </Card>
+
               {/* Ingredients */}
               <Card className="shadow-sm">
                 <CardHeader className="pb-3">
@@ -379,6 +390,27 @@ export default async function RecipePage({ params }: RecipePageProps) {
                 </CardContent>
               </Card>
 
+              {/* Nutrition */}
+              {detail.nutrition && (
+                <Card className="shadow-sm">
+                  <CardContent className="p-4">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Nutrition per serving</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {([
+                        { label: 'Calories', value: detail.nutrition.calories, unit: 'kcal' },
+                        { label: 'Protein',  value: detail.nutrition.protein,  unit: 'g' },
+                        { label: 'Carbs',    value: detail.nutrition.carbs,    unit: 'g' },
+                        { label: 'Fat',      value: detail.nutrition.fat,      unit: 'g' },
+                      ] as const).map(({ label, value, unit }) => (
+                        <div key={label} className="bg-stone-50 rounded-lg p-2.5 text-center">
+                          <p className="text-xs text-muted-foreground mb-0.5">{label}</p>
+                          <p className="text-sm font-bold">{value}<span className="text-[10px] font-normal ml-0.5">{unit}</span></p>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
               {/* Back to browse */}
               <Link href="/search">
                 <Button variant="outline" className="w-full">Browse more recipes</Button>
