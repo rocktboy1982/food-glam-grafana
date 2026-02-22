@@ -1,15 +1,20 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
-
 const ALLOWED_TYPES = ['recipe', 'short', 'image', 'video'] as const
 const ALLOWED_STATUSES = ['draft', 'active'] as const
+function isLocalSupabase() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+  return url.includes('127.0.0.1') || url.includes('localhost') || !url
+}
 
+// In-memory fallback store for local dev (resets on server restart)
+const DEV_POSTS: Record<string, unknown>[] = []
+const DEV_USER_ID = 'dev-user-001'
 /* ── POST: Create a new post ──────────────────────────────── */
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const { title, type, slug, hero_image_url, approach_id, diet_tags, recipe_json, status } = body
-
+    const { title, type, slug, hero_image_url, approach_id, diet_tags, food_tags, recipe_json, status } = body
     // Validation
     if (!title || typeof title !== 'string' || !title.trim()) {
       return NextResponse.json({ error: 'Title is required' }, { status: 400 })
@@ -18,18 +23,36 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid content type' }, { status: 400 })
     }
     const postStatus = ALLOWED_STATUSES.includes(status) ? status : 'draft'
+    // ── Local dev fallback (no real Supabase) ──────────────────────
+    if (isLocalSupabase()) {
+      const baseSlug = (slug || title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')).slice(0, 80)
+      const finalSlug = `${baseSlug}-${Date.now().toString(36)}`
+      const id = `dev-post-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+      const post = {
+        id, title: title.trim(), type, slug: finalSlug,
+        hero_image_url: hero_image_url || null,
+        approach_id: approach_id || null,
+        diet_tags: Array.isArray(diet_tags) ? diet_tags : null,
+        food_tags: Array.isArray(food_tags) ? food_tags : null,
+        recipe_json: recipe_json || null,
+        status: postStatus,
+        created_by: DEV_USER_ID,
+        created_at: new Date().toISOString(),
+      }
+      DEV_POSTS.push(post)
+      console.log(`[submit] Dev fallback: saved post "${title}" (id=${id})`)
+      return NextResponse.json({ ok: true, id }, { status: 201 })
+    }
 
-    // Auth
+    // ── Real Supabase ───────────────────────────────────────────────
     const supabase = createServerSupabaseClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
-
     // Build slug (ensure unique by appending random suffix)
     const baseSlug = (slug || title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')).slice(0, 80)
     const finalSlug = `${baseSlug}-${Date.now().toString(36)}`
-
     const insert: Record<string, unknown> = {
       title: title.trim(),
       type,
@@ -37,11 +60,11 @@ export async function POST(req: Request) {
       hero_image_url: hero_image_url || null,
       approach_id: approach_id || null,
       diet_tags: Array.isArray(diet_tags) ? diet_tags : null,
+      food_tags: Array.isArray(food_tags) ? food_tags : null,
       recipe_json: recipe_json || null,
       status: postStatus,
       created_by: user.id,
     }
-
     const { data, error } = await supabase.from('posts').insert(insert).select('id').single()
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
