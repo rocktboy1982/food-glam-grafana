@@ -1,9 +1,9 @@
 "use client"
-
-import React, { useState, useMemo, useCallback, useId } from "react"
+import React, { useState, useMemo, useCallback, useId, useEffect } from "react"
 import Link from "next/link"
 import { MOCK_RECIPES } from "@/lib/mock-data"
 import { usePreferredRecipes, type PreferredRecipe } from "@/lib/preferred-recipes"
+import { useFeatureFlags } from "@/components/feature-flags-provider"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -352,6 +352,74 @@ function WeekNav({
     </div>
   )
 }
+// ─── Nutrition helpers ───────────────────────────────────────────────────────
+
+type NutritionTotals = { calories: number; protein: number; carbs: number; fat: number }
+
+function sumSlotNutrition(slot: MealSlot): NutritionTotals {
+  return slot.dishes.reduce(
+    (acc, dish) => {
+      const n = dish.recipe.nutrition_per_serving
+      if (!n) return acc
+      return {
+        calories: acc.calories + n.calories * dish.servings,
+        protein: acc.protein + n.protein * dish.servings,
+        carbs: acc.carbs + n.carbs * dish.servings,
+        fat: acc.fat + n.fat * dish.servings,
+      }
+    },
+    { calories: 0, protein: 0, carbs: 0, fat: 0 }
+  )
+}
+
+function sumDayNutrition(dayPlan: Record<MealKey, MealSlot>): NutritionTotals {
+  return MEALS.reduce(
+    (acc, meal) => {
+      const s = sumSlotNutrition(dayPlan[meal])
+      return {
+        calories: acc.calories + s.calories,
+        protein: acc.protein + s.protein,
+        carbs: acc.carbs + s.carbs,
+        fat: acc.fat + s.fat,
+      }
+    },
+    { calories: 0, protein: 0, carbs: 0, fat: 0 }
+  )
+}
+
+function sumWeekNutrition(weekPlan: WeekPlan): NutritionTotals {
+  return DAYS.reduce(
+    (acc, day) => {
+      const d = sumDayNutrition(weekPlan[day])
+      return {
+        calories: acc.calories + d.calories,
+        protein: acc.protein + d.protein,
+        carbs: acc.carbs + d.carbs,
+        fat: acc.fat + d.fat,
+      }
+    },
+    { calories: 0, protein: 0, carbs: 0, fat: 0 }
+  )
+}
+
+function useHealthGoals() {
+  const [calorieTarget, setCalorieTarget] = useState<number>(2100)
+  const [macroProtein, setMacroProtein] = useState<number>(35)
+  const [macroCarbs, setMacroCarbs] = useState<number>(40)
+  const [macroFat, setMacroFat] = useState<number>(25)
+  useEffect(() => {
+    const ct = Number(localStorage.getItem("health-calorie-target") ?? 2100)
+    const mp = Number(localStorage.getItem("health-macro-protein") ?? 35)
+    const mc = Number(localStorage.getItem("health-macro-carbs") ?? 40)
+    const mf = Number(localStorage.getItem("health-macro-fat") ?? 25)
+    setCalorieTarget(isNaN(ct) ? 2100 : ct)
+    setMacroProtein(isNaN(mp) ? 35 : mp)
+    setMacroCarbs(isNaN(mc) ? 40 : mc)
+    setMacroFat(isNaN(mf) ? 25 : mf)
+  }, [])
+  return { calorieTarget, macroProtein, macroCarbs, macroFat }
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function PlanClient() {
@@ -370,6 +438,9 @@ export default function PlanClient() {
   const [view, setView] = useState<"planner" | "shopping">("planner")
   const [pickerSearch, setPickerSearch] = useState("")
   const { preferred, hydrated: prefHydrated } = usePreferredRecipes()
+  const { flags } = useFeatureFlags()
+  const healthMode = !!flags.healthMode
+  const healthGoals = useHealthGoals()
 
   // Shopping list state
   const [shopScope, setShopScope] = useState<ShoppingScope>({ type: "week", weekIndex: 0 })
@@ -380,6 +451,13 @@ export default function PlanClient() {
   const [shopRangeTo, setShopRangeTo] = useState(0)
 
   const week = planner[currentWeek]
+
+  // ── Nutrition totals (only computed when healthMode on) ──
+  const weekNutrition = useMemo(() => sumWeekNutrition(week), [week])
+  const dayNutrition = useMemo(() =>
+    Object.fromEntries(DAYS.map((d) => [d, sumDayNutrition(week[d])])) as Record<DayKey, NutritionTotals>,
+    [week]
+  )
 
   // ── Planner mutations ──
   const addDish = useCallback((day: DayKey, meal: MealKey, recipe: Recipe) => {
@@ -540,6 +618,44 @@ export default function PlanClient() {
             onMonthSelect={(m) => { setSelectedMonth(m); localStorage.setItem("planner-month", String(m)) }}
           />
 
+
+          {/* Weekly nutrition summary — only shown in Health Mode */}
+          {healthMode && weekNutrition.calories > 0 && (
+            <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50/50 p-4">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-semibold">🔥 Weekly Nutrition</h3>
+                <a href="/health" className="text-xs text-amber-600 hover:underline">Adjust targets →</a>
+              </div>
+              {/* Calorie progress bar */}
+              <div className="mb-3">
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-muted-foreground">Calories</span>
+                  <span className="font-medium">
+                    {Math.round(weekNutrition.calories)} / {healthGoals.calorieTarget * 7} kcal
+                  </span>
+                </div>
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all ${
+                      weekNutrition.calories > healthGoals.calorieTarget * 7
+                        ? "bg-red-500"
+                        : "bg-amber-500"
+                    }`}
+                    style={{ width: `${Math.min(100, (weekNutrition.calories / (healthGoals.calorieTarget * 7)) * 100)}%` }}
+                  />
+                </div>
+              </div>
+              {/* Macro chips */}
+              <div className="flex gap-4 text-xs flex-wrap">
+                <span className="text-red-600 font-medium">🥩 {Math.round(weekNutrition.protein)}g protein</span>
+                <span className="text-amber-600 font-medium">🌾 {Math.round(weekNutrition.carbs)}g carbs</span>
+                <span className="text-yellow-700 font-medium">🫒 {Math.round(weekNutrition.fat)}g fat</span>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-1">
+                Targets: {healthGoals.macroProtein}% protein · {healthGoals.macroCarbs}% carbs · {healthGoals.macroFat}% fat
+              </p>
+            </div>
+          )}
           {/* 7-day grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3 mb-8">
             {DAYS.map((day, di) => {
@@ -551,6 +667,11 @@ export default function PlanClient() {
                   <div className="bg-amber-50 border-b border-amber-100 px-3 py-2 text-center">
                     <div className="text-xs font-bold text-amber-700 uppercase tracking-wide">{day.slice(0, 3)}</div>
                     <div className="text-[10px] text-amber-500 mt-0.5">{dateStr}</div>
+                    {healthMode && dayNutrition[day].calories > 0 && (
+                      <div className="text-[9px] text-amber-600 font-semibold mt-0.5">
+                        🔥 {Math.round(dayNutrition[day].calories)} kcal
+                      </div>
+                    )}
                   </div>
 
                   {/* Meal slots */}
@@ -746,6 +867,8 @@ export default function PlanClient() {
                           avatar_url: "",
                         },
                         is_saved: false,
+                        servings: 1,
+                        nutrition_per_serving: { calories: 0, protein: 0, carbs: 0, fat: 0 },
                       }
                       return (
                         <button
