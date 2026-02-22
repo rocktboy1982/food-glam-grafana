@@ -295,7 +295,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <RecipeIngredientsClient sections={ingredientSections} />
+                  <RecipeIngredientsClient sections={ingredientSections} showCalories />
                 </CardContent>
               </Card>
 
@@ -346,6 +346,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
                 nutrition={detail.nutrition}
                 fasting={undefined}
                 foodLog={false}
+                ingredients={detail.ingredients}
               />
             </div>
 
@@ -587,7 +588,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
               </CardHeader>
               <CardContent>
                 {ingredientSections.length > 0 ? (
-                  <RecipeIngredientsClient sections={ingredientSections} />
+                  <RecipeIngredientsClient sections={ingredientSections} showCalories />
                 ) : (
                   <p className="text-sm text-muted-foreground">No ingredients listed.</p>
                 )}
@@ -646,6 +647,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
               nutrition={recipeData.nutrition_per_serving || { calories: null, protein: null, carbs: null, fat: null }}
               fasting={undefined}
               foodLog={false}
+              ingredients={ingredientSections.flatMap(s => s.ingredients)}
             />
           </div>
 

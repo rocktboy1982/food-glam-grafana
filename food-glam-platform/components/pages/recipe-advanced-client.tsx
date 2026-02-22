@@ -3,6 +3,7 @@
 import React from "react";
 import { useFeatureFlags } from "@/components/feature-flags-provider";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { estimateRecipeCalories } from "@/lib/calorie-engine";
 
 type NutritionData = {
   calories?: number | null;
@@ -11,7 +12,17 @@ type NutritionData = {
   fat?: number | null;
 };
 
-function MacroBar({ label, value, total, color }: { label: string; value: number; total: number; color: string }) {
+function MacroBar({
+  label,
+  value,
+  total,
+  color,
+}: {
+  label: string;
+  value: number;
+  total: number;
+  color: string;
+}) {
   const pct = total > 0 ? Math.min(100, Math.round((value / total) * 100)) : 0;
   return (
     <div className="flex items-center gap-3">
@@ -29,10 +40,13 @@ export default function RecipeAdvancedClient({
   nutrition,
   fasting,
   foodLog,
+  ingredients,
 }: {
   nutrition: NutritionData | null | undefined;
   fasting?: string;
   foodLog?: boolean;
+  /** All ingredient strings from the recipe — used to compute per-ingredient calories */
+  ingredients?: string[];
 }) {
   const { flags, loading } = useFeatureFlags();
   const healthMode = !!flags.healthMode;
@@ -58,9 +72,14 @@ export default function RecipeAdvancedClient({
   const protein = nutrition?.protein ?? 0;
   const carbs = nutrition?.carbs ?? 0;
   const fat = nutrition?.fat ?? 0;
-  // total grams for macro bar scaling (protein+carbs+fat)
   const totalMacroG = protein + carbs + fat;
   const hasData = calories > 0 || totalMacroG > 0;
+
+  // Per-ingredient calorie breakdown
+  const ingredientList = ingredients ?? [];
+  const { results: calorieResults, totalKcal: computedTotal, knownCount } =
+    estimateRecipeCalories(ingredientList);
+  const hasIngredientCalories = ingredientList.length > 0 && knownCount > 0;
 
   return (
     <Card className="mt-6">
@@ -70,6 +89,7 @@ export default function RecipeAdvancedClient({
         </CardTitle>
       </CardHeader>
       <CardContent>
+        {/* ── Macro summary (from recipe_json.nutrition_per_serving) ── */}
         {!hasData ? (
           <p className="text-sm text-muted-foreground">Nutrition data not available for this recipe.</p>
         ) : (
@@ -99,20 +119,89 @@ export default function RecipeAdvancedClient({
             {/* Macro distribution bars */}
             {totalMacroG > 0 && (
               <div className="space-y-2">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Macro breakdown</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+                  Macro breakdown
+                </p>
                 <MacroBar label="Protein" value={protein} total={totalMacroG} color="bg-red-400" />
-                <MacroBar label="Carbs" value={carbs} total={totalMacroG} color="bg-amber-400" />
-                <MacroBar label="Fat" value={fat} total={totalMacroG} color="bg-yellow-400" />
+                <MacroBar label="Carbs"   value={carbs}   total={totalMacroG} color="bg-amber-400" />
+                <MacroBar label="Fat"     value={fat}     total={totalMacroG} color="bg-yellow-400" />
               </div>
             )}
 
             {/* Extra health info */}
             {(fasting || foodLog) && (
               <div className="border-t border-border pt-3 space-y-1 text-sm text-muted-foreground">
-                {fasting && <div>⏱ Fasting window: <span className="text-foreground font-medium">{fasting}</span></div>}
-                {foodLog && <div>📓 Food logging: <span className="text-foreground font-medium">Enabled</span></div>}
+                {fasting && (
+                  <div>
+                    ⏱ Fasting window:{" "}
+                    <span className="text-foreground font-medium">{fasting}</span>
+                  </div>
+                )}
+                {foodLog && (
+                  <div>
+                    📓 Food logging: <span className="text-foreground font-medium">Enabled</span>
+                  </div>
+                )}
               </div>
             )}
+          </div>
+        )}
+
+        {/* ── Per-ingredient calorie breakdown (USDA estimate) ── */}
+        {hasIngredientCalories && (
+          <div className="mt-5 border-t border-border pt-4">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Calories by ingredient
+              </p>
+              <span className="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-0.5">
+                ~{computedTotal.toLocaleString()} kcal total
+              </span>
+            </div>
+            <p className="text-[11px] text-muted-foreground mb-3">
+              USDA estimates based on quantity &amp; unit.{" "}
+              {knownCount < ingredientList.length && (
+                <>{ingredientList.length - knownCount} ingredient(s) not matched.</>
+              )}
+            </p>
+            <div className="space-y-1.5">
+              {calorieResults.map((r, i) => {
+                const pct = computedTotal > 0 && r.kcal !== null
+                  ? Math.round((r.kcal / computedTotal) * 100)
+                  : 0;
+                return (
+                  <div key={i} className="flex items-center gap-2 group">
+                    {/* Ingredient label */}
+                    <span
+                      className="text-xs text-foreground truncate"
+                      style={{ minWidth: 0, flex: "1 1 0" }}
+                      title={ingredientList[i]}
+                    >
+                      {ingredientList[i]}
+                    </span>
+
+                    {/* Bar */}
+                    {r.kcal !== null ? (
+                      <>
+                        <div className="flex-shrink-0 w-20 h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-amber-400 rounded-full transition-all"
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                        <span className="flex-shrink-0 text-[11px] font-semibold text-amber-700 tabular-nums w-16 text-right">
+                          {r.kcal} kcal
+                        </span>
+                      </>
+                    ) : (
+                      <span className="flex-shrink-0 text-[11px] text-muted-foreground/50 w-[calc(5rem+4rem+0.5rem)] text-right">
+                        unknown
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </CardContent>

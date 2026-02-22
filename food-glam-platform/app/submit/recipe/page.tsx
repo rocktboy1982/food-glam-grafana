@@ -38,6 +38,17 @@ const FOOD_TAG_GROUPS = [
   { label: 'Character', tags: ['spicy', 'sweet', 'smoky', 'crispy', 'healthy', 'street-food', 'breakfast', 'dessert', 'comfort'] },
 ] as const
 const FOOD_TAGS = FOOD_TAG_GROUPS.flatMap(g => [...g.tags])
+/* ── Ingredient units ────────────────────────────────────── */
+const UNITS = [
+  '', 'g', 'kg', 'ml', 'l', 'oz', 'lb',
+  'tsp', 'tbsp', 'cup', 'cups', 'fl oz', 'pint', 'quart',
+  'piece', 'pieces', 'slice', 'slices', 'bunch', 'handful',
+  'pinch', 'dash', 'can', 'package', 'clove', 'cloves',
+  'stalk', 'sprig', 'leaf', 'leaves', 'sheet',
+] as const
+
+interface IngredientRow { qty: string; unit: string; name: string }
+const emptyIngredient = (): IngredientRow => ({ qty: '', unit: '', name: '' })
 
 /* ── Types ───────────────────────────────────────────────── */
 interface RecipeFormState {
@@ -52,7 +63,7 @@ interface RecipeFormState {
   foodTags: string[]
   servings: string
   cookTime: string
-  ingredients: string[]
+  ingredients: IngredientRow[]
   steps: string[]
 }
 
@@ -68,7 +79,7 @@ const emptyForm: RecipeFormState = {
   foodTags: [],
   servings: '',
   cookTime: '',
-  ingredients: [''],
+  ingredients: [emptyIngredient()],
   steps: [''],
 }
 
@@ -84,7 +95,7 @@ function validate(f: RecipeFormState): Errors {
   if (!f.countryId)           e.countryId    = 'Select the country / cuisine origin'
   if (!f.servings || Number(f.servings) < 1)   e.servings  = 'Enter number of servings'
   if (!f.cookTime || Number(f.cookTime) < 1)   e.cookTime  = 'Enter cook time in minutes'
-  const realIngredients = f.ingredients.filter(i => i.trim())
+  const realIngredients = f.ingredients.filter(i => i.name.trim())
   if (realIngredients.length === 0) e.ingredients = 'Add at least one ingredient'
   const realSteps = f.steps.filter(s => s.trim())
   if (realSteps.length === 0) e.steps = 'Add at least one step'
@@ -161,9 +172,15 @@ function SubmitRecipePageContent() {
         foodTags: (post.food_tags as string[]) || [],
         servings: String((rj.servings as number) || ''),
         cookTime: String((rj.cookTime as number) || ''),
-        ingredients: ((rj.ingredients as string[]) || ['']).length > 0
-          ? (rj.ingredients as string[])
-          : [''],
+        ingredients: (() => {
+          const raw = (rj.ingredients as (string | IngredientRow)[]) || []
+          const rows: IngredientRow[] = raw.map(r =>
+            typeof r === 'string'
+              ? { qty: '', unit: '', name: r }
+              : r
+          )
+          return rows.length > 0 ? rows : [emptyIngredient()]
+        })(),
         steps: ((rj.steps as string[]) || ['']).length > 0
           ? (rj.steps as string[])
           : [''],
@@ -222,15 +239,23 @@ function SubmitRecipePageContent() {
     })
   }, [])
 
-  const updateListItem = (key: 'ingredients' | 'steps', idx: number, val: string) => {
+  const updateListItem = (key: 'steps', idx: number, val: string) => {
     set(key, form[key].map((v, i) => (i === idx ? val : v)))
   }
-  const addListItem = (key: 'ingredients' | 'steps') => {
+  const addListItem = (key: 'steps') => {
     set(key, [...form[key], ''])
   }
-  const removeListItem = (key: 'ingredients' | 'steps', idx: number) => {
+  const removeListItem = (key: 'steps', idx: number) => {
     if (form[key].length <= 1) return
     set(key, form[key].filter((_, i) => i !== idx))
+  }
+  const updateIngredient = (idx: number, field: keyof IngredientRow, val: string) => {
+    set('ingredients', form.ingredients.map((r, i) => i === idx ? { ...r, [field]: val } : r))
+  }
+  const addIngredient = () => set('ingredients', [...form.ingredients, emptyIngredient()])
+  const removeIngredient = (idx: number) => {
+    if (form.ingredients.length <= 1) return
+    set('ingredients', form.ingredients.filter((_, i) => i !== idx))
   }
 
   const toggleDietTag = (tag: string) => {
@@ -278,7 +303,7 @@ function SubmitRecipePageContent() {
         summary: form.summary,
         servings: Number(form.servings),
         cookTime: Number(form.cookTime),
-        ingredients: form.ingredients.filter(i => i.trim()),
+        ingredients: form.ingredients.filter(i => i.name.trim()).map(i => [i.qty, i.unit, i.name].filter(Boolean).join(' ')),
         steps: form.steps.filter(s => s.trim()),
         videoUrl: form.videoUrl || null,
         photoGallery: form.photoGallery.filter(u => u.trim()),
@@ -398,10 +423,10 @@ function SubmitRecipePageContent() {
           <div>
             <h3 className="text-lg font-semibold mb-3">Ingredients</h3>
             <ul className="space-y-1.5">
-              {form.ingredients.filter(i => i.trim()).map((ing, i) => (
+              {form.ingredients.filter(i => i.name.trim()).map((ing, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm">
                   <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-amber-500 flex-shrink-0" />
-                  {ing}
+                  {[ing.qty, ing.unit, ing.name].filter(Boolean).join(' ')}
                 </li>
               ))}
             </ul>
@@ -822,21 +847,47 @@ function SubmitRecipePageContent() {
           <label className={labelCls}>
             Ingredients <span className="text-destructive">*</span>
           </label>
+          {/* Column headers */}
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-5 flex-shrink-0" />
+            <span className="w-16 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60 text-center">Qty</span>
+            <span className="w-24 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60 text-center">Unit</span>
+            <span className="flex-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60">Ingredient</span>
+          </div>
           <div className="space-y-2">
             {form.ingredients.map((ing, idx) => (
               <div key={idx} className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground w-5 text-right flex-shrink-0">{idx + 1}.</span>
+                {/* Quantity */}
+                <input
+                  type="text"
+                  value={ing.qty}
+                  onChange={e => updateIngredient(idx, 'qty', e.target.value)}
+                  className={`w-16 flex-shrink-0 rounded-lg border border-border bg-background px-2 py-2.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-ring/40 focus:border-ring`}
+                  placeholder="2"
+                />
+                {/* Unit */}
+                <select
+                  value={ing.unit}
+                  onChange={e => updateIngredient(idx, 'unit', e.target.value)}
+                  className={`w-24 flex-shrink-0 rounded-lg border border-border bg-background px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40 focus:border-ring text-muted-foreground`}
+                >
+                  {UNITS.map(u => (
+                    <option key={u} value={u}>{u === '' ? '— unit —' : u}</option>
+                  ))}
+                </select>
+                {/* Name with autocomplete */}
                 <IngredientInput
-                  value={ing}
-                  onChange={val => updateListItem('ingredients', idx, val)}
-                  className={`flex-1 ${inputCls}`}
-                  placeholder={idx === 0 ? '2 cups all-purpose flour' : idx === 1 ? '1 tsp salt' : ''}
+                  value={ing.name}
+                  onChange={val => updateIngredient(idx, 'name', val)}
+                  className={inputCls}
+                  placeholder={idx === 0 ? 'all-purpose flour' : idx === 1 ? 'salt' : ''}
                 />
                 {form.ingredients.length > 1 && (
                   <button
                     type="button"
-                    onClick={() => removeListItem('ingredients', idx)}
-                    className="p-1.5 text-muted-foreground hover:text-destructive rounded transition-colors"
+                    onClick={() => removeIngredient(idx)}
+                    className="p-1.5 text-muted-foreground hover:text-destructive rounded transition-colors flex-shrink-0"
                     aria-label="Remove ingredient"
                   >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
@@ -848,7 +899,7 @@ function SubmitRecipePageContent() {
             ))}
             <button
               type="button"
-              onClick={() => addListItem('ingredients')}
+              onClick={() => addIngredient()}
               className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mt-1"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
