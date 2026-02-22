@@ -690,7 +690,7 @@ export default function PlanClient() {
 
                           {/* Collapsed summary / expand trigger */}
                           <button
-                            onClick={() => setExpandedSlot(isExpanded ? null : { day, meal })}
+                            onClick={() => { if (!hasDishes) { setPickingFor({ day, meal }); setExpandedSlot(null) } else { setExpandedSlot(isExpanded ? null : { day, meal }) } }}
                             className={`w-full rounded-lg border transition-colors text-left ${
                               isExpanded
                                 ? "border-amber-400 bg-amber-50"
