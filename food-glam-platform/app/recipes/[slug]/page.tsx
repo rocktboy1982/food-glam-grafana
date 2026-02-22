@@ -9,6 +9,7 @@ import RecipeIngredientsClient from "@/components/pages/recipe-ingredients-clien
 import RecipeActionsClient from "@/components/pages/recipe-actions-client"
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import { MOCK_RECIPES } from '@/lib/mock-data'
+import { normalizeToEmbed } from '@/lib/embed'
 
 // Rich mock recipe details keyed by slug
 const MOCK_RECIPE_DETAILS: Record<string, {
@@ -126,10 +127,49 @@ interface RecipeJson {
   presentation?: string;
   drink_pairings?: string[];
   notes?: string;
+  videoUrl?: string;
+  photoGallery?: string[];
 }
 
 interface RecipePageProps {
   params: Promise<{ slug: string }>;
+}
+
+function VideoEmbed({ url }: { url: string }) {
+  const embedUrl = normalizeToEmbed(url)
+  if (!embedUrl) return null
+  return (
+    <div className="rounded-xl overflow-hidden border border-stone-200 shadow-sm bg-black aspect-video">
+      <iframe
+        src={embedUrl}
+        className="w-full h-full"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        title="Recipe video"
+      />
+    </div>
+  )
+}
+
+function PhotoGallery({ photos }: { photos: string[] }) {
+  const valid = photos.filter(Boolean)
+  if (valid.length === 0) return null
+  return (
+    <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory">
+      {valid.map((src, i) => (
+        <div
+          key={i}
+          className="flex-shrink-0 w-48 h-36 rounded-xl overflow-hidden border border-stone-200 shadow-sm snap-start"
+        >
+          <img
+            src={src}
+            alt={`Photo ${i + 1}`}
+            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+      ))}
+    </div>
+  )
 }
 
 export default async function RecipePage({ params }: RecipePageProps) {
@@ -247,6 +287,24 @@ export default async function RecipePage({ params }: RecipePageProps) {
                   <RecipeIngredientsClient sections={ingredientSections} />
                 </CardContent>
               </Card>
+
+              {/* Photo Gallery */}
+              {(detail as { photoGallery?: string[] }).photoGallery && (detail as { photoGallery?: string[] }).photoGallery!.length > 0 && (
+                <Card className="shadow-sm">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+                        <path d="m21 15-5-5L5 21"/>
+                      </svg>
+                      Gallery
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <PhotoGallery photos={(detail as { photoGallery?: string[] }).photoGallery!} />
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Steps */}
               <Card className="shadow-sm">
@@ -467,6 +525,23 @@ export default async function RecipePage({ params }: RecipePageProps) {
               </CardContent>
             </Card>
 
+            {/* Video embed */}
+            {((post as Record<string, unknown>).video_url || recipeData.videoUrl) && (
+              <Card className="shadow-sm overflow-hidden p-0">
+                <CardHeader className="pb-2 px-5 pt-5">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="5 3 19 12 5 21 5 3"/>
+                    </svg>
+                    Watch
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-5 pb-5">
+                  <VideoEmbed url={((post as Record<string, unknown>).video_url as string) || recipeData.videoUrl!} />
+                </CardContent>
+              </Card>
+            )}
+
             {/* Ingredients */}
             <Card className="shadow-sm">
               <CardHeader className="pb-3">
@@ -486,6 +561,24 @@ export default async function RecipePage({ params }: RecipePageProps) {
                 )}
               </CardContent>
             </Card>
+
+            {/* Photo Gallery */}
+            {recipeData.photoGallery && recipeData.photoGallery.length > 0 && (
+              <Card className="shadow-sm">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+                      <path d="m21 15-5-5L5 21"/>
+                    </svg>
+                    Gallery
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <PhotoGallery photos={recipeData.photoGallery} />
+                </CardContent>
+              </Card>
+            )}
 
             {/* Steps */}
             <Card className="shadow-sm">
