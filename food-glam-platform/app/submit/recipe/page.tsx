@@ -32,8 +32,8 @@ const DIET_TAGS = [
 ] as const
 
 const FOOD_TAG_GROUPS = [
-  { label: 'Dish',      tags: ['pizza', 'noodles', 'sushi', 'pastry', 'tacos', 'curry', 'paella', 'rice', 'bowl', 'stew', 'casserole'] },
-  { label: 'Protein',   tags: ['seafood', 'chicken', 'lamb', 'pork', 'beef', 'tofu'] },
+  { label: 'Dish',      tags: ['pizza', 'noodles', 'sushi', 'pastry', 'tacos', 'curry', 'paella', 'rice', 'bowl', 'stew', 'casserole', 'dumpling', 'burger', 'salad', 'soup', 'wrap', 'sandwich', 'flatbread', 'skewer', 'fritter', 'risotto', 'tartare', 'roast', 'pie', 'broth', 'gratin'] },
+  { label: 'Protein',   tags: ['seafood', 'chicken', 'lamb', 'pork', 'beef', 'tofu', 'veal', 'duck', 'game', 'venison', 'rabbit', 'turkey', 'eggs', 'tempeh', 'legumes', 'cheese', 'bison', 'goat', 'quail', 'offal'] },
   { label: 'Character', tags: ['spicy', 'sweet', 'smoky', 'crispy', 'healthy', 'street-food', 'breakfast', 'dessert', 'comfort'] },
 ] as const
 const FOOD_TAGS = FOOD_TAG_GROUPS.flatMap(g => [...g.tags])
