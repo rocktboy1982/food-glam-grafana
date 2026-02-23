@@ -1,12 +1,22 @@
 'use client'
-
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import RecipeCard from '@/components/RecipeCard'
 import RegionMap from '@/components/RegionMap'
 import NavigationButtons from '@/components/NavigationButtons'
 import TrendingSection from '@/components/TrendingSection'
 import CommunitySection from '@/components/CommunitySection'
 import TonightCard from '@/components/TonightCard'
+import { REGION_META } from '@/lib/recipe-taxonomy'
+
+const CONTINENT_GROUPS = [
+  { continent: 'Europe',                      ids: ['western-europe', 'northern-europe', 'eastern-europe'] },
+  { continent: 'Middle East & Central Asia',  ids: ['middle-east', 'central-asia'] },
+  { continent: 'Asia',                        ids: ['east-asia', 'southeast-asia', 'south-asia'] },
+  { continent: 'Africa',                      ids: ['north-africa', 'west-africa', 'east-africa', 'southern-africa'] },
+  { continent: 'Americas',                    ids: ['north-america', 'south-america'] },
+  { continent: 'Oceania & International',     ids: ['oceania', 'international'] },
+]
 
 interface Recipe {
   id: string
@@ -68,16 +78,38 @@ export default function Home() {
       {/* Map/Region Filter */}
       <RegionMap />
 
-      {/* Map/Region Filter */}
-      <section className="mb-8">
-        <h2 className="text-2xl font-bold mb-2">Browse by Region</h2>
-        <div className="flex gap-2 flex-wrap mb-4">
-          {["Asian", "European", "African", "American", "Middle Eastern"].map(region => (
-            <a key={region} href={`/search?region=${region}`} className="bg-muted px-3 py-1 rounded-full text-sm font-medium cursor-pointer hover:bg-primary/10 transition-colors">{region}</a>
-          ))}
+      {/* Browse by Region */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold">Browse by Region</h2>
+          <Link href="/cookbooks" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            All cookbooks →
+          </Link>
         </div>
-        <div className="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center mb-4">
-          <span className="text-muted-foreground">[Map visualization coming soon]</span>
+        <div className="space-y-4">
+          {CONTINENT_GROUPS.map(group => (
+            <div key={group.continent}>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-2">
+                {group.continent}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {group.ids.map(id => {
+                  const r = REGION_META[id]
+                  if (!r) return null
+                  return (
+                    <Link
+                      key={id}
+                      href={`/cookbooks/region/${id}`}
+                      className="inline-flex items-center gap-1.5 bg-muted px-3 py-1.5 rounded-full text-sm font-medium hover:bg-primary/10 hover:text-primary transition-colors"
+                    >
+                      <span>{r.emoji}</span>
+                      {r.label}
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 

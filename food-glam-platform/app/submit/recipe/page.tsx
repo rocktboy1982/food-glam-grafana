@@ -127,10 +127,11 @@ function SubmitRecipePageContent() {
   const [saving, setSaving] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [user, setUser] = useState<{ id: string } | null>(null)
+  const [authChecked, setAuthChecked] = useState(false)
 
   /* auth check */
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data.user ? { id: data.user.id } : null))
+    supabase.auth.getUser().then(({ data }) => { setUser(data.user ? { id: data.user.id } : null); setAuthChecked(true) })
   }, [])
 
   /* load existing post for editing */
@@ -464,6 +465,22 @@ function SubmitRecipePageContent() {
           </p>
         </div>
       </div>
+
+      {/* ── Auth notice ───────────────────────────────────── */}
+      {authChecked && !user && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 flex items-start gap-3">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+          </svg>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-amber-800">Sign in to publish</p>
+            <p className="text-xs text-amber-700 mt-0.5">You can fill out the form, but you&apos;ll need to sign in before publishing or saving a draft.</p>
+            <Link href="/auth/signin" className="inline-block mt-2 text-xs font-medium text-amber-900 underline underline-offset-2 hover:text-amber-700 transition-colors">
+              Sign in with Google →
+            </Link>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-8">
 

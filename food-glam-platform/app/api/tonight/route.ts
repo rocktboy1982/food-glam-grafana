@@ -14,21 +14,36 @@ export async function GET() {
   if (isLocalSupabase) {
     try {
       const healthCheck = await fetch(`${supabaseUrl}/health`, { signal: AbortSignal.timeout(2000) })
-      if (!healthCheck.ok) {
-        console.log('Local Supabase not responding, returning empty recommendations')
-        return NextResponse.json({
-          recommendations: [],
-          has_user: false,
-          _note: 'Using empty data - Local Supabase not running'
-        })
+      if (!healthCheck.ok) throw new Error('not ok')
+    } catch {
+      const { MOCK_RECIPES } = await import('@/lib/mock-data')
+      const COOK_TIMES: Record<string, number> = {
+        'classic-margherita-pizza': 45, 'pad-thai-noodles': 30, 'moroccan-tagine': 150,
+        'california-roll': 40, 'vegan-buddha-bowl': 40, 'french-croissants': 120,
+        'tacos-al-pastor': 35, 'greek-moussaka': 90, 'indian-butter-chicken': 60,
+        'new-york-cheesecake': 75, 'korean-bibimbap': 45, 'spanish-paella': 55,
       }
-    } catch (err) {
-      console.log('Local Supabase health check failed, returning empty recommendations')
-      return NextResponse.json({
-        recommendations: [],
-        has_user: false,
-        _note: 'Using empty data - Local Supabase not running'
-      })
+      const SERVINGS: Record<string, number> = {
+        'classic-margherita-pizza': 4, 'pad-thai-noodles': 2, 'moroccan-tagine': 6,
+        'california-roll': 2, 'vegan-buddha-bowl': 2, 'french-croissants': 8,
+        'tacos-al-pastor': 4, 'greek-moussaka': 6, 'indian-butter-chicken': 4,
+        'new-york-cheesecake': 10, 'korean-bibimbap': 2, 'spanish-paella': 4,
+      }
+      const reasons = ['Trending', 'Trending', 'Popular in your region', 'Similar to your saves', 'Trending'] as const
+      const recommendations = MOCK_RECIPES.slice(0, 5).map((r, i) => ({
+        id: r.id,
+        title: r.title,
+        slug: r.slug,
+        summary: r.summary,
+        hero_image_url: r.hero_image_url,
+        approach_name: r.region,
+        cook_time_minutes: COOK_TIMES[r.slug] ?? 40,
+        servings: SERVINGS[r.slug] ?? 4,
+        net_votes: r.votes,
+        reason: reasons[i] ?? 'Trending',
+        score: r.votes,
+      }))
+      return NextResponse.json({ recommendations, has_user: false, _note: 'mock data' })
     }
   }
 
