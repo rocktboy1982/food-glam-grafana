@@ -7,7 +7,7 @@ import Link from 'next/link'
 
 type ContentStatus = 'active' | 'pending' | 'rejected' | 'removed'
 type ChefStatus    = 'active' | 'suspended' | 'banned'
-type AdminTab      = 'dashboard' | 'content' | 'chefs' | 'reports'
+type AdminTab      = 'dashboard' | 'content' | 'chefs' | 'users' | 'reports'
 
 interface Stats {
   totalRecipes: number
@@ -46,6 +46,7 @@ interface Chef {
   handle: string
   avatar_url: string | null
   status: ChefStatus
+  tier: 'pro' | 'amateur' | 'user'
   notes: string
   recipe_count: number
   total_votes: number
@@ -53,18 +54,33 @@ interface Chef {
   followers: number
 }
 
+type UserStatus = 'active' | 'blocked'
+
+interface AdminUser {
+  id: string
+  display_name: string
+  handle: string
+  avatar_url: string | null
+  email: string
+  status: UserStatus
+  notes: string
+  joined_at: string
+  recipe_count: number
+}
+
 /* ─── helpers ────────────────────────────────────────────────────────────── */
 
-const STATUS_COLORS: Record<ContentStatus | ChefStatus, string> = {
+const STATUS_COLORS: Record<ContentStatus | ChefStatus | UserStatus, string> = {
   active:    'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
   pending:   'bg-amber-500/20    text-amber-300    border-amber-500/30',
   rejected:  'bg-red-500/20      text-red-300      border-red-500/30',
   removed:   'bg-zinc-500/20     text-zinc-400     border-zinc-500/30',
   suspended: 'bg-orange-500/20   text-orange-300   border-orange-500/30',
   banned:    'bg-red-600/30      text-red-300      border-red-600/40',
+  blocked:   'bg-red-500/20      text-red-300      border-red-500/30',
 }
 
-function Badge({ status }: { status: ContentStatus | ChefStatus }) {
+function Badge({ status }: { status: ContentStatus | ChefStatus | UserStatus }) {
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border ${STATUS_COLORS[status]}`}>
       {status}
@@ -141,6 +157,14 @@ export default function AdminClient() {
   const [chefsLoading, setChefsLoading] = useState(false)
   const [editingChef, setEditingChef] = useState<Chef | null>(null)
   const [chefNotesDraft, setChefNotesDraft] = useState('')
+
+  /* users state */
+  const [users, setUsers] = useState<AdminUser[]>([])
+  const [userFilter, setUserFilter] = useState<UserStatus | 'all'>('all')
+  const [userSearch, setUserSearch] = useState('')
+  const [usersLoading, setUsersLoading] = useState(false)
+  const [editingUser, setEditingUser] = useState<AdminUser | null>(null)
+  const [userNotesDraft, setUserNotesDraft] = useState('')
 
   /* ui state */
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
@@ -230,40 +254,68 @@ export default function AdminClient() {
   /* ── chef actions ── */
   const setChefStatus = useCallback(async (id: string, status: ChefStatus) => {
     const chef = chefs.find(c => c.id === id)
-    const action = status === 'banned' ? `ban ${chef?.display_name}` : status === 'suspended' ? `suspend ${chef?.display_name}` : `restore ${chef?.display_name}`
+    const verb = status === 'banned' ? 'Ban' : status === 'suspended' ? 'Suspend' : 'Restore'
     setConfirm({
-      message: `Are you sure you want to ${action}?`,
+      message: `${verb} ${chef?.display_name ?? 'this chef'}?`,
       onConfirm: async () => {
         setConfirm(null)
         try {
-          await fetch('/api/admin/chefs', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, status }),
-          })
-          showToast(`Chef ${action}d`)
+          await fetch('/api/admin/chefs', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status }) })
+          showToast(`Chef ${verb.toLowerCase()}d`)
           fetchChefs()
-        } catch {
-          showToast('Action failed', 'error')
-        }
+        } catch { showToast('Action failed', 'error') }
       },
     })
   }, [chefs, fetchChefs, showToast])
-
+  const setChefTier = useCallback(async (id: string, tier: 'pro' | 'amateur' | 'user') => {
+    await fetch('/api/admin/chefs', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, tier }) })
+    setChefs(prev => prev.map(c => c.id === id ? { ...c, tier } : c))
+    showToast('Tier updated')
+  }, [showToast])
   const saveChefNotes = useCallback(async (id: string, notes: string) => {
     try {
-      await fetch('/api/admin/chefs', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, notes }),
-      })
-      showToast('Notes saved')
-      setEditingChef(null)
-      fetchChefs()
-    } catch {
-      showToast('Save failed', 'error')
-    }
+      await fetch('/api/admin/chefs', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, notes }) })
+      showToast('Notes saved'); setEditingChef(null); fetchChefs()
+    } catch { showToast('Save failed', 'error') }
   }, [fetchChefs, showToast])
+  /* ── user fetch ── */
+  const fetchUsers = useCallback(async () => {
+    setUsersLoading(true)
+    try {
+      const params = new URLSearchParams()
+      if (userFilter !== 'all') params.set('status', userFilter)
+      if (userSearch) params.set('q', userSearch)
+      const res = await fetch(`/api/admin/users?${params}`)
+      const data = await res.json()
+      setUsers(data.users ?? [])
+    } finally { setUsersLoading(false) }
+  }, [userFilter, userSearch])
+
+  useEffect(() => { if (tab === 'users') fetchUsers() }, [tab, fetchUsers])
+
+  /* ── user actions ── */
+  const setUserStatus = useCallback(async (id: string, status: UserStatus) => {
+    const user = users.find(u => u.id === id)
+    const verb = status === 'blocked' ? 'Block' : 'Resume'
+    setConfirm({
+      message: `${verb} ${user?.display_name ?? 'this user'}?`,
+      onConfirm: async () => {
+        setConfirm(null)
+        try {
+          await fetch('/api/admin/users', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status }) })
+          showToast(`User ${verb.toLowerCase()}d`)
+          fetchUsers()
+        } catch { showToast('Action failed', 'error') }
+      },
+    })
+  }, [users, fetchUsers, showToast])
+
+  const saveUserNotes = useCallback(async (id: string, notes: string) => {
+    try {
+      await fetch('/api/admin/users', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, notes }) })
+      showToast('Notes saved'); setEditingUser(null); fetchUsers()
+    } catch { showToast('Save failed', 'error') }
+  }, [fetchUsers, showToast])
 
   /* ── select helpers ── */
   const toggleSelectContent = (id: string) =>
@@ -280,6 +332,7 @@ export default function AdminClient() {
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'content',   label: 'Content',   icon: '🍽️' },
     { id: 'chefs',     label: 'Chefs',     icon: '👨‍🍳' },
+    { id: 'users',     label: 'Users',     icon: '👥' },
     { id: 'reports',   label: 'Reports',   icon: '🚩' },
   ]
 
@@ -666,8 +719,11 @@ export default function AdminClient() {
                         {/* info */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
+
                             <span className="font-bold">{chef.display_name}</span>
                             <Badge status={chef.status} />
+                            {chef.tier === 'pro' && <span title="Professional Chef" style={{ fontSize: 13 }}>⭐</span>}
+                            {chef.tier === 'amateur' && <span title="Amateur / Influencer" style={{ fontSize: 13, filter: 'grayscale(1) brightness(2)' }}>⭐</span>}
                           </div>
                           <div className="text-xs flex gap-4 flex-wrap" style={{ color: '#666' }}>
                             <span>{chef.handle}</span>
@@ -686,6 +742,23 @@ export default function AdminClient() {
 
                         {/* actions */}
                         <div className="flex gap-2 flex-shrink-0 flex-wrap justify-end">
+                          {/* Tier selector */}
+                          <div className="flex gap-1 mr-1">
+                            {(['user', 'amateur', 'pro'] as const).map(t => (
+                              <button key={t} onClick={() => setChefTier(chef.id, t)}
+                                className="px-2 py-1 rounded-lg text-[10px] font-bold transition-all"
+                                style={chef.tier === t
+                                  ? t === 'pro'
+                                    ? { background: 'rgba(255,77,109,0.3)', color: '#ff4d6d', border: '1px solid rgba(255,77,109,0.5)' }
+                                    : t === 'amateur'
+                                      ? { background: 'rgba(224,224,224,0.2)', color: '#e0e0e0', border: '1px solid rgba(255,255,255,0.4)' }
+                                      : { background: 'rgba(255,255,255,0.12)', color: '#888', border: '1px solid rgba(255,255,255,0.2)' }
+                                  : { background: 'rgba(255,255,255,0.04)', color: '#444', border: '1px solid rgba(255,255,255,0.07)' }
+                                }>
+                                  {t === 'pro' ? '🔴 Pro' : t === 'amateur' ? '⬜ Amat.' : '○ User'}
+                                </button>
+                            ))}
+                          </div>
                           <button
                             onClick={() => { setEditingChef(editingChef?.id === chef.id ? null : chef); setChefNotesDraft(chef.notes) }}
                             className="px-3 py-1.5 rounded-lg text-xs font-semibold"
@@ -746,6 +819,96 @@ export default function AdminClient() {
                               style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}>
                               Save notes
                             </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ════════════════════════════════
+              USERS TAB
+          ════════════════════════════════ */}
+          {tab === 'users' && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="ff-display text-2xl font-bold">Users</h2>
+                <span className="text-sm" style={{ color: '#555' }}>{users.length} users</span>
+              </div>
+              <div className="flex gap-3 mb-6 flex-wrap">
+                <input className="admin-input flex-1 min-w-[180px]" placeholder="Search users…" value={userSearch} onChange={e => setUserSearch(e.target.value)} />
+                {(['all', 'active', 'blocked'] as const).map(s => (
+                  <button key={s} onClick={() => setUserFilter(s)} className="chip"
+                    style={userFilter === s
+                      ? { background: 'rgba(255,149,0,0.2)', color: '#ff9500', borderColor: 'rgba(255,149,0,0.4)' }
+                      : { background: 'rgba(255,255,255,0.04)', color: '#666', borderColor: 'rgba(255,255,255,0.08)' }}>
+                    {s === 'all' ? 'All' : s === 'active' ? '✓ Active' : '🚫 Blocked'}
+                  </button>
+                ))}
+              </div>
+              {usersLoading ? (
+                <div className="space-y-3">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-20 rounded-xl animate-pulse" style={{ background: '#1a1a1a' }} />)}</div>
+              ) : users.length === 0 ? (
+                <div className="py-12 text-center text-sm" style={{ color: '#555' }}>No users found</div>
+              ) : (
+                <div className="space-y-3">
+                  {users.map(user => (
+                    <div key={user.id}>
+                      <div className="admin-row rounded-2xl px-5 py-4 flex items-center gap-4"
+                        style={{ background: '#161616', border: user.status === 'blocked' ? '1px solid rgba(239,68,68,0.3)' : '1px solid rgba(255,255,255,0.07)' }}>
+                        <div className="relative flex-shrink-0">
+                          <img src={user.avatar_url ?? `https://i.pravatar.cc/80?u=${user.id}`} alt={user.display_name}
+                            className="w-12 h-12 rounded-full object-cover"
+                            style={{ border: user.status === 'blocked' ? '2px solid #ef4444' : '2px solid rgba(255,255,255,0.1)' }} />
+                          {user.status === 'blocked' && (
+                            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px]" style={{ background: '#ef4444' }}>🚫</div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <span className="font-bold">{user.display_name}</span>
+                            <Badge status={user.status} />
+                          </div>
+                          <div className="text-xs flex gap-3 flex-wrap" style={{ color: '#666' }}>
+                            <span>{user.handle}</span>
+                            <span style={{ color: '#444' }}>{user.email}</span>
+                            <span>📖 {user.recipe_count} recipes</span>
+                            <span>Joined {new Date(user.joined_at).toLocaleDateString()}</span>
+                          </div>
+                          {user.notes && <div className="mt-1 text-xs px-2 py-0.5 rounded-lg inline-block" style={{ background: 'rgba(245,158,11,0.1)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.2)' }}>📝 {user.notes}</div>}
+                        </div>
+                        <div className="flex gap-2 flex-shrink-0 flex-wrap justify-end">
+                          <button onClick={() => { setEditingUser(editingUser?.id === user.id ? null : user); setUserNotesDraft(user.notes) }}
+                            className="px-3 py-1.5 rounded-lg text-xs font-semibold"
+                            style={{ background: 'rgba(255,255,255,0.07)', color: '#aaa', border: '1px solid rgba(255,255,255,0.1)' }}>📝 Notes
+                          </button>
+                          {user.status === 'active' ? (
+                            <button onClick={() => setUserStatus(user.id, 'blocked')}
+                              className="px-3 py-1.5 rounded-lg text-xs font-semibold"
+                              style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)' }}>🚫 Block
+                            </button>
+                          ) : (
+                            <button onClick={() => setUserStatus(user.id, 'active')}
+                              className="px-3 py-1.5 rounded-lg text-xs font-semibold"
+                              style={{ background: 'rgba(34,197,94,0.15)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.3)' }}>▶ Resume
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      {editingUser?.id === user.id && (
+                        <div className="mx-2 mb-2 px-4 py-4 rounded-b-2xl"
+                          style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.07)', borderTop: 'none' }}>
+                          <label className="block text-xs font-semibold mb-2" style={{ color: '#777' }}>Internal notes (not visible to user)</label>
+                          <textarea className="admin-input resize-none" rows={3} value={userNotesDraft}
+                            onChange={e => setUserNotesDraft(e.target.value)} placeholder="Reason for action, warnings, etc…" />
+                          <div className="flex gap-2 mt-3 justify-end">
+                            <button onClick={() => setEditingUser(null)} className="px-4 py-1.5 rounded-lg text-xs font-semibold"
+                              style={{ background: 'rgba(255,255,255,0.07)', color: '#777' }}>Cancel</button>
+                            <button onClick={() => saveUserNotes(user.id, userNotesDraft)} className="px-4 py-1.5 rounded-lg text-xs font-semibold"
+                              style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}>Save notes</button>
                           </div>
                         </div>
                       )}

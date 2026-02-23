@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import TonightCard from '@/components/TonightCard'
 import TrendingSection from '@/components/TrendingSection'
 import CommunitySection from '@/components/CommunitySection'
+import LatestChefPosts from '@/components/LatestChefPosts'
 import { REGION_META } from '@/lib/recipe-taxonomy'
 import { MOCK_RECIPES } from '@/lib/mock-data'
 
@@ -545,6 +546,10 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ════════════════════════════════════════════════════════
+            LATEST FROM CHEFS  (horizontal scroll strip)
+        ════════════════════════════════════════════════════════ */}
+        <LatestChefPosts />
 
 
         {/* ════════════════════════════════════════════════════════

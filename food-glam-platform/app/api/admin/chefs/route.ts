@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server'
 import { MOCK_RECIPES } from '@/lib/mock-data'
 
 type ChefStatus = 'active' | 'suspended' | 'banned'
+type ChefTier   = 'pro' | 'amateur' | 'user'
 const chefStatusOverrides: Record<string, ChefStatus> = {}
+const chefTierOverrides:   Record<string, ChefTier>   = {}
 const chefNotes: Record<string, string> = {}
 
 // Derive unique chefs from mock recipes
@@ -16,6 +18,7 @@ function buildChefs() {
       handle: r.created_by.handle,
       avatar_url: r.created_by.avatar_url,
       status: (chefStatusOverrides[r.created_by.id] ?? 'active') as ChefStatus,
+      tier:   (chefTierOverrides[r.created_by.id]  ?? 'user')   as ChefTier,
       notes: chefNotes[r.created_by.id] ?? '',
       recipe_count: MOCK_RECIPES.filter(x => x.created_by.id === r.created_by.id).length,
       total_votes: MOCK_RECIPES.filter(x => x.created_by.id === r.created_by.id).reduce((s, x) => s + x.votes, 0),
@@ -38,8 +41,9 @@ export async function GET(req: Request) {
 }
 
 export async function PUT(req: Request) {
-  const body = await req.json() as { id: string; status?: ChefStatus; notes?: string }
+  const body = await req.json() as { id: string; status?: ChefStatus; notes?: string; tier?: ChefTier }
   if (body.status) chefStatusOverrides[body.id] = body.status
+  if (body.tier) chefTierOverrides[body.id] = body.tier
   if (body.notes !== undefined) chefNotes[body.id] = body.notes
   return NextResponse.json({ ok: true })
 }

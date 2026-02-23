@@ -865,6 +865,7 @@ export default function PlanClient() {
                           display_name: recipe.chefName ?? "",
                           handle: recipe.chefHandle ?? "",
                           avatar_url: "",
+                          tier: 'user' as const,
                         },
                         is_saved: false,
                         servings: 1,

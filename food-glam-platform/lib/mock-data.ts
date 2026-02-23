@@ -30,6 +30,7 @@ export const MOCK_RECIPES = [
       id: 'mock-user-1',
       display_name: 'Chef Mario',
       handle: '@chef_mario',
+      tier: 'pro' as const,
       avatar_url: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=200&q=80'
     },
     is_saved: false,
@@ -55,6 +56,7 @@ export const MOCK_RECIPES = [
       id: 'mock-user-2',
       display_name: 'Thai Kitchen',
       handle: '@thai_kitchen',
+      tier: 'pro' as const,
       avatar_url: 'https://images.unsplash.com/photo-1595273670150-bd0c3c392e46?auto=format&fit=crop&w=200&q=80'
     },
     is_saved: false,
@@ -80,6 +82,7 @@ export const MOCK_RECIPES = [
       id: 'mock-user-3',
       display_name: 'Sahara Spice',
       handle: '@sahara_spice',
+      tier: 'amateur' as const,
       avatar_url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80'
     },
     is_saved: false,
@@ -105,6 +108,7 @@ export const MOCK_RECIPES = [
       id: 'mock-user-4',
       display_name: 'Sushi Master',
       handle: '@sushi_master',
+      tier: 'pro' as const,
       avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80'
     },
     is_saved: false,
@@ -130,6 +134,7 @@ export const MOCK_RECIPES = [
       id: 'mock-user-5',
       display_name: 'Plant Power',
       handle: '@plant_power',
+      tier: 'amateur' as const,
       avatar_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80'
     },
     is_saved: false,
@@ -155,6 +160,7 @@ export const MOCK_RECIPES = [
       id: 'mock-user-6',
       display_name: 'Parisian Baker',
       handle: '@parisian_baker',
+      tier: 'pro' as const,
       avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80'
     },
     is_saved: false,
@@ -180,6 +186,7 @@ export const MOCK_RECIPES = [
       id: 'mock-user-7',
       display_name: 'Taqueria Luna',
       handle: '@taqueria_luna',
+      tier: 'amateur' as const,
       avatar_url: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=200&q=80'
     },
     is_saved: false,
@@ -205,6 +212,7 @@ export const MOCK_RECIPES = [
       id: 'mock-user-8',
       display_name: 'Athens Kitchen',
       handle: '@athens_kitchen',
+      tier: 'user' as const,
       avatar_url: 'https://images.unsplash.com/photo-1463453091185-61582044d556?auto=format&fit=crop&w=200&q=80'
     },
     is_saved: false,
@@ -230,6 +238,7 @@ export const MOCK_RECIPES = [
       id: 'mock-user-9',
       display_name: 'Spice Route',
       handle: '@spice_route',
+      tier: 'pro' as const,
       avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80'
     },
     is_saved: false,
@@ -255,6 +264,7 @@ export const MOCK_RECIPES = [
       id: 'mock-user-10',
       display_name: 'Sweet Tooth',
       handle: '@sweet_tooth',
+      tier: 'amateur' as const,
       avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80'
     },
     is_saved: false,
@@ -280,6 +290,7 @@ export const MOCK_RECIPES = [
       id: 'mock-user-11',
       display_name: 'Seoul Food',
       handle: '@seoul_food',
+      tier: 'user' as const,
       avatar_url: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=200&q=80'
     },
     is_saved: false,
@@ -305,6 +316,7 @@ export const MOCK_RECIPES = [
       id: 'mock-user-12',
       display_name: 'Valencia Kitchen',
       handle: '@valencia_kitchen',
+      tier: 'amateur' as const,
       avatar_url: 'https://images.unsplash.com/photo-1502378735452-bc7d86632805?auto=format&fit=crop&w=200&q=80'
     },
     is_saved: false,
