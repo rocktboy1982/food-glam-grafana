@@ -318,16 +318,16 @@ export default function Home() {
         ════════════════════════════════════════════════════════ */}
         <section className="px-4 pb-8">
           {loading && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-2">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="rounded-2xl overflow-hidden animate-pulse"
-                  style={{ height: i % 3 === 0 ? 420 : 340, background: '#1a1a1a' }} />
+                  style={{ height: i % 3 === 0 ? 260 : 200, background: '#1a1a1a' }} />
               ))}
             </div>
           )}
 
           {!loading && (
-            <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 mt-2 [column-fill:_balance]">
+            <div className="columns-2 sm:columns-3 lg:columns-4 gap-3 mt-2 [column-fill:_balance]">
               {tabFeed.map((recipe, i) => {
                 const liked = likedIds.has(recipe.id)
                 const saved = savedIds.has(recipe.id)
@@ -337,13 +337,13 @@ export default function Home() {
                 return (
                   <div
                     key={recipe.id}
-                    className="feed-card break-inside-avoid mb-4 rounded-2xl overflow-hidden relative slide-up"
+                    className="feed-card break-inside-avoid mb-3 rounded-xl overflow-hidden relative slide-up"
                     style={{ background: '#1a1a1a', animationDelay: `${i * 40}ms` }}
                   >
                     {/* image */}
                     <div
                       className="relative cursor-pointer"
-                      style={{ height: i % 3 === 0 ? 420 : 300 }}
+                      style={{ height: i % 3 === 0 ? 260 : 200 }}
                       onDoubleClick={() => toggleLike(recipe.id)}
                       onClick={() => router.push(`/recipes/${recipe.slug}`)}
                     >
@@ -375,14 +375,14 @@ export default function Home() {
                       )}
 
                       {/* bottom content inside image */}
-                      <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <h3 className="ff-display font-bold text-lg leading-tight mb-2 line-clamp-2">{recipe.title}</h3>
+                      <div className="absolute bottom-0 left-0 right-0 p-3">
+                        <h3 className="ff-display font-semibold text-sm leading-tight mb-1.5 line-clamp-2">{recipe.title}</h3>
 
                         {/* chef row */}
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             {recipe.created_by.avatar_url && (
-                              <img src={recipe.created_by.avatar_url} alt="" className="w-7 h-7 rounded-full object-cover border border-white/30" />
+                              <img src={recipe.created_by.avatar_url} alt="" className="w-6 h-6 rounded-full object-cover border border-white/30" />
                             )}
                             <span className="text-xs text-gray-300">{recipe.created_by.display_name}</span>
                           </div>
@@ -400,15 +400,15 @@ export default function Home() {
                     </div>
 
                     {/* action row */}
-                    <div className="flex items-center justify-between px-4 py-3">
-                      <div className="flex items-center gap-4">
+                    <div className="flex items-center justify-between px-3 py-2">
+                      <div className="flex items-center gap-3">
                         {/* like */}
                         <button
                           onClick={() => toggleLike(recipe.id)}
                           className="flex items-center gap-1.5 transition-transform active:scale-110"
                           style={{ color: liked ? '#ff4d6d' : '#888' }}
                         >
-                          <svg width="20" height="20" viewBox="0 0 24 24"
+                          <svg width="17" height="17" viewBox="0 0 24 24"
                             fill={liked ? '#ff4d6d' : 'none'}
                             stroke={liked ? '#ff4d6d' : '#888'}
                             strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
@@ -416,7 +416,7 @@ export default function Home() {
                           >
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                           </svg>
-                          <span className="text-sm font-semibold" style={{ color: liked ? '#ff4d6d' : '#888' }}>{count}</span>
+                          <span className="text-xs font-semibold" style={{ color: liked ? '#ff4d6d' : '#888' }}>{count}</span>
                         </button>
 
                         {/* comment */}
@@ -425,10 +425,10 @@ export default function Home() {
                           className="flex items-center gap-1.5"
                           style={{ color: '#888' }}
                         >
-                          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                           </svg>
-                          <span className="text-sm font-semibold">{recipe.comments}</span>
+                          <span className="text-xs font-semibold">{recipe.comments}</span>
                         </button>
 
                         {/* share */}
@@ -440,7 +440,7 @@ export default function Home() {
                           }}
                           style={{ color: '#888' }}
                         >
-                          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
                             <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
                           </svg>
@@ -453,7 +453,7 @@ export default function Home() {
                         style={{ color: saved ? '#ff9500' : '#888' }}
                         className="transition-transform active:scale-110"
                       >
-                        <svg width="20" height="20" viewBox="0 0 24 24"
+                        <svg width="17" height="17" viewBox="0 0 24 24"
                           fill={saved ? '#ff9500' : 'none'}
                           stroke={saved ? '#ff9500' : '#888'}
                           strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
@@ -466,7 +466,7 @@ export default function Home() {
 
                     {/* diet tags */}
                     {recipe.dietTags.length > 0 && (
-                      <div className="flex gap-1.5 px-4 pb-3 flex-wrap">
+                      <div className="flex gap-1 px-3 pb-2 flex-wrap">
                         {recipe.dietTags.map(t => (
                           <span key={t} className="text-[10px] px-2 py-0.5 rounded-full"
                             style={{ background: 'rgba(255,255,255,0.08)', color: '#aaa' }}>
