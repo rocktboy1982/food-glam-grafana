@@ -306,6 +306,14 @@ export default function Home() {
         </div>
 
         {/* ════════════════════════════════════════════════════════
+            TONIGHT  (existing component, dark-wrapped)
+        ════════════════════════════════════════════════════════ */}
+        <section className="px-4 pb-8">
+          <p className="ff-display text-xl font-bold mb-4">Tonight's Picks ✨</p>
+          <TonightCard />
+        </section>
+
+        {/* ════════════════════════════════════════════════════════
             MAIN FEED  (2-col masonry-ish on desktop, 1-col mobile)
         ════════════════════════════════════════════════════════ */}
         <section className="px-4 pb-8">
@@ -537,13 +545,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ════════════════════════════════════════════════════════
-            TONIGHT  (existing component, dark-wrapped)
-        ════════════════════════════════════════════════════════ */}
-        <section className="px-4 pb-12">
-          <p className="ff-display text-xl font-bold mb-4">Tonight's Picks ✨</p>
-          <TonightCard />
-        </section>
+
 
         {/* ════════════════════════════════════════════════════════
             TRENDING + COMMUNITY  (existing components)
