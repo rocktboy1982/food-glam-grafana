@@ -29,9 +29,11 @@ export default function CookModeClient({
   const [showIngredients, setShowIngredients] = useState(false);
   const [wakeLockActive, setWakeLockActive] = useState(false);
   const [wakeLockSentinel, setWakeLockSentinel] = useState<WakeLockSentinel | null>(null);
-
+  const [mounted, setMounted] = useState(false);
   const totalSteps = steps.length;
   const progress = totalSteps > 0 ? ((currentStep + 1) / totalSteps) * 100 : 0;
+  // Hydration guard — only render browser-API-dependent UI after mount
+  useEffect(() => { setMounted(true); }, []);
 
   // Wake Lock API
   const requestWakeLock = useCallback(async () => {
@@ -138,7 +140,8 @@ export default function CookModeClient({
 
         <div className="flex items-center gap-3">
           {/* Wake lock indicator */}
-          {"wakeLock" in (typeof navigator !== "undefined" ? navigator : {}) && (
+          {/* Wake lock indicator — client-only to avoid hydration mismatch */}
+          {mounted && "wakeLock" in navigator && (
             <button
               onClick={wakeLockActive ? releaseWakeLock : requestWakeLock}
               className={cn(
