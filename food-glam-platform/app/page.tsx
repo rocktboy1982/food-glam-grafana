@@ -306,11 +306,24 @@ export default function Home() {
         </div>
 
         {/* ════════════════════════════════════════════════════════
-            TONIGHT  (existing component, dark-wrapped)
+            REGION CHIPS  (horizontal scroll)
         ════════════════════════════════════════════════════════ */}
         <section className="px-4 pb-8">
-          <p className="ff-display text-xl font-bold mb-4">Tonight's Picks ✨</p>
-          <TonightCard />
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#555' }}>Browse Cuisines</p>
+          <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
+            {REGION_PILLS.map(id => {
+              const r = REGION_META[id]
+              if (!r) return null
+              return (
+                <Link key={id} href={`/cookbooks/region/${id}`}
+                  className="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all"
+                  style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', color: '#ccc' }}>
+                  <span>{r.emoji}</span>
+                  <span>{r.label}</span>
+                </Link>
+              )
+            })}
+          </div>
         </section>
 
         {/* ════════════════════════════════════════════════════════
@@ -483,24 +496,11 @@ export default function Home() {
         </section>
 
         {/* ════════════════════════════════════════════════════════
-            REGION CHIPS  (horizontal scroll)
+            TONIGHT  (existing component, dark-wrapped)
         ════════════════════════════════════════════════════════ */}
         <section className="px-4 pb-10">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#555' }}>Browse Cuisines</p>
-          <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
-            {REGION_PILLS.map(id => {
-              const r = REGION_META[id]
-              if (!r) return null
-              return (
-                <Link key={id} href={`/cookbooks/region/${id}`}
-                  className="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all"
-                  style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', color: '#ccc' }}>
-                  <span>{r.emoji}</span>
-                  <span>{r.label}</span>
-                </Link>
-              )
-            })}
-          </div>
+          <p className="ff-display text-xl font-bold mb-4">Tonight's Picks ✨</p>
+          <TonightCard />
         </section>
 
         {/* ════════════════════════════════════════════════════════
