@@ -325,7 +325,7 @@ export const MOCK_RECIPES = [
   }
 ];
 
-export const MOCK_TRENDING = MOCK_RECIPES.filter(r => r.tag === 'Trending').slice(0, 6);
+export const MOCK_TRENDING = [...MOCK_RECIPES].sort((a, b) => b.votes - a.votes).slice(0, 10);
 
 export const MOCK_COMMUNITY_THREADS = [
   {
