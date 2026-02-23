@@ -5,6 +5,7 @@ import '@/styles/globals.css'
 import { Navigation } from '@/components/navigation'
 import { FeatureFlagsProvider } from '@/components/feature-flags-provider'
 import FeatureFlagPanel from '@/components/dev/feature-flag-panel'
+import CookieConsent from '@/components/CookieConsent'
 import ToastClient from '@/components/ui/toast-client'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -22,11 +23,12 @@ export default function RootLayout({
   // ...existing code...
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={inter.className} style={{ background: '#0d0d0d' }}>
         <FeatureFlagsProvider>
           <ToastClient>
             <Navigation />
             {children}
+            <CookieConsent />
             {process.env.NODE_ENV !== 'production' && <FeatureFlagPanel />}
           </ToastClient>
         </FeatureFlagsProvider>
