@@ -333,8 +333,12 @@ export default function Home() {
             4-COLUMN GRID LAYOUT  (desktop responsive)
         ════════════════════════════════════════════════════════ */}
         <div className="px-4 pb-8 grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* COL 1–2: Feed (2-col masonry, max 6 tiles) */}
-          {/* COL 1–2: Feed — strict 2-col grid, equal-height tiles */}
+          {/* COL 1: Latest Chef Vlogs */}
+          <div className="lg:col-span-1">
+            <LatestChefVlogs />
+          </div>
+
+          {/* COL 2–3: Feed — strict 2-col grid, equal-height tiles */}
           <div className="lg:col-span-2">
             {loading && (
               <div className="grid grid-cols-2 gap-3">
@@ -384,7 +388,6 @@ export default function Home() {
                             </div>
                           </div>
                         )}
-
                         {/* title + chef overlay */}
                         <div className="absolute bottom-0 left-0 right-0 p-2.5">
                           <h3 className="ff-display font-semibold text-xs leading-snug mb-1 line-clamp-2">{recipe.title}</h3>
@@ -440,17 +443,11 @@ export default function Home() {
             )}
           </div>
 
-          {/* COL 3: Latest Chef Vlogs */}
-          <div className="lg:col-span-1">
-            <LatestChefVlogs />
-          </div>
-
           {/* COL 4: Trending */}
           <div className="lg:col-span-1">
             <TrendingSection />
           </div>
         </div>
-
         {/* bottom padding for mobile nav */}
         <div className="h-20 md:h-4" />
       </main>
