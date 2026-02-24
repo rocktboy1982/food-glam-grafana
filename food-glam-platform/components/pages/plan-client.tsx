@@ -575,7 +575,7 @@ export default function PlanClient() {
 
   // ─────────────────────────────────────────────────────────────────────────────
   return (
-    <main className="container mx-auto px-4 py-8 max-w-7xl">
+    <main className="container mx-auto px-4 py-8 max-w-7xl" style={{ minHeight: '100vh', background: '#f5f5f5', color: '#111' }}>
 
       {/* ── Top bar ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
