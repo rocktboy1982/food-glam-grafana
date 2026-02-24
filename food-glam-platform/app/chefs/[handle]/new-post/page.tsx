@@ -109,13 +109,13 @@ export default function NewPostPage() {
   }
 
   if (!hydrated) {
-    return <div style={{ background: '#f5f5f5', minHeight: '100vh' }} />
+    return <div style={{ background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', minHeight: '100vh' }} />
   }
 
   // Unauthenticated
   if (!mockUser) {
     return (
-      <main style={{ background: '#f5f5f5', minHeight: '100vh', color: '#111' }} className="px-4 py-8">
+      <main style={{ background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', minHeight: '100vh', color: '#111' }} className="px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <h1 className="ff-display text-2xl font-bold mb-4">Sign in to post</h1>
           <p className="mb-6" style={{ color: '#666' }}>You need to be signed in to create vlog entries.</p>
@@ -133,7 +133,7 @@ export default function NewPostPage() {
   const resolvedHandle = handle === 'me' ? mockUser.handle : handle
   if (handle !== 'me' && handle !== mockUser.handle) {
     return (
-      <main style={{ background: '#f5f5f5', minHeight: '100vh', color: '#111' }} className="px-4 py-8">
+      <main style={{ background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', minHeight: '100vh', color: '#111' }} className="px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <h1 className="ff-display text-2xl font-bold mb-4">Not your page</h1>
           <p className="mb-6" style={{ color: '#666' }}>You can only edit your own vlog entries.</p>
@@ -227,7 +227,7 @@ export default function NewPostPage() {
   }
 
   return (
-    <main style={{ background: '#f5f5f5', minHeight: '100vh', color: '#111' }}>
+    <main style={{ background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', minHeight: '100vh', color: '#111' }}>
       {/* Header */}
       <div className="sticky top-0 z-40 px-4 py-3 flex items-center gap-3"
         style={{

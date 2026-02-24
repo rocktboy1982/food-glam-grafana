@@ -116,7 +116,7 @@ export default function ChefPage() {
   /* ── loading skeleton ── */
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', background: '#f5f5f5', color: '#111' }}>
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', color: '#111' }}>
         <div className="animate-pulse">
           <div style={{ height: 220, background: '#e8e8e8' }} />
           <div className="px-4 pt-16 space-y-3">
@@ -131,7 +131,7 @@ export default function ChefPage() {
   /* ── not found ── */
   if (!profile) {
     return (
-      <div style={{ minHeight: '100vh', background: '#f5f5f5', color: '#111' }}
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', color: '#111' }}
         className="flex flex-col items-center justify-center gap-4">
         <p className="text-2xl">😕</p>
         <p className="text-lg font-semibold">Chef not found</p>
@@ -141,7 +141,7 @@ export default function ChefPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', color: '#111', fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', color: '#111', fontFamily: "'Inter', sans-serif" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap');.ff-display{font-family:'Syne',sans-serif;}`}</style>
 
       {/* ── Banner ── */}
@@ -171,12 +171,12 @@ export default function ChefPage() {
             src={profile.avatar_url}
             alt={profile.display_name}
             className="rounded-full object-cover border-4"
-            style={{ width: 88, height: 88, borderColor: '#f5f5f5' }}
+            style={{ width: 88, height: 88, borderColor: '#fdf8f0' }}
           />
           {profile.tier !== 'user' && (
             <span
               className="absolute bottom-0 right-0 flex items-center justify-center rounded-full"
-              style={{ width: 24, height: 24, background: '#f5f5f5', border: '2px solid #f5f5f5' }}
+              style={{ width: 24, height: 24, background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', border: '2px solid #fdf8f0' }}
             >
               <TierStar tier={profile.tier} size={16} />
             </span>

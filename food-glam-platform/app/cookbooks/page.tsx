@@ -121,7 +121,7 @@ export default async function CookbooksPage() {
   return (
     <main
       className="min-h-screen"
-      style={{ background: '#f5f5f5', color: '#111', fontFamily: "'Inter', sans-serif" }}
+      style={{ background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', color: '#111', fontFamily: "'Inter', sans-serif" }}
     >
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap');.ff{font-family:'Syne',sans-serif;}`}</style>
 
