@@ -278,10 +278,10 @@ export default function ChefPage() {
                               <article
                                 key={item.data.id}
                                 className="group flex rounded-2xl overflow-hidden transition-all hover:ring-1 hover:ring-white/10"
-                                style={{ background: '#161616', border: '1px solid rgba(255,255,255,0.07)', height: 200 }}
+                                style={{ background: '#161616', border: '1px solid rgba(255,255,255,0.07)', height: 275 }}
                               >
                                 {/* Image — left */}
-                                <Link href={`/recipes/${item.data.slug}`} className="flex-shrink-0 relative overflow-hidden" style={{ width: 220 }}>
+                                <Link href={`/recipes/${item.data.slug}`} className="relative overflow-hidden" style={{ flex: '1.618', minWidth: 0 }}>
                                   <img
                                     src={item.data.hero_image_url}
                                     alt={item.data.title}
