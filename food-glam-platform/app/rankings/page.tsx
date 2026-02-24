@@ -41,7 +41,7 @@ function RankBadge({ rank }: { rank: number }) {
   return (
     <span
       className="text-sm font-extrabold tabular-nums w-8 text-center block"
-      style={{ color: '#555', fontFamily: "'Syne', sans-serif" }}
+      style={{ color: '#999', fontFamily: "'Syne', sans-serif" }}
     >
       {rank}
     </span>
@@ -71,10 +71,10 @@ function TopRecipesTab() {
         <Link
           key={recipe.id}
           href={`/recipes/${recipe.slug}`}
-          className="group flex items-center gap-5 px-5 py-5 transition-colors hover:bg-white/[0.03]"
+          className="group flex items-center gap-5 px-5 py-5 transition-colors hover:bg-black/[0.02]"
           style={{
             borderBottom: i < TOP_RECIPES.length - 1
-              ? '1px solid rgba(255,255,255,0.05)'
+              ? '1px solid rgba(0,0,0,0.07)'
               : 'none',
           }}
         >
@@ -97,7 +97,7 @@ function TopRecipesTab() {
             ) : (
               <div
                 className="w-full h-full flex items-center justify-center text-2xl"
-                style={{ background: '#1a1a1a' }}
+                style={{ background: '#e8e8e8' }}
               >
                 🍽️
               </div>
@@ -107,14 +107,14 @@ function TopRecipesTab() {
           {/* Info */}
           <div className="flex-1 min-w-0">
             <p
-              className="text-base font-bold leading-snug line-clamp-1 group-hover:text-white transition-colors"
-              style={{ color: '#e0e0e0' }}
+              className="text-base font-bold leading-snug line-clamp-1 group-hover:text-black transition-colors"
+              style={{ color: '#111' }}
             >
               {recipe.title}
             </p>
             <div className="flex items-center gap-2 mt-0.5 flex-wrap">
               {recipe.created_by && (
-                <span className="flex items-center gap-1 text-sm" style={{ color: '#666' }}>
+                <span className="flex items-center gap-1 text-sm" style={{ color: '#888' }}>
                   {recipe.created_by.display_name}
                   <TierStar tier={recipe.created_by.tier} size={11} />
                 </span>
@@ -138,7 +138,7 @@ function TopRecipesTab() {
                   ✓ Tested
                 </span>
               )}
-              <span className="text-xs" style={{ color: '#444' }}>
+              <span className="text-xs" style={{ color: '#999' }}>
                 {recipe.comments} comments
               </span>
             </div>
@@ -152,7 +152,7 @@ function TopRecipesTab() {
             >
               {recipe.votes.toLocaleString()}
             </span>
-            <span className="text-xs" style={{ color: '#444' }}>votes</span>
+            <span className="text-xs" style={{ color: '#999' }}>votes</span>
           </div>
         </Link>
       ))}
@@ -180,7 +180,7 @@ function TopChefsTab() {
             className="flex items-center gap-5 px-5 py-5"
             style={{
               borderBottom: i < TOP_CHEFS.length - 1
-                ? '1px solid rgba(255,255,255,0.05)'
+                ? '1px solid rgba(0,0,0,0.07)'
                 : 'none',
             }}
           >
@@ -216,14 +216,14 @@ function TopChefsTab() {
                   <TierStar tier={chef.tier} size={13} />
                 </div>
               </Link>
-              <p className="text-sm mt-1 line-clamp-2" style={{ color: '#555' }}>
+              <p className="text-sm mt-1 line-clamp-2" style={{ color: '#666' }}>
                 {chef.bio}
               </p>
               <div className="flex items-center gap-3 mt-1">
                 <span className="text-xs font-semibold" style={{ color: '#ff9500' }}>
                   {formatFollowers(chef.follower_count)} followers
                 </span>
-                <span className="text-xs" style={{ color: '#444' }}>
+                <span className="text-xs" style={{ color: '#aaa' }}>
                   {chef.post_count} posts
                 </span>
               </div>
@@ -236,9 +236,9 @@ function TopChefsTab() {
               style={
                 isFollowing
                   ? {
-                      background: 'rgba(255,255,255,0.07)',
+                      background: 'rgba(0,0,0,0.07)',
                       color: '#888',
-                      border: '1px solid rgba(255,255,255,0.1)',
+                      border: '1px solid rgba(0,0,0,0.12)',
                     }
                   : {
                       background: 'linear-gradient(135deg,#ff4d6d,#ff9500)',
@@ -258,8 +258,8 @@ function TopChefsTab() {
 function RisingTab() {
   return (
     <div>
-      <div className="px-4 py-2.5" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-        <p className="text-[11px]" style={{ color: '#555' }}>
+      <div className="px-4 py-2.5" style={{ borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
+        <p className="text-[11px]" style={{ color: '#999' }}>
           Ranked by quality score — highly-rated recipes that may have fewer votes yet.
         </p>
       </div>
@@ -269,11 +269,9 @@ function RisingTab() {
           <Link
             key={recipe.id}
             href={`/recipes/${recipe.slug}`}
-            className="group flex items-center gap-5 px-5 py-5 transition-colors hover:bg-white/[0.03]"
+            className="group flex items-center gap-5 px-5 py-5 transition-colors hover:bg-black/[0.02]"
             style={{
-              borderBottom: i < RISING_RECIPES.length - 1
-                ? '1px solid rgba(255,255,255,0.05)'
-                : 'none',
+              borderBottom: i < RISING_RECIPES.length - 1 ? '1px solid rgba(0,0,0,0.07)' : 'none',
             }}
           >
             {/* Rank */}
@@ -295,7 +293,7 @@ function RisingTab() {
               ) : (
                 <div
                   className="w-full h-full flex items-center justify-center text-2xl"
-                  style={{ background: '#1a1a1a' }}
+                style={{ background: '#e8e8e8' }}
                 >
                   🍽️
                 </div>
@@ -305,8 +303,8 @@ function RisingTab() {
             {/* Info */}
             <div className="flex-1 min-w-0">
               <p
-                className="text-base font-bold leading-snug line-clamp-1 group-hover:text-white transition-colors"
-                style={{ color: '#e0e0e0' }}
+                className="text-base font-bold leading-snug line-clamp-1 group-hover:text-black transition-colors"
+                style={{ color: '#111' }}
               >
                 {recipe.title}
               </p>
@@ -320,7 +318,7 @@ function RisingTab() {
                 </span>
               </div>
               {recipe.created_by && (
-                <span className="flex items-center gap-1 text-sm mt-0.5" style={{ color: '#555' }}>
+                <span className="flex items-center gap-1 text-sm mt-0.5" style={{ color: '#888' }}>
                   {recipe.created_by.display_name}
                   <TierStar tier={recipe.created_by.tier} size={11} />
                 </span>
@@ -335,7 +333,7 @@ function RisingTab() {
               >
                 {recipe.votes}
               </span>
-              <span className="text-xs" style={{ color: '#444' }}>votes</span>
+              <span className="text-xs" style={{ color: '#999' }}>votes</span>
             </div>
           </Link>
         )
@@ -352,7 +350,7 @@ function ByCuisineTab() {
           key={approach.id}
           href={`/recipes/${top.slug}`}
           className="group relative rounded-2xl overflow-hidden"
-          style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.06)' }}
+          style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.1)' }}
         >
           {/* Hero image */}
           <div className="relative h-44 overflow-hidden">
@@ -397,13 +395,13 @@ function ByCuisineTab() {
           <div className="px-4 py-3">
             <p
               className="text-sm font-semibold leading-snug line-clamp-1 group-hover:text-white transition-colors"
-              style={{ color: '#ddd' }}
+              style={{ color: '#111' }}
             >
               🥇 {top.title}
             </p>
             <div className="flex items-center justify-between mt-1">
               {top.created_by && (
-                <span className="text-xs flex items-center gap-1 truncate" style={{ color: '#555' }}>
+                <span className="text-xs flex items-center gap-1 truncate" style={{ color: '#888' }}>
                   {top.created_by.display_name}
                   <TierStar tier={top.created_by.tier} size={10} />
                 </span>
@@ -441,12 +439,12 @@ export default function RankingsPage() {
   return (
     <main
       className="min-h-screen"
-      style={{ background: '#0a0a0a' }}
+      style={{ background: '#f5f5f5', color: '#111' }}
     >
       {/* ── Hero header ── */}
       <div
         className="px-4 py-8 text-center"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
+        style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}
       >
         <h1
           className="text-3xl font-extrabold tracking-tight mb-1"
@@ -459,7 +457,7 @@ export default function RankingsPage() {
         >
           🏆 Rankings
         </h1>
-        <p className="text-sm" style={{ color: '#555' }}>
+        <p className="text-sm" style={{ color: '#888' }}>
           The community&apos;s most voted recipes, top chefs, and hidden gems
         </p>
       </div>
@@ -467,7 +465,7 @@ export default function RankingsPage() {
       {/* ── Tab bar ── */}
       <div
         className="sticky top-[105px] z-30 px-4 py-3 flex items-center justify-center gap-2 flex-wrap"
-        style={{ background: '#0a0a0a', borderBottom: '1px solid rgba(255,255,255,0.07)' }}
+        style={{ background: '#f5f5f5', borderBottom: '1px solid rgba(0,0,0,0.08)' }}
       >
         {TABS.map(t => (
           <button
@@ -481,9 +479,9 @@ export default function RankingsPage() {
                     color: '#fff',
                   }
                 : {
-                    background: 'rgba(255,255,255,0.05)',
-                    color: '#888',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: 'rgba(0,0,0,0.06)',
+                    color: '#555',
+                    border: '1px solid rgba(0,0,0,0.1)',
                   }
             }
           >
@@ -498,12 +496,12 @@ export default function RankingsPage() {
       <div className="max-w-6xl mx-auto py-6 px-6">
         <div
           className="rounded-2xl overflow-hidden"
-          style={{ background: '#111', border: '1px solid rgba(255,255,255,0.08)' }}
+          style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.1)' }}
         >
           {/* Panel header */}
           <div
             className="relative flex items-center justify-between px-6 py-5 overflow-hidden"
-            style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
+            style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}
           >
             {/* giant ghost watermark */}
             <span
@@ -523,11 +521,11 @@ export default function RankingsPage() {
               <div>
                 <p
                   className="font-extrabold text-xl leading-tight"
-                  style={{ fontFamily: "'Syne', sans-serif", color: '#f0f0f0' }}
+                  style={{ fontFamily: "'Syne', sans-serif", color: '#111' }}
                 >
                   {current.label}
                 </p>
-                <p className="text-xs mt-0.5" style={{ color: '#555' }}>
+                <p className="text-xs mt-0.5" style={{ color: '#888' }}>
                   {current.description}
                 </p>
               </div>
@@ -542,7 +540,7 @@ export default function RankingsPage() {
         </div>
 
         {/* Footer note */}
-        <p className="text-center text-[11px] mt-4" style={{ color: '#333' }}>
+        <p className="text-center text-[11px] mt-4" style={{ color: '#bbb' }}>
           Rankings update in real-time as the community votes · Data shown is live
         </p>
       </div>

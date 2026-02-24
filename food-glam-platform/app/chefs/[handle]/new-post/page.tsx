@@ -102,17 +102,23 @@ export default function NewPostPage() {
     }
   }, [hydrated, handle, mockUser, editDate])
 
+  const inputStyle = {
+    background: 'rgba(0,0,0,0.05)',
+    border: '1px solid rgba(0,0,0,0.12)',
+    color: '#111',
+  }
+
   if (!hydrated) {
-    return <div style={{ background: '#0d0d0d', minHeight: '100vh' }} />
+    return <div style={{ background: '#f5f5f5', minHeight: '100vh' }} />
   }
 
   // Unauthenticated
   if (!mockUser) {
     return (
-      <main style={{ background: '#0d0d0d', minHeight: '100vh', color: '#f0f0f0' }} className="px-4 py-8">
+      <main style={{ background: '#f5f5f5', minHeight: '100vh', color: '#111' }} className="px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <h1 className="ff-display text-2xl font-bold mb-4">Sign in to post</h1>
-          <p className="mb-6" style={{ color: '#aaa' }}>You need to be signed in to create vlog entries.</p>
+          <p className="mb-6" style={{ color: '#666' }}>You need to be signed in to create vlog entries.</p>
           <Link href="/auth/signin"
             className="px-6 py-3 rounded-full text-sm font-semibold text-white inline-block"
             style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)' }}>
@@ -127,10 +133,10 @@ export default function NewPostPage() {
   const resolvedHandle = handle === 'me' ? mockUser.handle : handle
   if (handle !== 'me' && handle !== mockUser.handle) {
     return (
-      <main style={{ background: '#0d0d0d', minHeight: '100vh', color: '#f0f0f0' }} className="px-4 py-8">
+      <main style={{ background: '#f5f5f5', minHeight: '100vh', color: '#111' }} className="px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <h1 className="ff-display text-2xl font-bold mb-4">Not your page</h1>
-          <p className="mb-6" style={{ color: '#aaa' }}>You can only edit your own vlog entries.</p>
+          <p className="mb-6" style={{ color: '#666' }}>You can only edit your own vlog entries.</p>
           <Link href={`/chefs/${mockUser.handle}`}
             className="px-6 py-3 rounded-full text-sm font-semibold text-white inline-block"
             style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)' }}>
@@ -221,13 +227,13 @@ export default function NewPostPage() {
   }
 
   return (
-    <main style={{ background: '#0d0d0d', minHeight: '100vh', color: '#f0f0f0' }}>
+    <main style={{ background: '#f5f5f5', minHeight: '100vh', color: '#111' }}>
       {/* Header */}
       <div className="sticky top-0 z-40 px-4 py-3 flex items-center gap-3"
         style={{
-          background: 'rgba(13,13,13,0.95)',
+          background: 'rgba(245,245,245,0.95)',
           backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(255,255,255,0.07)'
+          borderBottom: '1px solid rgba(0,0,0,0.08)'
         }}>
         <Link href={`/chefs/${resolvedHandle}`} className="flex items-center gap-1 text-sm opacity-70 hover:opacity-100 transition-opacity">
           <span>←</span>
@@ -247,28 +253,19 @@ export default function NewPostPage() {
             value={date}
             onChange={e => setDate(e.target.value)}
             className="w-full px-4 py-2 rounded-lg text-sm focus:outline-none"
-            style={{
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: '#f0f0f0'
-            }}
+            style={inputStyle}
           />
         </div>
 
         {/* Vlog text area */}
         <div className="mb-6">
-          <label className="block text-sm font-semibold mb-2">What's on your mind today?</label>
+          <label className="block text-sm font-semibold mb-2">{"What's on your mind today?"}</label>
           <textarea
             value={body}
             onChange={e => setBody(e.target.value)}
             placeholder="What's on your mind today?"
             className="w-full px-4 py-3 rounded-lg text-sm resize-none focus:outline-none"
-            style={{
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: '#f0f0f0',
-              minHeight: 140
-            }}
+            style={{ ...inputStyle, minHeight: 140 }}
           />
         </div>
 
@@ -284,22 +281,18 @@ export default function NewPostPage() {
               onChange={handleSearchChange}
               placeholder="Search recipes..."
               className="w-full px-4 py-2 rounded-lg text-sm focus:outline-none"
-              style={{
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                color: '#f0f0f0'
-              }}
+              style={inputStyle}
             />
 
             {/* Search results dropdown */}
             {showSearchResults && searchResults.length > 0 && (
               <div className="absolute top-full left-0 right-0 mt-1 rounded-lg overflow-hidden z-10"
-                style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)' }}>
+                style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.12)', boxShadow: '0 4px 16px rgba(0,0,0,0.1)' }}>
                 {searchResults.map(recipe => (
                   <button
                     key={recipe.id}
                     onClick={() => handleSelectRecipe(recipe)}
-                    className="w-full flex items-center gap-2 p-2 text-sm hover:opacity-80 transition-opacity border-b border-b-gray-800 last:border-b-0"
+                    className="w-full flex items-center gap-2 p-2 text-sm hover:bg-black/[0.04] transition-colors border-b border-b-black/[0.06] last:border-b-0"
                   >
                     <img src={recipe.hero_image_url} alt="" className="w-10 h-10 rounded object-cover" />
                     <div className="flex-1 text-left">
@@ -314,7 +307,7 @@ export default function NewPostPage() {
           {/* Attached recipe preview */}
           {attachedRecipe && (
             <div className="flex gap-3 p-3 rounded-lg"
-              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+              style={{ background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.1)' }}>
               <img src={attachedRecipe.hero_image_url} alt="" className="w-16 h-16 rounded object-cover flex-shrink-0" />
               <div className="flex-1">
                 <Link href={`/recipes/${attachedRecipe.slug}`} className="text-sm font-semibold hover:underline">
@@ -335,7 +328,7 @@ export default function NewPostPage() {
         <div className="mb-6">
           <button
             onClick={() => setShowProductSection(!showProductSection)}
-            className="flex items-center gap-2 text-sm font-semibold mb-3 hover:text-orange-300 transition-colors"
+            className="flex items-center gap-2 text-sm font-semibold mb-3 hover:text-orange-400 transition-colors"
             style={{ color: '#ff9500' }}
           >
             {showProductSection ? '−' : '+'} Add product promotion
@@ -343,27 +336,23 @@ export default function NewPostPage() {
           </button>
 
           {showProductSection && (
-            <div className="p-4 rounded-lg" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="p-4 rounded-lg" style={{ background: 'rgba(0,0,0,0.03)', border: '1px solid rgba(0,0,0,0.08)' }}>
               {/* Product name */}
               <div className="mb-4">
-                <label className="block text-xs font-semibold mb-2 uppercase" style={{ color: '#999' }}>Product name</label>
+                <label className="block text-xs font-semibold mb-2 uppercase" style={{ color: '#666' }}>Product name</label>
                 <input
                   type="text"
                   value={productName}
                   onChange={e => setProductName(e.target.value)}
                   placeholder="e.g., My Organic Pasta"
                   className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none"
-                  style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    color: '#f0f0f0'
-                  }}
+                  style={inputStyle}
                 />
               </div>
 
               {/* Product image URL with preview */}
               <div className="mb-4">
-                <label className="block text-xs font-semibold mb-2 uppercase" style={{ color: '#999' }}>Product image URL</label>
+                <label className="block text-xs font-semibold mb-2 uppercase" style={{ color: '#666' }}>Product image URL</label>
                 <div className="flex gap-3">
                   <input
                     type="url"
@@ -371,14 +360,10 @@ export default function NewPostPage() {
                     onChange={e => setProductImageUrl(e.target.value)}
                     placeholder="https://example.com/product.jpg"
                     className="flex-1 px-3 py-2 rounded-lg text-sm focus:outline-none"
-                    style={{
-                      background: 'rgba(255,255,255,0.05)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      color: '#f0f0f0'
-                    }}
+                    style={inputStyle}
                   />
                   {productImageUrl && (
-                    <div className="flex-shrink-0 w-12 h-12 rounded flex items-center justify-center overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <div className="flex-shrink-0 w-12 h-12 rounded flex items-center justify-center overflow-hidden" style={{ background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.1)' }}>
                       <img src={productImageUrl} alt="preview" className="w-full h-full object-cover" onError={() => {}} />
                     </div>
                   )}
@@ -387,26 +372,22 @@ export default function NewPostPage() {
 
               {/* Shop/Affiliate link */}
               <div className="mb-4">
-                <label className="block text-xs font-semibold mb-2 uppercase" style={{ color: '#999' }}>Shop / affiliate link</label>
+                <label className="block text-xs font-semibold mb-2 uppercase" style={{ color: '#666' }}>Shop / affiliate link</label>
                 <input
                   type="url"
                   value={productLinkUrl}
                   onChange={e => setProductLinkUrl(e.target.value)}
                   placeholder="https://example.com/shop"
                   className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none"
-                  style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    color: '#f0f0f0'
-                  }}
+                  style={inputStyle}
                 />
               </div>
 
               {/* Description with char counter */}
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-semibold uppercase" style={{ color: '#999' }}>Short description</label>
-                  <span className="text-xs" style={{ color: '#555' }}>{productDescription.length} / 120</span>
+                  <label className="text-xs font-semibold uppercase" style={{ color: '#666' }}>Short description</label>
+                  <span className="text-xs" style={{ color: '#aaa' }}>{productDescription.length} / 120</span>
                 </div>
                 <textarea
                   value={productDescription}
@@ -414,18 +395,13 @@ export default function NewPostPage() {
                   placeholder="Brief product description..."
                   maxLength={120}
                   className="w-full px-3 py-2 rounded-lg text-sm resize-none focus:outline-none"
-                  style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    color: '#f0f0f0',
-                    minHeight: 80
-                  }}
+                  style={{ ...inputStyle, minHeight: 80 }}
                 />
               </div>
 
               {/* Disclosure label selector */}
               <div>
-                <label className="block text-xs font-semibold mb-2 uppercase" style={{ color: '#999' }}>Disclosure</label>
+                <label className="block text-xs font-semibold mb-2 uppercase" style={{ color: '#666' }}>Disclosure</label>
                 <div className="flex gap-2">
                   {(['Ad', 'Sponsored', 'Partner', 'Gifted'] as const).map(label => (
                     <button
@@ -433,9 +409,9 @@ export default function NewPostPage() {
                       onClick={() => setProductDisclosure(label)}
                       className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
                       style={{
-                        background: productDisclosure === label ? 'rgba(212,160,23,0.25)' : 'rgba(255,255,255,0.08)',
-                        border: productDisclosure === label ? '1px solid rgba(212,160,23,0.5)' : '1px solid rgba(255,255,255,0.1)',
-                        color: productDisclosure === label ? '#d4a017' : '#999'
+                        background: productDisclosure === label ? 'rgba(212,160,23,0.2)' : 'rgba(0,0,0,0.06)',
+                        border: productDisclosure === label ? '1px solid rgba(212,160,23,0.5)' : '1px solid rgba(0,0,0,0.1)',
+                        color: productDisclosure === label ? '#d4a017' : '#666'
                       }}
                     >
                       {label}
@@ -452,9 +428,9 @@ export default function NewPostPage() {
           <Link href={`/chefs/${resolvedHandle}`}
             className="px-6 py-2 rounded-full text-sm font-semibold"
             style={{
-              background: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.15)',
-              color: '#ccc'
+              background: 'rgba(0,0,0,0.07)',
+              border: '1px solid rgba(0,0,0,0.12)',
+              color: '#444'
             }}>
             Cancel
           </Link>
