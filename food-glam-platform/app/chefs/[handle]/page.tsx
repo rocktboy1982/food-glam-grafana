@@ -6,6 +6,27 @@ import Link from 'next/link'
 import TierStar from '@/components/TierStar'
 import type { ChefProfile, ChefBlogPost } from '@/lib/mock-chef-data'
 
+interface MockUser {
+  id: string
+  display_name: string
+  handle: string
+  avatar_url: string | null
+}
+
+interface VlogEntry {
+  id: string
+  date: string
+  body: string
+  attachedRecipe?: {
+    id: string
+    slug: string
+    title: string
+    hero_image_url: string
+  }
+  createdAt: string
+  updatedAt: string
+}
+
 /* ─── helpers ─────────────────────────────────────────────────────────────── */
 
 function timeAgo(isoString: string): string {
@@ -39,10 +60,25 @@ export default function ChefPage() {
 
   const [profile, setProfile] = useState<ChefProfile | null>(null)
   const [posts, setPosts] = useState<ChefBlogPost[]>([])
+  const [vlogEntries, setVlogEntries] = useState<VlogEntry[]>([])
+  const [mockUser, setMockUser] = useState<MockUser | null>(null)
   const [loading, setLoading] = useState(true)
   const [isFollowing, setIsFollowing] = useState(false)
   const [followerCount, setFollowerCount] = useState(0)
+  const [hydrated, setHydrated] = useState(false)
 
+  // Load mock user
+  useEffect(() => {
+    const userStr = localStorage.getItem('mock_user')
+    if (userStr) {
+      try {
+        setMockUser(JSON.parse(userStr))
+      } catch {}
+    }
+    setHydrated(true)
+  }, [])
+
+  // Load API posts
   useEffect(() => {
     if (!handle) return
     fetch(`/api/chefs/${handle}/posts`)
@@ -57,6 +93,18 @@ export default function ChefPage() {
       })
       .catch(() => setLoading(false))
   }, [handle])
+
+  // Load vlog entries from localStorage
+  useEffect(() => {
+    if (!hydrated) return
+    const entriesStr = localStorage.getItem(`chef_vlog_${handle}`)
+    if (entriesStr) {
+      try {
+        const entries = JSON.parse(entriesStr) as VlogEntry[]
+        setVlogEntries(entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()))
+      } catch {}
+    }
+  }, [handle, hydrated])
 
   /* ── loading skeleton ── */
   if (loading) {
@@ -180,63 +228,149 @@ export default function ChefPage() {
         </div>
 
         {/* ── Posts ── */}
-        <h2 className="ff-display text-lg font-bold mb-4">
-          Posts <span style={{ color: '#555' }}>{posts.length}</span>
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="ff-display text-lg font-bold">
+            Posts <span style={{ color: '#555' }}>{posts.length + vlogEntries.length}</span>
+          </h2>
+          {mockUser && mockUser.handle === handle && (
+            <Link href={`/chefs/${handle}/new-post`}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all"
+              style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14"/></svg>
+              New Entry
+            </Link>
+          )}
+        </div>
 
-        {posts.length === 0 ? (
+        {posts.length === 0 && vlogEntries.length === 0 ? (
           <p className="text-sm text-center py-12" style={{ color: '#444' }}>No posts yet.</p>
         ) : (
-          <div className="space-y-4 pb-20">
-            {posts.map(post => (
-              <article
-                key={post.id}
-                className="rounded-2xl overflow-hidden"
-                style={{ background: '#161616', border: '1px solid rgba(255,255,255,0.07)' }}
-              >
-                {/* cover image */}
-                <Link href={`/recipes/${post.slug}`}>
-                  <div className="relative" style={{ height: 200 }}>
-                    <img
-                      src={post.hero_image_url}
-                      alt={post.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div
-                      className="absolute inset-0"
-                      style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%)' }}
-                    />
-                    <h3 className="ff-display absolute bottom-0 left-0 right-0 px-4 pb-3 text-lg font-bold leading-tight">
-                      {post.title}
-                    </h3>
-                  </div>
-                </Link>
+          <div className="pb-20">
+            {/* Merge and sort all items by date (newest first) */}
+            {(() => {
+              type DisplayItem = { type: 'post'; data: ChefBlogPost; date: string } | { type: 'vlog'; data: VlogEntry; date: string }
+              const allItems: DisplayItem[] = [
+                ...posts.map(p => ({ type: 'post' as const, data: p, date: p.created_at.split('T')[0] })),
+                ...vlogEntries.map(v => ({ type: 'vlog' as const, data: v, date: v.date }))
+              ]
+              allItems.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+              
+              // Group by date
+              const grouped = new Map<string, DisplayItem[]>()
+              allItems.forEach(item => {
+                if (!grouped.has(item.date)) grouped.set(item.date, [])
+                grouped.get(item.date)!.push(item)
+              })
 
-                {/* body */}
-                <div className="px-4 py-3">
-                  {/* chef's note */}
-                  <p className="text-sm leading-relaxed mb-3" style={{ color: '#b0b0b0' }}>
-                    {post.description}
-                  </p>
+              return (
+                <div className="space-y-6">
+                  {Array.from(grouped.entries()).map(([date, items]) => {
+                    const dateObj = new Date(date + 'T00:00:00')
+                    const dateLabel = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
+                    
+                    return (
+                      <div key={date}>
+                        <p className="text-xs font-semibold uppercase tracking-widest mb-2 pb-2" style={{ color: '#555', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>📅 {dateLabel}</p>
+                        <div className="space-y-4">
+                          {items.map(item => (
+                            item.type === 'post' ? (
+                              // API Post
+                              <article
+                                key={item.data.id}
+                                className="rounded-2xl overflow-hidden"
+                                style={{ background: '#161616', border: '1px solid rgba(255,255,255,0.07)' }}
+                              >
+                                {/* Image */}
+                                <Link href={`/recipes/${item.data.slug}`}>
+                                  <div className="relative overflow-hidden" style={{ height: 260 }}>
+                                    <img
+                                      src={item.data.hero_image_url}
+                                      alt={item.data.title}
+                                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                                    />
+                                    <div
+                                      className="absolute inset-0"
+                                      style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 50%)' }}
+                                    />
+                                  </div>
+                                </Link>
 
-                  {/* meta + actions */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 text-xs" style={{ color: '#555' }}>
-                      <span>❤️ {post.votes}</span>
-                      <span>💬 {post.comments}</span>
-                      <span>{timeAgo(post.created_at)}</span>
-                    </div>
-                    <Link
-                      href={`/recipes/${post.slug}`}
-                      className="text-xs font-semibold px-3 py-1.5 rounded-full transition-all"
-                      style={{ background: 'rgba(255,149,0,0.15)', color: '#ff9500', border: '1px solid rgba(255,149,0,0.25)' }}
-                    >
-                      View Recipe →
-                    </Link>
-                  </div>
+                                {/* Text box */}
+                                <div
+                                  className="px-4 py-4"
+                                  style={{ borderTop: '2px solid rgba(255,255,255,0.06)', background: '#1a1a1a' }}
+                                >
+                                  <Link href={`/recipes/${item.data.slug}`}>
+                                    <h3 className="ff-display text-lg font-bold leading-snug mb-2 hover:text-white transition-colors" style={{ color: '#f0f0f0' }}>
+                                      {item.data.title}
+                                    </h3>
+                                  </Link>
+                                  <p className="text-sm leading-relaxed mb-3" style={{ color: '#b0b0b0' }}>
+                                    {item.data.description}
+                                  </p>
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3 text-xs" style={{ color: '#555' }}>
+                                      <span>❤️ {item.data.votes}</span>
+                                      <span>💬 {item.data.comments}</span>
+                                      <span>{timeAgo(item.data.created_at)}</span>
+                                    </div>
+                                    <Link
+                                      href={`/recipes/${item.data.slug}`}
+                                      className="text-xs font-semibold px-3 py-1.5 rounded-full transition-all"
+                                      style={{ background: 'rgba(255,149,0,0.15)', color: '#ff9500', border: '1px solid rgba(255,149,0,0.25)' }}
+                                    >
+                                      View Recipe →
+                                    </Link>
+                                  </div>
+                                </div>
+                              </article>
+                            ) : (
+                              // Vlog Entry
+                              <article
+                                key={item.data.id}
+                                className="rounded-2xl overflow-hidden p-4"
+                                style={{ background: '#161616', border: '1px solid rgba(255,255,255,0.07)' }}
+                              >
+                                {item.data.attachedRecipe && (
+                                  <div className="mb-3 rounded-lg overflow-hidden" style={{ height: 80 }}>
+                                    <img src={item.data.attachedRecipe.hero_image_url} alt="" className="w-full h-full object-cover" />
+                                  </div>
+                                )}
+
+                                <p className="text-sm leading-relaxed mb-3" style={{ color: '#ccc', whiteSpace: 'pre-wrap' }}>
+                                  {item.data.body}
+                                </p>
+
+                                {item.data.attachedRecipe && (
+                                  <div className="flex items-center gap-2 mb-3 text-sm">
+                                    <span style={{ color: '#888' }}>🍽️</span>
+                                    <Link href={`/recipes/${item.data.attachedRecipe.slug}`}
+                                      className="font-semibold hover:underline" style={{ color: '#ff9500' }}>
+                                      {item.data.attachedRecipe.title}
+                                    </Link>
+                                  </div>
+                                )}
+
+                                {mockUser && mockUser.handle === handle && (
+                                  <div className="flex justify-end">
+                                    <Link href={`/chefs/${handle}/new-post?date=${item.data.date}`}
+                                      className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full opacity-60 hover:opacity-100 transition-opacity"
+                                      style={{ background: 'rgba(255,255,255,0.1)' }}>
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                      Edit
+                                    </Link>
+                                  </div>
+                                )}
+                              </article>
+                            )
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
-              </article>
-            ))}
+              )
+            })()}
           </div>
         )}
       </div>
