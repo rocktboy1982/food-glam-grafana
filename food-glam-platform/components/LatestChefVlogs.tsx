@@ -41,7 +41,7 @@ const SORTED_POSTS = [...MOCK_CHEF_POSTS]
 export default function LatestChefVlogs() {
   return (
     <div
-      className="rounded-2xl overflow-hidden"
+      className="rounded-2xl overflow-hidden flex flex-col h-full"
       style={{ background: '#111', border: '1px solid rgba(255,255,255,0.08)' }}
     >
       {/* ── Header ── */}
@@ -70,7 +70,7 @@ export default function LatestChefVlogs() {
       </div>
 
       {/* ── List ── */}
-      <div>
+      <div className="flex-1 overflow-y-auto">
         {SORTED_POSTS.map(({ post, chef }, i) => (
           <Link
             key={post.id}
@@ -153,7 +153,6 @@ export default function LatestChefVlogs() {
           </Link>
         ))}
       </div>
-
       {/* ── Footer ── */}
       <div
         className="px-4 py-2.5"

@@ -58,7 +58,7 @@ export default function TrendingSection() {
 
   return (
     <div
-      className="rounded-2xl overflow-hidden"
+      className="rounded-2xl overflow-hidden flex flex-col h-full"
       style={{ background: '#111', border: '1px solid rgba(255,255,255,0.08)' }}
     >
       {/* ── Header ── */}
@@ -117,7 +117,7 @@ export default function TrendingSection() {
 
       {/* ── List ── */}
       {!loading && enriched.length > 0 && (
-        <div>
+        <div className="flex-1 overflow-y-auto">
           {enriched.map((recipe, i) => (
             <Link
               key={recipe.id}

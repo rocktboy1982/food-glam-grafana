@@ -332,14 +332,14 @@ export default function Home() {
         {/* ════════════════════════════════════════════════════════
             4-COLUMN GRID LAYOUT  (desktop responsive)
         ════════════════════════════════════════════════════════ */}
-        <div className="px-4 pb-8 grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="px-4 pb-8 grid grid-cols-1 lg:grid-cols-4 gap-6 lg:items-stretch">
           {/* COL 1: Latest Chef Vlogs */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 flex flex-col">
             <LatestChefVlogs />
           </div>
 
           {/* COL 2–3: Feed — strict 2-col grid, equal-height tiles */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 flex flex-col">
             {loading && (
               <div className="grid grid-cols-2 gap-3">
                 {Array.from({ length: 6 }).map((_, i) => (
@@ -444,7 +444,7 @@ export default function Home() {
           </div>
 
           {/* COL 4: Trending */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 flex flex-col">
             <TrendingSection />
           </div>
         </div>
