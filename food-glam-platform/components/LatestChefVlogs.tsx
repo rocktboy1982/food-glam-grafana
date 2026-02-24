@@ -75,7 +75,7 @@ export default function LatestChefVlogs() {
           <Link
             key={post.id}
             href={`/chefs/${post.chef_handle}`}
-            className="group flex items-center gap-3 px-3 py-2.5 transition-colors hover:bg-white/[0.03]"
+            className="group flex items-start gap-3 px-3 py-3.5 transition-colors hover:bg-white/[0.03]"
             style={{
               borderBottom:
                 i < SORTED_POSTS.length - 1
@@ -86,7 +86,7 @@ export default function LatestChefVlogs() {
             {/* Chef avatar */}
             <div
               className="flex-shrink-0 rounded-xl overflow-hidden"
-              style={{ width: 56, height: 56 }}
+              style={{ width: 112, height: 112 }}
             >
               {chef?.avatar_url ? (
                 <img
@@ -118,11 +118,17 @@ export default function LatestChefVlogs() {
               </div>
               {/* Post title */}
               <p
-                className="text-sm font-semibold leading-snug line-clamp-2 group-hover:text-white transition-colors"
+                className="text-sm font-semibold leading-snug line-clamp-2 group-hover:text-white transition-colors mb-1"
                 style={{ color: '#ddd' }}
               >
                 {post.title}
               </p>
+              {/* Description snippet */}
+              {post.description && (
+                <p className="text-[11px] leading-relaxed line-clamp-2" style={{ color: '#555' }}>
+                  {post.description}
+                </p>
+              )}
               {/* Meta row */}
               <div className="flex items-center gap-2 mt-1">
                 <span
