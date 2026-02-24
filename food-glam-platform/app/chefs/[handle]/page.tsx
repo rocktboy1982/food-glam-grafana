@@ -277,49 +277,47 @@ export default function ChefPage() {
                               // API Post
                               <article
                                 key={item.data.id}
-                                className="rounded-2xl overflow-hidden"
-                                style={{ background: '#161616', border: '1px solid rgba(255,255,255,0.07)' }}
+                                className="group flex rounded-2xl overflow-hidden transition-all hover:ring-1 hover:ring-white/10"
+                                style={{ background: '#161616', border: '1px solid rgba(255,255,255,0.07)', height: 140 }}
                               >
-                                {/* Image */}
-                                <Link href={`/recipes/${item.data.slug}`}>
-                                  <div className="relative overflow-hidden" style={{ height: 260 }}>
-                                    <img
-                                      src={item.data.hero_image_url}
-                                      alt={item.data.title}
-                                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                                    />
-                                    <div
-                                      className="absolute inset-0"
-                                      style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 50%)' }}
-                                    />
+                                {/* Image — left */}
+                                <Link href={`/recipes/${item.data.slug}`} className="flex-shrink-0 relative overflow-hidden" style={{ width: 140 }}>
+                                  <img
+                                    src={item.data.hero_image_url}
+                                    alt={item.data.title}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                  />
+                                  <div className="absolute top-2 left-2">
+                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ background: 'rgba(255,149,0,0.9)', backdropFilter: 'blur(4px)' }}>
+                                      🎥 Vlog
+                                    </span>
                                   </div>
                                 </Link>
 
-                                {/* Text box */}
-                                <div
-                                  className="px-4 py-4"
-                                  style={{ borderTop: '2px solid rgba(255,255,255,0.06)', background: '#1a1a1a' }}
-                                >
-                                  <Link href={`/recipes/${item.data.slug}`}>
-                                    <h3 className="ff-display text-lg font-bold leading-snug mb-2 hover:text-white transition-colors" style={{ color: '#f0f0f0' }}>
-                                      {item.data.title}
-                                    </h3>
-                                  </Link>
-                                  <p className="text-sm leading-relaxed mb-3" style={{ color: '#b0b0b0' }}>
-                                    {item.data.description}
-                                  </p>
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3 text-xs" style={{ color: '#555' }}>
-                                      <span>❤️ {item.data.votes}</span>
+                                {/* Text panel — right */}
+                                <div className="flex-1 min-w-0 flex flex-col justify-between px-3 py-3" style={{ borderLeft: '1px solid rgba(255,255,255,0.05)' }}>
+                                  <div className="min-w-0">
+                                    <Link href={`/recipes/${item.data.slug}`}>
+                                      <h3 className="ff-display text-sm font-bold leading-snug line-clamp-2 hover:text-white transition-colors mb-1" style={{ color: '#f0f0f0' }}>
+                                        {item.data.title}
+                                      </h3>
+                                    </Link>
+                                    <p className="text-[11px] leading-relaxed line-clamp-2" style={{ color: '#777' }}>
+                                      {item.data.description}
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center justify-between mt-2">
+                                    <div className="flex items-center gap-2 text-[11px]" style={{ color: '#555' }}>
+                                      <span style={{ color: '#ff4d6d' }}>♥ {item.data.votes}</span>
                                       <span>💬 {item.data.comments}</span>
                                       <span>{timeAgo(item.data.created_at)}</span>
                                     </div>
                                     <Link
                                       href={`/recipes/${item.data.slug}`}
-                                      className="text-xs font-semibold px-3 py-1.5 rounded-full transition-all"
-                                      style={{ background: 'rgba(255,149,0,0.15)', color: '#ff9500', border: '1px solid rgba(255,149,0,0.25)' }}
+                                      className="text-[10px] font-semibold px-2.5 py-1 rounded-full flex-shrink-0 transition-all"
+                                      style={{ background: 'rgba(255,149,0,0.12)', color: '#ff9500', border: '1px solid rgba(255,149,0,0.2)' }}
                                     >
-                                      View Recipe →
+                                      View →
                                     </Link>
                                   </div>
                                 </div>
