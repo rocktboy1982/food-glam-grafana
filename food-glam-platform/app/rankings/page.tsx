@@ -346,7 +346,7 @@ function RisingTab() {
 
 function ByCuisineTab() {
   return (
-    <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {CUISINE_LEADERS.map(({ approach, top, total }) => (
         <Link
           key={approach.id}
@@ -495,7 +495,7 @@ export default function RankingsPage() {
       </div>
 
       {/* ── Panel ── */}
-      <div className="max-w-3xl mx-auto py-6 px-4">
+      <div className="max-w-6xl mx-auto py-6 px-6">
         <div
           className="rounded-2xl overflow-hidden"
           style={{ background: '#111', border: '1px solid rgba(255,255,255,0.08)' }}
