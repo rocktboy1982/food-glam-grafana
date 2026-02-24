@@ -312,8 +312,8 @@ export default function Home() {
             REGION CHIPS  (horizontal scroll)
         ════════════════════════════════════════════════════════ */}
         <section className="px-4 pb-8">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#555' }}>Browse Cuisines</p>
-          <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3 text-center" style={{ color: '#555' }}>Browse Cuisines</p>
+          <div className="flex gap-2 flex-wrap justify-center pb-1">
             {REGION_PILLS.map(id => {
               const r = REGION_META[id]
               if (!r) return null
