@@ -345,172 +345,102 @@ export default function Home() {
         ════════════════════════════════════════════════════════ */}
         <div className="px-4 pb-8 grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* COL 1–2: Feed (2-col masonry, max 6 tiles) */}
+          {/* COL 1–2: Feed — strict 2-col grid, equal-height tiles */}
           <div className="lg:col-span-2">
             {loading && (
-              <div className="columns-1 sm:columns-2 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="rounded-2xl overflow-hidden animate-pulse mb-3"
-                    style={{ height: i % 2 === 0 ? 260 : 200, background: '#1a1a1a' }} />
+                  <div key={i} className="rounded-xl overflow-hidden animate-pulse" style={{ height: 280, background: '#1a1a1a' }} />
                 ))}
               </div>
             )}
-
             {!loading && (
-              <div className="columns-1 sm:columns-2 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 {tabFeed.slice(0, 6).map((recipe, i) => {
                   const liked = likedIds.has(recipe.id)
                   const saved = savedIds.has(recipe.id) || preferredIds.has(recipe.id)
                   const count = likeCounts[recipe.id] ?? recipe.votes
                   const isBursting = burstId === recipe.id
-
                   return (
                     <div
                       key={recipe.id}
-                      className="feed-card break-inside-avoid mb-3 rounded-xl overflow-hidden relative slide-up"
+                      className="feed-card rounded-xl overflow-hidden slide-up flex flex-col"
                       style={{ background: '#1a1a1a', animationDelay: `${i * 40}ms` }}
                     >
-                      {/* image */}
+                      {/* image — fixed 200px, always equal */}
                       <div
-                        className="relative cursor-pointer"
-                        style={{ height: i % 2 === 0 ? 260 : 200 }}
+                        className="relative cursor-pointer flex-shrink-0"
+                        style={{ height: 200 }}
                         onDoubleClick={() => toggleLike(recipe.id)}
                         onClick={() => router.push(`/recipes/${recipe.slug}`)}
                       >
-                        <img
-                          src={recipe.hero_image_url}
-                          alt={recipe.title}
-                          className="w-full h-full object-cover"
-                        />
-
-                        {/* gradient overlay */}
-                        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, transparent 100%)' }} />
-
+                        <img src={recipe.hero_image_url} alt={recipe.title} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.1) 55%, transparent 100%)' }} />
                         {/* tag badge */}
-                        <div className="absolute top-3 left-3">
-                          <span className="px-2.5 py-1 rounded-full text-[11px] font-bold"
-                            style={{
-                              background: recipe.tag === 'Trending' ? 'rgba(255,77,109,0.9)' : recipe.tag === 'New' ? 'rgba(0,200,150,0.9)' : 'rgba(255,149,0,0.9)',
-                              backdropFilter: 'blur(4px)',
-                            }}>
+                        <div className="absolute top-2 left-2">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                            style={{ background: recipe.tag === 'Trending' ? 'rgba(255,77,109,0.9)' : recipe.tag === 'New' ? 'rgba(0,200,150,0.9)' : 'rgba(255,149,0,0.9)', backdropFilter: 'blur(4px)' }}>
                             {recipe.tag === 'Trending' ? '🔥' : recipe.tag === 'New' ? '✨' : '⭐'} {recipe.tag}
                           </span>
                         </div>
-
-                        {/* heart burst overlay */}
                         {isBursting && (
                           <div className="absolute inset-0 flex items-center justify-center dtap-overlay">
-                            <span className="heart-burst text-6xl">❤️</span>
+                            <span className="heart-burst text-5xl">❤️</span>
                           </div>
                         )}
-
-                        {/* added to preferred toast */}
                         {toastId === recipe.id && (
                           <div className="absolute inset-0 flex items-center justify-center dtap-overlay">
-                            <div className="toast-enter bg-black bg-opacity-80 px-4 py-3 rounded-full text-sm font-semibold flex items-center gap-2">
-                              <span>⭐</span>
-                              <span>Added to Preferred</span>
+                            <div className="toast-enter bg-black bg-opacity-80 px-3 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5">
+                              <span>⭐</span><span>Saved</span>
                             </div>
                           </div>
                         )}
 
-                        {/* bottom content inside image */}
-                        <div className="absolute bottom-0 left-0 right-0 p-3">
-                          <h3 className="ff-display font-semibold text-sm leading-tight mb-1.5 line-clamp-2">{recipe.title}</h3>
-
-                          {/* chef row */}
+                        {/* title + chef overlay */}
+                        <div className="absolute bottom-0 left-0 right-0 p-2.5">
+                          <h3 className="ff-display font-semibold text-xs leading-snug mb-1 line-clamp-2">{recipe.title}</h3>
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1.5">
                               {recipe.created_by.avatar_url && (
-                                <img src={recipe.created_by.avatar_url} alt="" className="w-6 h-6 rounded-full object-cover border border-white/30" />
+                                <img src={recipe.created_by.avatar_url} alt="" className="w-5 h-5 rounded-full object-cover border border-white/30" />
                               )}
-                              <span className="text-xs text-gray-300">{recipe.created_by.display_name}</span>
+                              <span className="text-[10px] text-gray-300 truncate max-w-[56px]">{recipe.created_by.display_name}</span>
                             </div>
                             <button
                               onClick={e => { e.stopPropagation(); toggleFollow(recipe.created_by.id) }}
-                              className="px-3 py-1 rounded-full text-xs font-semibold transition-all"
+                              className="px-2 py-0.5 rounded-full text-[10px] font-semibold transition-all flex-shrink-0"
                               style={followedChefs.has(recipe.created_by.id)
-                                ? { background: 'rgba(255,255,255,0.15)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)' }
+                                ? { background: 'rgba(255,255,255,0.15)', color: '#fff' }
                                 : { background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}
                             >
-                              {followedChefs.has(recipe.created_by.id) ? 'Following' : 'Follow'}
+                              {followedChefs.has(recipe.created_by.id) ? '✓' : '+ Follow'}
                             </button>
                           </div>
                         </div>
                       </div>
-
                       {/* action row */}
-                      <div className="flex items-center justify-between px-3 py-2">
-                        <div className="flex items-center gap-3">
-                          {/* like */}
-                          <button
-                            onClick={() => toggleLike(recipe.id)}
-                            className="flex items-center gap-1.5 transition-transform active:scale-110"
-                            style={{ color: liked ? '#ff4d6d' : '#888' }}
-                          >
-                            <svg width="17" height="17" viewBox="0 0 24 24"
-                              fill={liked ? '#ff4d6d' : 'none'}
-                              stroke={liked ? '#ff4d6d' : '#888'}
-                              strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                              style={{ transition: 'all 0.15s ease', transform: liked ? 'scale(1.15)' : 'scale(1)' }}
-                            >
-                              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                            </svg>
-                            <span className="text-xs font-semibold" style={{ color: liked ? '#ff4d6d' : '#888' }}>{count}</span>
+                      <div className="flex items-center justify-between px-2.5 py-2">
+                        <div className="flex items-center gap-2.5">
+                          <button onClick={() => toggleLike(recipe.id)} className="flex items-center gap-1 transition-transform active:scale-110" style={{ color: liked ? '#ff4d6d' : '#888' }}>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill={liked ? '#ff4d6d' : 'none'} stroke={liked ? '#ff4d6d' : '#888'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            <span className="text-[11px] font-semibold" style={{ color: liked ? '#ff4d6d' : '#888' }}>{count}</span>
                           </button>
-
-                          {/* comment */}
-                          <button
-                            onClick={() => router.push(`/recipes/${recipe.slug}#comments`)}
-                            className="flex items-center gap-1.5"
-                            style={{ color: '#888' }}
-                          >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                            </svg>
-                            <span className="text-xs font-semibold">{recipe.comments}</span>
+                          <button onClick={() => router.push(`/recipes/${recipe.slug}#comments`)} className="flex items-center gap-1" style={{ color: '#888' }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <span className="text-[11px] font-semibold">{recipe.comments}</span>
                           </button>
-
-                          {/* share */}
-                          <button
-                            onClick={async () => {
-                              const url = `${window.location.origin}/recipes/${recipe.slug}`
-                              if (navigator.share) await navigator.share({ title: recipe.title, url })
-                              else await navigator.clipboard.writeText(url)
-                            }}
-                            style={{ color: '#888' }}
-                          >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-                              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-                            </svg>
+                          <button onClick={async () => { const url = `${window.location.origin}/recipes/${recipe.slug}`; if (navigator.share) await navigator.share({ title: recipe.title, url }); else await navigator.clipboard.writeText(url) }} style={{ color: '#888' }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                           </button>
                         </div>
-
-                        {/* save */}
-                        <button
-                          onClick={() => toggleSave(recipe)}
-                          style={{ color: saved ? '#ff9500' : '#888' }}
-                          className="transition-transform active:scale-110"
-                        >
-                          <svg width="17" height="17" viewBox="0 0 24 24"
-                            fill={saved ? '#ff9500' : 'none'}
-                            stroke={saved ? '#ff9500' : '#888'}
-                            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                            style={{ transition: 'all 0.15s ease' }}
-                          >
-                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-                          </svg>
+                        <button onClick={() => toggleSave(recipe)} style={{ color: saved ? '#ff9500' : '#888' }} className="transition-transform active:scale-110">
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill={saved ? '#ff9500' : 'none'} stroke={saved ? '#ff9500' : '#888'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
                         </button>
                       </div>
-
-                      {/* diet tags */}
                       {recipe.dietTags.length > 0 && (
-                        <div className="flex gap-1 px-3 pb-2 flex-wrap">
+                        <div className="flex gap-1 px-2.5 pb-2 flex-wrap">
                           {recipe.dietTags.map(t => (
-                            <span key={t} className="text-[10px] px-2 py-0.5 rounded-full"
-                              style={{ background: 'rgba(255,255,255,0.08)', color: '#aaa' }}>
-                              {t}
-                            </span>
+                            <span key={t} className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: 'rgba(255,255,255,0.08)', color: '#aaa' }}>{t}</span>
                           ))}
                         </div>
                       )}
