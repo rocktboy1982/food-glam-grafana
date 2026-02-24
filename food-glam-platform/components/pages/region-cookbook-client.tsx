@@ -46,7 +46,7 @@ export default function RegionCookbookClient({ region }: { region: string }) {
   }, [region, meta.label, selectedCountry, activeCourse])
 
   return (
-    <main className="container mx-auto px-4 py-8 max-w-6xl">
+    <main className="min-h-screen" style={{ background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', color: '#111' }}><div className="container mx-auto px-4 py-8 max-w-6xl">
       {/* Breadcrumb */}
       <nav className="text-sm text-muted-foreground mb-6 flex items-center gap-2">
         <Link href="/cookbooks" className="hover:text-foreground transition-colors">
@@ -268,6 +268,6 @@ export default function RegionCookbookClient({ region }: { region: string }) {
           </div>
         )}
       </section>
-    </main>
+    </div></main>
   )
 }
