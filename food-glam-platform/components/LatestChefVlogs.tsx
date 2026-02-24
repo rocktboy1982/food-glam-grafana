@@ -70,71 +70,50 @@ export default function LatestChefVlogs() {
       </div>
 
       {/* ── List ── */}
-      <div className="flex-1 overflow-y-auto">
-        {SORTED_POSTS.map(({ post, chef }, i) => (
+      <div className="flex-1 overflow-y-auto p-3 space-y-3">
+        {SORTED_POSTS.map(({ post, chef }) => (
           <Link
             key={post.id}
             href={`/chefs/${post.chef_handle}`}
-            className="group flex items-start gap-3 px-3 py-3.5 transition-colors hover:bg-white/[0.03]"
-            style={{
-              borderBottom:
-                i < SORTED_POSTS.length - 1
-                  ? '1px solid rgba(255,255,255,0.04)'
-                  : 'none',
-            }}
+            className="group block rounded-2xl overflow-hidden transition-all hover:ring-1 hover:ring-white/10"
+            style={{ background: '#1a1a1a' }}
           >
-            {/* Chef avatar */}
-            <div
-              className="flex-shrink-0 rounded-xl overflow-hidden"
-              style={{ width: 112, height: 112 }}
-            >
-              {chef?.avatar_url ? (
+            {/* ─ Image ─ */}
+            <div className="relative overflow-hidden" style={{ height: 88 }}>
+              {post.hero_image_url ? (
                 <img
-                  src={chef.avatar_url}
+                  src={post.hero_image_url}
                   alt=""
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               ) : (
-                <div
-                  className="w-full h-full flex items-center justify-center text-xl"
-                  style={{ background: '#1a1a1a' }}
-                >
+                <div className="w-full h-full flex items-center justify-center text-2xl" style={{ background: '#222' }}>
                   👨‍🍳
                 </div>
               )}
+              {/* gradient */}
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)' }} />
             </div>
 
-            {/* Info */}
-            <div className="flex-1 min-w-0">
-              {/* Chef name + tier */}
-              <div className="flex items-center gap-1 mb-0.5">
-                <span
-                  className="text-[11px] font-semibold truncate"
-                  style={{ color: '#888' }}
-                >
+            {/* ─ Text box ─ */}
+            <div className="px-3 py-2.5" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              {/* Chef row */}
+              <div className="flex items-center gap-1.5 mb-1">
+                {chef?.avatar_url && (
+                  <img src={chef.avatar_url} alt="" className="w-4 h-4 rounded-full object-cover flex-shrink-0" />
+                )}
+                <span className="text-[10px] font-semibold truncate" style={{ color: '#888' }}>
                   {chef?.display_name}
                 </span>
-                {chef && <TierStar tier={chef.tier} size={10} />}
+                {chef && <TierStar tier={chef.tier} size={9} />}
               </div>
-              {/* Post title */}
-              <p
-                className="text-sm font-semibold leading-snug line-clamp-2 group-hover:text-white transition-colors mb-1"
-                style={{ color: '#ddd' }}
-              >
+              {/* Title */}
+              <p className="text-xs font-bold leading-snug line-clamp-2 group-hover:text-white transition-colors" style={{ color: '#e0e0e0' }}>
                 {post.title}
               </p>
-              {/* Description snippet */}
-              {post.description && (
-                <p className="text-[11px] leading-relaxed line-clamp-2" style={{ color: '#555' }}>
-                  {post.description}
-                </p>
-              )}
-              {/* Meta row */}
-              <div className="flex items-center gap-2 mt-1">
-                <span
-                  className="text-[11px] font-semibold flex items-center gap-0.5"
-                  style={{ color: '#ff4d6d' }}
-                >
+              {/* Meta */}
+              <div className="flex items-center gap-2 mt-1.5">
+                <span className="text-[10px] font-semibold" style={{ color: '#ff4d6d' }}>
                   ♥ {post.votes}
                 </span>
                 <span className="text-[10px]" style={{ color: '#444' }}>
@@ -142,14 +121,6 @@ export default function LatestChefVlogs() {
                 </span>
               </div>
             </div>
-
-            {/* Arrow hint */}
-            <span
-              className="flex-shrink-0 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-              style={{ color: '#555' }}
-            >
-              →
-            </span>
           </Link>
         ))}
       </div>
