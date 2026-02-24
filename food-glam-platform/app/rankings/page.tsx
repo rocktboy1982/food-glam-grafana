@@ -502,21 +502,36 @@ export default function RankingsPage() {
         >
           {/* Panel header */}
           <div
-            className="flex items-center justify-between px-5 py-4"
+            className="relative flex items-center justify-between px-6 py-5 overflow-hidden"
             style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
           >
-            <div className="flex items-center gap-2">
-              <span className="text-lg">{current.icon}</span>
-              <span
-                className="font-bold text-base"
-                style={{ fontFamily: "'Syne', sans-serif", color: '#f0f0f0' }}
-              >
-                {current.label}
-              </span>
-            </div>
-            <span className="text-[11px]" style={{ color: '#555' }}>
-              {current.description}
+            {/* giant ghost watermark */}
+            <span
+              className="absolute right-4 top-1/2 -translate-y-1/2 select-none pointer-events-none"
+              style={{ fontSize: 96, lineHeight: 1, opacity: 0.07 }}
+            >
+              {current.icon}
             </span>
+
+            <div className="flex items-center gap-3">
+              <span
+                className="text-3xl"
+                style={{ filter: 'drop-shadow(0 0 12px rgba(255,149,0,0.4))' }}
+              >
+                {current.icon}
+              </span>
+              <div>
+                <p
+                  className="font-extrabold text-xl leading-tight"
+                  style={{ fontFamily: "'Syne', sans-serif", color: '#f0f0f0' }}
+                >
+                  {current.label}
+                </p>
+                <p className="text-xs mt-0.5" style={{ color: '#555' }}>
+                  {current.description}
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Tab content */}
