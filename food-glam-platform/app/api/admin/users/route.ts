@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { MOCK_RECIPES } from '@/lib/mock-data'
 
-type UserStatus = 'active' | 'blocked'
+type UserStatus = 'active' | 'warned' | 'blocked' | 'deleted'
 
 const userStatusOverrides: Record<string, UserStatus> = {}
 const userNotes: Record<string, string> = {}
@@ -40,7 +40,7 @@ export async function GET(req: Request) {
 }
 
 export async function PUT(req: Request) {
-  const body = await req.json() as { id: string; status?: UserStatus; notes?: string }
+  const body = await req.json() as { id: string; status?: UserStatus; notes?: string; tier?: 'pro' | 'amateur' | 'user' }
   if (body.status) userStatusOverrides[body.id] = body.status
   if (body.notes !== undefined) userNotes[body.id] = body.notes
   return NextResponse.json({ ok: true })
