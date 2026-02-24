@@ -157,7 +157,7 @@ export default function ChefPage() {
       </div>
 
       {/* ── Profile header ── */}
-      <div className="px-4 relative" style={{ marginTop: -56 }}>
+      <div className="px-4 relative max-w-2xl mx-auto" style={{ marginTop: -56 }}>
         {/* avatar + tier star */}
         <div className="relative inline-block mb-3">
           <img
