@@ -117,7 +117,7 @@ export default function MeWatchlistClient() {
   // Auth gate removed - SSO disabled in dev
 
   return (
-    <main className="container mx-auto px-4 py-8 pb-24">
+    <main className="min-h-screen" style={{ background: '#f5f5f5', color: '#111' }}><div className="container mx-auto px-4 py-8 pb-24">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
@@ -258,6 +258,6 @@ export default function MeWatchlistClient() {
           })}
         </div>
       )}
-    </main>
+    </div></main>
   )
 }
