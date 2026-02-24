@@ -134,6 +134,14 @@ const QUALITY_OPTIONS = [
   { value: 4.7, label: '4.7+' },
 ]
 
+const CALORIE_OPTIONS = [
+  { value: 0,    label: 'Any' },
+  { value: 300,  label: '< 300 kcal' },
+  { value: 500,  label: '< 500 kcal' },
+  { value: 700,  label: '< 700 kcal' },
+  { value: 1000, label: '< 1000 kcal' },
+]
+
 const DIET_TAGS = [
   'vegan',
   'vegetarian',
@@ -190,6 +198,7 @@ function SearchDiscoveryPageClientContent() {
   const [cuisineId, setCuisineId] = useState(searchParams.get('cuisine_id') || '')
   const [cookbookId, setCookbookId] = useState(searchParams.get('cookbook_id') || '')
   const [chapterId, setChapterId] = useState(searchParams.get('chapter_id') || '')
+  const [calMax, setCalMax] = useState(parseInt(searchParams.get('cal_max') || '0') || 0)
 
   // ---- UI state ----
   const [recipes, setRecipes] = useState<Recipe[]>([])
@@ -224,6 +233,7 @@ function SearchDiscoveryPageClientContent() {
     searchIsTested: boolean,
     searchTagFilter: string,
     searchQualityMin: number,
+    searchCalMax: number,
   ) => {
     abortRef.current?.abort()
     abortRef.current = new AbortController()
@@ -240,6 +250,7 @@ function SearchDiscoveryPageClientContent() {
     if (searchIsTested) params.set('is_tested', 'true')
     if (searchTagFilter) params.set('tag', searchTagFilter)
     if (searchQualityMin > 0) params.set('quality_min', String(searchQualityMin))
+    if (searchCalMax > 0) params.set('cal_max', String(searchCalMax))
     params.set('page', String(searchPage))
     params.set('per_page', String(PER_PAGE))
 
@@ -278,6 +289,7 @@ function SearchDiscoveryPageClientContent() {
     newIsTested?: boolean,
     newTagFilter?: string,
     newQualityMin?: number,
+    newCalMax?: number,
   ) => {
     const q = newQuery ?? query
     const a = newApproach ?? approach
@@ -289,6 +301,7 @@ function SearchDiscoveryPageClientContent() {
     const it = newIsTested ?? isTested
     const tf = newTagFilter ?? tagFilter
     const qm = newQualityMin ?? qualityMin
+    const cm = newCalMax ?? calMax
 
     // Update URL
     updateURL({
@@ -301,11 +314,12 @@ function SearchDiscoveryPageClientContent() {
       is_tested: it ? 'true' : '',
       tag: tf,
       quality_min: qm > 0 ? String(qm) : '',
+      cal_max: cm > 0 ? String(cm) : '',
       page: p > 1 ? String(p) : '',
     })
 
-    fetchResults(q, a, d, t, s, p, ft, it, tf, qm)
-  }, [query, approach, dietTags, type, sort, foodTags, isTested, tagFilter, qualityMin, fetchResults, updateURL])
+    fetchResults(q, a, d, t, s, p, ft, it, tf, qm, cm)
+  }, [query, approach, dietTags, type, sort, foodTags, isTested, tagFilter, qualityMin, calMax, fetchResults, updateURL])
 
   // ---- Debounced search for text input ----
   const handleQueryChange = (value: string) => {
@@ -357,7 +371,13 @@ function SearchDiscoveryPageClientContent() {
   const handleQualityMinChange = (val: number) => {
     setQualityMin(val)
     setPage(1)
-    triggerSearch(undefined, undefined, undefined, undefined, undefined, 1, undefined, undefined, undefined, val)
+    triggerSearch(undefined, undefined, undefined, undefined, undefined, 1, undefined, undefined, undefined, val, undefined)
+  }
+
+  const handleCalMaxChange = (val: number) => {
+    setCalMax(val)
+    setPage(1)
+    triggerSearch(undefined, undefined, undefined, undefined, undefined, 1, undefined, undefined, undefined, undefined, val)
   }
 
   const handleTypeChange = (val: string) => {
@@ -388,15 +408,16 @@ function SearchDiscoveryPageClientContent() {
     setIsTested(false)
     setTagFilter('')
     setQualityMin(0)
+    setCalMax(0)
     setPage(1)
-    triggerSearch('', '', [], 'recipe', 'relevance', 1, [], false, '', 0)
+    triggerSearch('', '', [], 'recipe', 'relevance', 1, [], false, '', 0, 0)
   }
 
-  const hasActiveFilters = query || approach || dietTags.length > 0 || type !== 'recipe' || sort !== 'relevance' || foodTags.length > 0 || isTested || tagFilter || qualityMin > 0 || cookbookId || chapterId
+  const hasActiveFilters = query || approach || dietTags.length > 0 || type !== 'recipe' || sort !== 'relevance' || foodTags.length > 0 || isTested || tagFilter || qualityMin > 0 || calMax > 0 || cookbookId || chapterId
 
   // ---- Initial load ----
   useEffect(() => {
-    fetchResults(query, approach, dietTags, type, sort, page, foodTags, isTested, tagFilter, qualityMin)
+    fetchResults(query, approach, dietTags, type, sort, page, foodTags, isTested, tagFilter, qualityMin, calMax)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -409,6 +430,7 @@ function SearchDiscoveryPageClientContent() {
     isTested ? 1 : 0,
     tagFilter ? 1 : 0,
     qualityMin > 0 ? 1 : 0,
+    calMax > 0 ? 1 : 0,
   ].reduce((a, b) => a + b, 0)
 
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE))
@@ -675,6 +697,26 @@ function SearchDiscoveryPageClientContent() {
                 </div>
               </div>
 
+              {/* Calories pills */}
+              <div>
+                <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">Max Calories</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {CALORIE_OPTIONS.map(opt => (
+                    <button
+                      key={opt.value}
+                      onClick={() => handleCalMaxChange(opt.value)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                        calMax === opt.value
+                          ? 'bg-rose-500 text-white shadow-sm'
+                          : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Type radio buttons */}
               <div>
                 <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">
@@ -728,7 +770,7 @@ function SearchDiscoveryPageClientContent() {
                 </p>
 
                 {/* Active filter pills */}
-                {(approach || dietTags.length > 0 || foodTags.length > 0 || tagFilter || isTested || qualityMin > 0) && (
+                {(approach || dietTags.length > 0 || foodTags.length > 0 || tagFilter || isTested || qualityMin > 0 || calMax > 0) && (
                   <div className="hidden md:flex items-center gap-1.5 flex-wrap">
                     {approach && (
                       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-medium">
@@ -774,6 +816,14 @@ function SearchDiscoveryPageClientContent() {
                       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-medium">
                         ≥{qualityMin} quality
                         <button onClick={() => handleQualityMinChange(0)} className="hover:text-emerald-900">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    )}
+                    {calMax > 0 && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-100 text-rose-800 text-xs font-medium">
+                        &lt;{calMax} kcal
+                        <button onClick={() => handleCalMaxChange(0)} className="hover:text-rose-900">
                           <X className="w-3 h-3" />
                         </button>
                       </span>

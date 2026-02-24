@@ -30,6 +30,7 @@ export async function GET(req: NextRequest) {
     const is_tested = url.searchParams.get('is_tested') === 'true'
     const tag_filter = url.searchParams.get('tag')?.trim() || ''
     const quality_min = parseFloat(url.searchParams.get('quality_min') || '0') || 0
+    const cal_max = parseInt(url.searchParams.get('cal_max') || '0') || 0
     const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10) || 1)
     const perPage = Math.min(48, Math.max(1, parseInt(url.searchParams.get('per_page') || '12', 10) || 12))
     const foodTags = foodTagsRaw ? foodTagsRaw.split(',').map(t => t.trim()).filter(Boolean) : []
@@ -63,6 +64,9 @@ export async function GET(req: NextRequest) {
       }
       if (quality_min > 0) {
         filtered = filtered.filter(r => (r.quality_score ?? 0) >= quality_min)
+      }
+      if (cal_max > 0) {
+        filtered = filtered.filter(r => (r.nutrition_per_serving?.calories ?? Infinity) <= cal_max)
       }
       // Sort
       if (sort === 'trending') {
@@ -111,7 +115,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Cache key
-    const cacheKey = `search:recipes:${q}:${approach}:${dietTags.join(',')}:${type}:${sort}:${cuisine_id}:${food_style_id}:${cookbook_id}:${chapter_id}:${page}:${perPage}`
+    const cacheKey = `search:recipes:${q}:${approach}:${dietTags.join(',')}:${type}:${sort}:${cuisine_id}:${food_style_id}:${cookbook_id}:${chapter_id}:${page}:${perPage}:${cal_max}`
     const cached = cacheGet(cacheKey)
     if (cached) return NextResponse.json(cached)
 
