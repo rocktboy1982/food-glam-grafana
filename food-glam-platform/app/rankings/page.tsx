@@ -466,7 +466,7 @@ export default function RankingsPage() {
 
       {/* ── Tab bar ── */}
       <div
-        className="sticky top-[105px] z-30 px-4 py-2 flex items-center gap-2 overflow-x-auto scrollbar-hide"
+        className="sticky top-[105px] z-30 px-4 py-3 flex items-center justify-center gap-2 flex-wrap"
         style={{ background: '#0a0a0a', borderBottom: '1px solid rgba(255,255,255,0.07)' }}
       >
         {TABS.map(t => (
