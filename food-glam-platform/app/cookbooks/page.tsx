@@ -162,7 +162,7 @@ export default async function CookbooksPage() {
       {/* ── MAIN CONTENT ── */}
       <div className="px-6 py-12 max-w-7xl mx-auto space-y-16">
         {/* ── REGION GROUPS ── */}
-        <section className="space-y-14">
+        <section className="space-y-10">
           {CONTINENT_GROUPS.map((group) => {
             const regions = group.ids
               .map((id) => ({ id, ...REGION_META[id] }))
@@ -173,36 +173,35 @@ export default async function CookbooksPage() {
             return (
               <div key={group.continent}>
                 {/* Continent header */}
-                <div className="mb-6">
-                  <h2 className="ff text-2xl font-extrabold mb-1">{group.continent}</h2>
-                  <p style={{ color: '#666' }} className="text-sm">
+                <div className="mb-3">
+                  <h2 className="ff text-lg font-bold mb-1">{group.continent}</h2>
+                  <p style={{ color: '#555' }} className="text-xs">
                     {group.desc}
                   </p>
                 </div>
 
                 {/* Region horizontal cards */}
-                <div className="space-y-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                   {regions.map((r) => {
                     const img = REGION_IMAGES[r.id]
                     return (
                       <Link
                         key={r.id}
                         href={`/cookbooks/region/${r.id}`}
-                        className="group relative flex rounded-3xl overflow-hidden border transition-all duration-300 hover:border-opacity-100"
+                        className="group relative flex flex-col rounded-[12px] overflow-hidden border transition-all duration-300"
                         style={{
-                          background: '#161616',
                           borderColor: 'rgba(255,255,255,0.07)',
                           borderWidth: '1px',
-                          height: '130px',
+                          height: '160px',
                         }}
                       >
-                        {/* Left: Food image 200px */}
-                        <div className="flex-shrink-0 w-48 h-full overflow-hidden">
+                        {/* Image: 95px */}
+                        <div className="h-[95px] overflow-hidden flex-shrink-0 w-full">
                           {img ? (
                             <img
                               src={img}
                               alt={r.label}
-                              className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500"
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             />
                           ) : (
                             <div
@@ -214,38 +213,32 @@ export default async function CookbooksPage() {
                           )}
                         </div>
 
-                        {/* Right: Text panel */}
-                        <div className="flex-1 px-5 py-4 flex flex-col justify-between">
+                        {/* Text area: 65px */}
+                        <div
+                          className="flex-1 px-3 py-2 flex flex-col justify-between"
+                          style={{ background: '#161616' }}
+                        >
                           <div>
-                            <h3 className="ff text-lg font-bold mb-2 leading-tight">{r.label}</h3>
-            <p style={{ color: '#999' }} className="text-sm line-clamp-2 leading-relaxed">
-              {r.description || `Discover authentic flavours and culinary traditions from ${r.label}.`}
-            </p>
+                            <h3 className="ff text-sm font-bold leading-tight truncate text-white">{r.label}</h3>
+                            <p style={{ color: '#777' }} className="text-xs line-clamp-1">
+                              {r.description || `Discover authentic flavours and culinary traditions from ${r.label}.`}
+                            </p>
                           </div>
 
-                          {/* Bottom row: emoji + badge + link */}
+                          {/* Bottom: emoji + arrow */}
                           <div className="flex items-center justify-between gap-2">
-                            <div className="text-base flex-shrink-0">{r.emoji}</div>
-                            <span
-                              className="text-xs font-bold px-2 py-1 rounded-full flex-shrink-0"
-                              style={{ background: 'rgba(255,149,0,0.15)', color: '#ff9500' }}
-                            >
-                              Recipes
-                            </span>
-                            <span
-                              style={{ color: '#ff9500' }}
-                              className="text-xs font-bold ml-auto flex-shrink-0"
-                            >
-                              Explore →
+                            <span className="text-base flex-shrink-0">{r.emoji}</span>
+                            <span style={{ color: '#ff9500' }} className="text-xs font-bold ml-auto flex-shrink-0">
+                              →
                             </span>
                           </div>
                         </div>
 
                         {/* Hover border effect */}
                         <div
-                          className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                          className="absolute inset-0 rounded-[12px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
                           style={{
-                            border: '1px solid rgba(255,149,0,0.3)',
+                            border: '1px solid rgba(255,149,0,0.35)',
                           }}
                         />
                       </Link>
