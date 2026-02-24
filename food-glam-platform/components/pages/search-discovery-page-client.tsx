@@ -544,40 +544,33 @@ function SearchDiscoveryPageClientContent() {
               </div>
 
               {/* Region pills — continent grouped */}
-<div>
-  <div className="flex items-center justify-between mb-2">
-    <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider">Region</label>
-  </div>
-  <div className="space-y-3">
-    {/* All Regions pill */}
-    <button
-      onClick={() => handleApproachChange('')}
-      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${ approach === '' ? 'bg-amber-500 text-white shadow-sm' : 'bg-stone-100 text-stone-600 hover:bg-stone-200' }`}
-    >
-      🌍 All Regions
-    </button>
-    {/* Continent rows */}
-    {REGION_GROUPS.map(group => (
-      <div key={group.continent}>
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-stone-400 mb-1.5">{group.continent}</p>
-        <div className="flex flex-wrap gap-1">
-          {group.regions.map(id => {
-            const r = { slug: id, ...REGION_META[id] }
-            return (
-              <button
-                key={r.slug}
-                onClick={() => handleApproachChange(r.slug)}
-                className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${ approach === r.slug ? 'bg-amber-500 text-white shadow-sm' : 'bg-stone-100 text-stone-600 hover:bg-stone-200' }`}
-              >
-                {r.emoji} {r.label}
-              </button>
-            )
-          })}
-        </div>
-      </div>
-    ))}
-  </div>
-</div>
+              {/* Region pills — continent grouped, collapsible */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider">Region</label>
+                  {approach && (
+                    <button onClick={() => handleApproachChange('')} className="text-[10px] text-amber-600 hover:text-amber-700 font-medium">Clear</button>
+                  )}
+                </div>
+                {/* Compact select dropdown — 1 line, no height waste */}
+                <select
+                  value={approach}
+                  onChange={e => handleApproachChange(e.target.value)}
+                  className="w-full text-xs rounded-lg border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-stone-700 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 cursor-pointer"
+                >
+                  <option value="">🌍 All Regions</option>
+                  {REGION_GROUPS.map(group => (
+                    <optgroup key={group.continent} label={group.continent}>
+                      {group.regions.map(id => {
+                        const r = REGION_META[id]
+                        return (
+                          <option key={id} value={id}>{r.emoji} {r.label}</option>
+                        )
+                      })}
+                    </optgroup>
+                  ))}
+                </select>
+              </div>
 
               {/* Food Tags — grouped */}
               <div>
