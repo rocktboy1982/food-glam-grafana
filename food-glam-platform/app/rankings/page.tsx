@@ -5,10 +5,11 @@ import Link from 'next/link'
 import TierStar from '@/components/TierStar'
 import { MOCK_RECIPES, MOCK_APPROACHES } from '@/lib/mock-data'
 import { MOCK_CHEF_PROFILES } from '@/lib/mock-chef-data'
+import CommunitySection from '@/components/CommunitySection'
 
 /* ─── types ──────────────────────────────────────────────────────────────── */
 
-type Tab = 'recipes' | 'chefs' | 'rising' | 'cuisine'
+type Tab = 'recipes' | 'chefs' | 'rising' | 'cuisine' | 'community'
 
 /* ─── derived data ───────────────────────────────────────────────────────── */
 
@@ -428,7 +429,8 @@ const TABS: { id: Tab; label: string; icon: string; description: string }[] = [
   { id: 'recipes', label: 'Top Recipes',  icon: '🏆', description: 'Most voted' },
   { id: 'chefs',   label: 'Top Chefs',    icon: '👨‍🍳', description: 'Most followed' },
   { id: 'rising',  label: 'Rising',       icon: '⭐', description: 'Highest rated' },
-  { id: 'cuisine', label: 'By Cuisine',   icon: '🌍', description: 'Per region' },
+  { id: 'cuisine',   label: 'By Cuisine', icon: '🌍', description: 'Per region' },
+  { id: 'community', label: 'Community',  icon: '💬', description: 'Latest discussions' },
 ]
 
 export default function RankingsPage() {
@@ -536,7 +538,8 @@ export default function RankingsPage() {
           {tab === 'recipes' && <TopRecipesTab />}
           {tab === 'chefs'   && <TopChefsTab />}
           {tab === 'rising'  && <RisingTab />}
-          {tab === 'cuisine' && <ByCuisineTab />}
+          {tab === 'cuisine'    && <ByCuisineTab />}
+          {tab === 'community' && <div className="p-5"><CommunitySection /></div>}
         </div>
 
         {/* Footer note */}

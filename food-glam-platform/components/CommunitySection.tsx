@@ -42,9 +42,9 @@ export default function CommunitySection() {
   }, [])
 
   return (
-    <div className="rounded-2xl overflow-hidden" style={{ background: '#161616', border: '1px solid rgba(255,255,255,0.07)' }}>
+    <div className="rounded-2xl overflow-hidden" style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.1)' }}>
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+      <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
         <div className="flex items-center gap-2">
           <span className="text-lg">💬</span>
           <span className="font-bold text-base" style={{ fontFamily: "'Syne', sans-serif" }}>Community</span>
@@ -60,15 +60,15 @@ export default function CommunitySection() {
           <div className="px-5 py-4 space-y-4">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="space-y-2">
-                <div className="h-3 rounded animate-pulse" style={{ background: '#2a2a2a', width: '85%' }} />
-                <div className="h-2.5 rounded animate-pulse" style={{ background: '#2a2a2a', width: '50%' }} />
+                <div className="h-3 rounded animate-pulse" style={{ background: '#e8e8e8', width: '85%' }} />
+                <div className="h-2.5 rounded animate-pulse" style={{ background: '#e8e8e8', width: '50%' }} />
               </div>
             ))}
           </div>
         )}
 
         {!loading && threads.length === 0 && (
-          <p className="px-5 py-8 text-sm text-center" style={{ color: '#555' }}>No discussions yet</p>
+          <p className="px-5 py-8 text-sm text-center" style={{ color: '#bbb' }}>No discussions yet</p>
         )}
 
         {!loading && threads.map((thread, i) => {
@@ -79,13 +79,13 @@ export default function CommunitySection() {
               href="/me"
               className="block px-5 py-3.5 group transition-colors"
               style={{
-                borderBottom: i < threads.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
+                borderBottom: i < threads.length - 1 ? '1px solid rgba(0,0,0,0.07)' : 'none',
               }}
             >
               {/* Title */}
               <p
-                className="text-sm font-semibold leading-snug mb-1.5 line-clamp-2 group-hover:text-white transition-colors"
-                style={{ color: '#e0e0e0' }}
+                className="text-sm font-semibold leading-snug mb-1.5 line-clamp-2 group-hover:text-black transition-colors"
+                style={{ color: '#111' }}
               >
                 {thread.title}
               </p>
