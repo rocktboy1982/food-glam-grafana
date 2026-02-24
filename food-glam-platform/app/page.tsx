@@ -342,14 +342,14 @@ export default function Home() {
           <div className="lg:col-span-2 flex flex-col">
             {loading && (
               <div className="grid grid-cols-2 gap-3">
-                {Array.from({ length: 6 }).map((_, i) => (
+                {Array.from({ length: 8 }).map((_, i) => (
                   <div key={i} className="rounded-xl overflow-hidden animate-pulse" style={{ height: 280, background: '#1a1a1a' }} />
                 ))}
               </div>
             )}
             {!loading && (
               <div className="grid grid-cols-2 gap-3">
-                {tabFeed.slice(0, 6).map((recipe, i) => {
+                {tabFeed.slice(0, 8).map((recipe, i) => {
                   const liked = likedIds.has(recipe.id)
                   const saved = savedIds.has(recipe.id) || preferredIds.has(recipe.id)
                   const count = likeCounts[recipe.id] ?? recipe.votes
