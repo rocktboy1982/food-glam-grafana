@@ -157,7 +157,7 @@ export default function ChefPage() {
       </div>
 
       {/* ── Profile header ── */}
-      <div className="px-4 relative max-w-2xl mx-auto" style={{ marginTop: -56 }}>
+      <div className="px-4 relative max-w-5xl mx-auto" style={{ marginTop: -56 }}>
         {/* avatar + tier star */}
         <div className="relative inline-block mb-3">
           <img
@@ -278,7 +278,7 @@ export default function ChefPage() {
                               <article
                                 key={item.data.id}
                                 className="group flex rounded-2xl overflow-hidden transition-all hover:ring-1 hover:ring-white/10"
-                                style={{ background: '#161616', border: '1px solid rgba(255,255,255,0.07)', height: 275 }}
+                                style={{ background: '#161616', border: '1px solid rgba(255,255,255,0.07)', height: 340 }}
                               >
                                 {/* Image — left */}
                                 <Link href={`/recipes/${item.data.slug}`} className="relative overflow-hidden flex-shrink-0" style={{ flex: '1', minWidth: 0 }}>
@@ -295,26 +295,26 @@ export default function ChefPage() {
                                 </Link>
 
                                 {/* Text panel — right */}
-                                <div className="flex flex-col justify-between px-4 py-4" style={{ flex: '1.618', minWidth: 0, borderLeft: '1px solid rgba(255,255,255,0.05)' }}>
+                                <div className="flex flex-col justify-between px-6 py-5" style={{ flex: '3', minWidth: 0, borderLeft: '1px solid rgba(255,255,255,0.05)' }}>
                                   <div className="min-w-0">
                                     <Link href={`/recipes/${item.data.slug}`}>
-                                      <h3 className="ff-display text-base font-bold leading-snug line-clamp-3 hover:text-white transition-colors mb-2" style={{ color: '#f0f0f0' }}>
+                                      <h3 className="ff-display text-2xl font-bold leading-snug line-clamp-2 hover:text-white transition-colors mb-3" style={{ color: '#f0f0f0' }}>
                                         {item.data.title}
                                       </h3>
                                     </Link>
-                                    <p className="text-xs leading-relaxed line-clamp-3" style={{ color: '#999' }}>
+                                    <p className="text-base leading-relaxed line-clamp-3" style={{ color: '#999' }}>
                                       {item.data.description}
                                     </p>
                                   </div>
                                   <div className="flex items-center justify-between mt-2">
-                                    <div className="flex items-center gap-2 text-xs" style={{ color: '#555' }}>
+                                    <div className="flex items-center gap-3 text-sm" style={{ color: '#555' }}>
                                       <span style={{ color: '#ff4d6d' }}>♥ {item.data.votes}</span>
                                       <span>💬 {item.data.comments}</span>
                                       <span>{timeAgo(item.data.created_at)}</span>
                                     </div>
                                     <Link
                                       href={`/recipes/${item.data.slug}`}
-                                      className="text-xs font-semibold px-3 py-1.5 rounded-full flex-shrink-0 transition-all"
+                                      className="text-sm font-semibold px-4 py-2 rounded-full flex-shrink-0 transition-all"
                                       style={{ background: 'rgba(255,149,0,0.12)', color: '#ff9500', border: '1px solid rgba(255,149,0,0.2)' }}
                                     >
                                       View →
