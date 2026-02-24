@@ -35,12 +35,12 @@ const CUISINE_LEADERS = MOCK_APPROACHES
 /* ─── helper components ──────────────────────────────────────────────────── */
 
 function RankBadge({ rank }: { rank: number }) {
-  if (rank === 1) return <span className="text-xl leading-none">🥇</span>
-  if (rank === 2) return <span className="text-xl leading-none">🥈</span>
-  if (rank === 3) return <span className="text-xl leading-none">🥉</span>
+  if (rank === 1) return <span className="text-2xl leading-none">🥇</span>
+  if (rank === 2) return <span className="text-2xl leading-none">🥈</span>
+  if (rank === 3) return <span className="text-2xl leading-none">🥉</span>
   return (
     <span
-      className="text-xs font-extrabold tabular-nums w-6 text-center block"
+      className="text-sm font-extrabold tabular-nums w-8 text-center block"
       style={{ color: '#555', fontFamily: "'Syne', sans-serif" }}
     >
       {rank}
@@ -71,7 +71,7 @@ function TopRecipesTab() {
         <Link
           key={recipe.id}
           href={`/recipes/${recipe.slug}`}
-          className="group flex items-center gap-4 px-4 py-3 transition-colors hover:bg-white/[0.03]"
+          className="group flex items-center gap-5 px-5 py-5 transition-colors hover:bg-white/[0.03]"
           style={{
             borderBottom: i < TOP_RECIPES.length - 1
               ? '1px solid rgba(255,255,255,0.05)'
@@ -79,14 +79,14 @@ function TopRecipesTab() {
           }}
         >
           {/* Rank */}
-          <div className="flex-shrink-0 w-8 flex items-center justify-center">
+          <div className="flex-shrink-0 w-10 flex items-center justify-center">
             <RankBadge rank={i + 1} />
           </div>
 
           {/* Thumbnail */}
           <div
-            className="flex-shrink-0 rounded-xl overflow-hidden"
-            style={{ width: 64, height: 64 }}
+            className="flex-shrink-0 rounded-2xl overflow-hidden"
+            style={{ width: 96, height: 96 }}
           >
             {recipe.hero_image_url ? (
               <img
@@ -107,22 +107,22 @@ function TopRecipesTab() {
           {/* Info */}
           <div className="flex-1 min-w-0">
             <p
-              className="text-sm font-semibold leading-snug line-clamp-1 group-hover:text-white transition-colors"
+              className="text-base font-bold leading-snug line-clamp-1 group-hover:text-white transition-colors"
               style={{ color: '#e0e0e0' }}
             >
               {recipe.title}
             </p>
             <div className="flex items-center gap-2 mt-0.5 flex-wrap">
               {recipe.created_by && (
-                <span className="flex items-center gap-1 text-[11px]" style={{ color: '#666' }}>
+                <span className="flex items-center gap-1 text-sm" style={{ color: '#666' }}>
                   {recipe.created_by.display_name}
-                  <TierStar tier={recipe.created_by.tier} size={9} />
+                  <TierStar tier={recipe.created_by.tier} size={11} />
                 </span>
               )}
               {recipe.dietTags.slice(0, 2).map(tag => (
                 <span
                   key={tag}
-                  className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                  className="text-xs font-semibold px-2 py-0.5 rounded-full"
                   style={{
                     background: `${DIET_COLORS[tag] ?? '#888'}18`,
                     color: DIET_COLORS[tag] ?? '#888',
@@ -134,11 +134,11 @@ function TopRecipesTab() {
             </div>
             <div className="flex items-center gap-3 mt-1">
               {recipe.is_tested && (
-                <span className="text-[10px] font-semibold" style={{ color: '#4ade80' }}>
+                <span className="text-xs font-semibold" style={{ color: '#4ade80' }}>
                   ✓ Tested
                 </span>
               )}
-              <span className="text-[10px]" style={{ color: '#444' }}>
+              <span className="text-xs" style={{ color: '#444' }}>
                 {recipe.comments} comments
               </span>
             </div>
@@ -147,12 +147,12 @@ function TopRecipesTab() {
           {/* Score */}
           <div className="flex-shrink-0 flex flex-col items-center gap-0.5">
             <span
-              className="text-base font-extrabold tabular-nums"
+              className="text-2xl font-extrabold tabular-nums"
               style={{ color: '#ff4d6d' }}
             >
               {recipe.votes.toLocaleString()}
             </span>
-            <span className="text-[10px]" style={{ color: '#444' }}>votes</span>
+            <span className="text-xs" style={{ color: '#444' }}>votes</span>
           </div>
         </Link>
       ))}
@@ -177,7 +177,7 @@ function TopChefsTab() {
         return (
           <div
             key={chef.id}
-            className="flex items-center gap-4 px-4 py-3"
+            className="flex items-center gap-5 px-5 py-5"
             style={{
               borderBottom: i < TOP_CHEFS.length - 1
                 ? '1px solid rgba(255,255,255,0.05)'
@@ -185,7 +185,7 @@ function TopChefsTab() {
             }}
           >
             {/* Rank */}
-            <div className="flex-shrink-0 w-8 flex items-center justify-center">
+            <div className="flex-shrink-0 w-10 flex items-center justify-center">
               <RankBadge rank={i + 1} />
             </div>
 
@@ -193,7 +193,7 @@ function TopChefsTab() {
             <Link href={`/chefs/${chef.handle}`} className="flex-shrink-0 group">
               <div
                 className="rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-orange-500 transition-all"
-                style={{ width: 52, height: 52 }}
+                style={{ width: 72, height: 72 }}
               >
                 <img
                   src={chef.avatar_url}
@@ -208,22 +208,22 @@ function TopChefsTab() {
               <Link href={`/chefs/${chef.handle}`} className="group/name">
                 <div className="flex items-center gap-1.5">
                   <span
-                    className="text-sm font-semibold group-hover/name:text-white transition-colors truncate"
+                    className="text-base font-bold group-hover/name:text-white transition-colors truncate"
                     style={{ color: '#e0e0e0' }}
                   >
                     {chef.display_name}
                   </span>
-                  <TierStar tier={chef.tier} size={11} />
+                  <TierStar tier={chef.tier} size={13} />
                 </div>
               </Link>
-              <p className="text-[11px] mt-0.5 line-clamp-1" style={{ color: '#555' }}>
+              <p className="text-sm mt-1 line-clamp-2" style={{ color: '#555' }}>
                 {chef.bio}
               </p>
               <div className="flex items-center gap-3 mt-1">
-                <span className="text-[11px] font-semibold" style={{ color: '#ff9500' }}>
+                <span className="text-xs font-semibold" style={{ color: '#ff9500' }}>
                   {formatFollowers(chef.follower_count)} followers
                 </span>
-                <span className="text-[11px]" style={{ color: '#444' }}>
+                <span className="text-xs" style={{ color: '#444' }}>
                   {chef.post_count} posts
                 </span>
               </div>
@@ -232,7 +232,7 @@ function TopChefsTab() {
             {/* Follow button */}
             <button
               onClick={() => toggle(chef.id)}
-              className="flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full transition-all"
+              className="flex-shrink-0 text-sm font-semibold px-4 py-2 rounded-full transition-all"
               style={
                 isFollowing
                   ? {
@@ -269,7 +269,7 @@ function RisingTab() {
           <Link
             key={recipe.id}
             href={`/recipes/${recipe.slug}`}
-            className="group flex items-center gap-4 px-4 py-3 transition-colors hover:bg-white/[0.03]"
+            className="group flex items-center gap-5 px-5 py-5 transition-colors hover:bg-white/[0.03]"
             style={{
               borderBottom: i < RISING_RECIPES.length - 1
                 ? '1px solid rgba(255,255,255,0.05)'
@@ -277,14 +277,14 @@ function RisingTab() {
             }}
           >
             {/* Rank */}
-            <div className="flex-shrink-0 w-8 flex items-center justify-center">
+            <div className="flex-shrink-0 w-10 flex items-center justify-center">
               <RankBadge rank={i + 1} />
             </div>
 
             {/* Thumbnail */}
             <div
-              className="flex-shrink-0 rounded-xl overflow-hidden"
-              style={{ width: 64, height: 64 }}
+              className="flex-shrink-0 rounded-2xl overflow-hidden"
+              style={{ width: 96, height: 96 }}
             >
               {recipe.hero_image_url ? (
                 <img
@@ -305,24 +305,24 @@ function RisingTab() {
             {/* Info */}
             <div className="flex-1 min-w-0">
               <p
-                className="text-sm font-semibold leading-snug line-clamp-1 group-hover:text-white transition-colors"
+                className="text-base font-bold leading-snug line-clamp-1 group-hover:text-white transition-colors"
                 style={{ color: '#e0e0e0' }}
               >
                 {recipe.title}
               </p>
               {/* Star rating */}
               <div className="flex items-center gap-1 mt-0.5">
-                <span className="text-xs" style={{ letterSpacing: '-1px' }}>
+                <span className="text-sm" style={{ letterSpacing: '-1px' }}>
                   {'★'.repeat(stars)}{'☆'.repeat(5 - stars)}
                 </span>
-                <span className="text-[11px] font-semibold" style={{ color: '#ff9500' }}>
+                <span className="text-sm font-bold" style={{ color: '#ff9500' }}>
                   {recipe.quality_score.toFixed(1)}
                 </span>
               </div>
               {recipe.created_by && (
-                <span className="flex items-center gap-1 text-[11px] mt-0.5" style={{ color: '#555' }}>
+                <span className="flex items-center gap-1 text-sm mt-0.5" style={{ color: '#555' }}>
                   {recipe.created_by.display_name}
-                  <TierStar tier={recipe.created_by.tier} size={9} />
+                  <TierStar tier={recipe.created_by.tier} size={11} />
                 </span>
               )}
             </div>
@@ -330,12 +330,12 @@ function RisingTab() {
             {/* Votes (secondary) */}
             <div className="flex-shrink-0 flex flex-col items-center gap-0.5">
               <span
-                className="text-sm font-bold tabular-nums"
+                className="text-xl font-bold tabular-nums"
                 style={{ color: '#888' }}
               >
                 {recipe.votes}
               </span>
-              <span className="text-[10px]" style={{ color: '#444' }}>votes</span>
+              <span className="text-xs" style={{ color: '#444' }}>votes</span>
             </div>
           </Link>
         )
@@ -346,7 +346,7 @@ function RisingTab() {
 
 function ByCuisineTab() {
   return (
-    <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
       {CUISINE_LEADERS.map(({ approach, top, total }) => (
         <Link
           key={approach.id}
@@ -355,7 +355,7 @@ function ByCuisineTab() {
           style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.06)' }}
         >
           {/* Hero image */}
-          <div className="relative h-28 overflow-hidden">
+          <div className="relative h-44 overflow-hidden">
             {top.hero_image_url ? (
               <img
                 src={top.hero_image_url}
@@ -378,7 +378,7 @@ function ByCuisineTab() {
             {/* Region label */}
             <div className="absolute bottom-2 left-3 right-3">
               <p
-                className="text-xs font-extrabold tracking-wide uppercase truncate"
+                className="text-sm font-extrabold tracking-wide uppercase truncate"
                 style={{ color: '#ff9500', fontFamily: "'Syne', sans-serif" }}
               >
                 {approach.name}
@@ -394,22 +394,22 @@ function ByCuisineTab() {
           </div>
 
           {/* Card body */}
-          <div className="px-3 py-2.5">
+          <div className="px-4 py-3">
             <p
-              className="text-xs font-semibold leading-snug line-clamp-1 group-hover:text-white transition-colors"
+              className="text-sm font-semibold leading-snug line-clamp-1 group-hover:text-white transition-colors"
               style={{ color: '#ddd' }}
             >
               🥇 {top.title}
             </p>
             <div className="flex items-center justify-between mt-1">
               {top.created_by && (
-                <span className="text-[10px] flex items-center gap-1 truncate" style={{ color: '#555' }}>
+                <span className="text-xs flex items-center gap-1 truncate" style={{ color: '#555' }}>
                   {top.created_by.display_name}
-                  <TierStar tier={top.created_by.tier} size={8} />
+                  <TierStar tier={top.created_by.tier} size={10} />
                 </span>
               )}
               <span
-                className="text-[10px] font-semibold flex-shrink-0"
+                className="text-xs font-semibold flex-shrink-0"
                 style={{ color: '#ff4d6d' }}
               >
                 ♥ {top.votes}
@@ -502,13 +502,13 @@ export default function RankingsPage() {
         >
           {/* Panel header */}
           <div
-            className="flex items-center justify-between px-4 py-3"
+            className="flex items-center justify-between px-5 py-4"
             style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
           >
             <div className="flex items-center gap-2">
-              <span className="text-base">{current.icon}</span>
+              <span className="text-lg">{current.icon}</span>
               <span
-                className="font-bold text-sm"
+                className="font-bold text-base"
                 style={{ fontFamily: "'Syne', sans-serif", color: '#f0f0f0' }}
               >
                 {current.label}
