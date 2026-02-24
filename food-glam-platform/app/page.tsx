@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import TonightCard from '@/components/TonightCard'
+import LatestChefVlogs from '@/components/LatestChefVlogs'
 import TrendingSection from '@/components/TrendingSection'
 import { REGION_META } from '@/lib/recipe-taxonomy'
 import { MOCK_RECIPES } from '@/lib/mock-data'
@@ -58,18 +58,7 @@ const REGION_PILLS = [
   'north-africa', 'western-europe', 'eastern-europe', 'north-america', 'south-america',
 ]
 
-/* ─── Today/Tonight column component ────────────────────────────────────── */
-function TodayTonightColumn() {
-  const hour = new Date().getHours()
-  const isTonight = hour >= 18
-  const label = isTonight ? "Tonight's Picks ✨" : "Today's Picks 🍽️"
-  return (
-    <div>
-      <p className="ff-display text-base font-bold mb-3">{label}</p>
-      <TonightCard />
-    </div>
-  )
-}
+
 
 /* ══════════════════════════════════════════════════════════════════════════
    HOME PAGE
@@ -456,9 +445,9 @@ export default function Home() {
             <TrendingSection />
           </div>
 
-          {/* COL 4: Tonight/Today timezone-aware picks */}
+          {/* COL 4: Latest Chef Vlogs */}
           <div className="lg:col-span-1">
-            <TodayTonightColumn />
+            <LatestChefVlogs />
           </div>
         </div>
 
