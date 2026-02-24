@@ -121,7 +121,7 @@ export default async function CookbooksPage() {
   return (
     <main
       className="min-h-screen"
-      style={{ background: '#0a0a0a', color: '#f0f0f0', fontFamily: "'Inter', sans-serif" }}
+      style={{ background: '#141414', color: '#f0f0f0', fontFamily: "'Inter', sans-serif" }}
     >
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap');.ff{font-family:'Syne',sans-serif;}`}</style>
 
@@ -133,7 +133,7 @@ export default async function CookbooksPage() {
           alt=""
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.7)' }} />
+        <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.52)' }} />
 
         {/* Hero content */}
         <div className="relative h-full flex flex-col justify-between px-8 py-8 max-w-7xl mx-auto w-full">
@@ -152,7 +152,7 @@ export default async function CookbooksPage() {
             <h1 className="ff text-5xl font-extrabold tracking-tight mb-3 leading-tight">
               The World on a Plate
             </h1>
-            <p className="text-lg" style={{ color: '#999' }}>
+            <p className="text-lg" style={{ color: '#ccc' }}>
               Explore recipes by region, cuisine, and style
             </p>
           </div>
@@ -175,7 +175,7 @@ export default async function CookbooksPage() {
                 {/* Continent header */}
                 <div className="mb-3">
                   <h2 className="ff text-lg font-bold mb-1">{group.continent}</h2>
-                  <p style={{ color: '#555' }} className="text-xs">
+                  <p style={{ color: '#888' }} className="text-xs">
                     {group.desc}
                   </p>
                 </div>
@@ -190,7 +190,7 @@ export default async function CookbooksPage() {
                         href={`/cookbooks/region/${r.id}`}
                         className="group relative flex flex-col rounded-[12px] overflow-hidden border transition-all duration-300"
                         style={{
-                          borderColor: 'rgba(255,255,255,0.07)',
+                          borderColor: 'rgba(255,255,255,0.12)',
                           borderWidth: '1px',
                           height: '160px',
                         }}
@@ -206,7 +206,7 @@ export default async function CookbooksPage() {
                           ) : (
                             <div
                               className="w-full h-full flex items-center justify-center text-4xl"
-                              style={{ background: '#1a1a1a' }}
+                              style={{ background: '#252525' }}
                             >
                               {r.emoji}
                             </div>
@@ -216,11 +216,11 @@ export default async function CookbooksPage() {
                         {/* Text area: 65px */}
                         <div
                           className="flex-1 px-3 py-2 flex flex-col justify-between"
-                          style={{ background: '#161616' }}
+                          style={{ background: '#1e1e1e' }}
                         >
                           <div>
                             <h3 className="ff text-sm font-bold leading-tight truncate text-white">{r.label}</h3>
-                            <p style={{ color: '#777' }} className="text-xs line-clamp-1">
+                            <p style={{ color: '#aaa' }} className="text-xs line-clamp-1">
                               {r.description || `Discover authentic flavours and culinary traditions from ${r.label}.`}
                             </p>
                           </div>
@@ -262,8 +262,8 @@ export default async function CookbooksPage() {
                 style={{
                   width: '200px',
                   height: '180px',
-                  background: '#161616',
-                  borderColor: 'rgba(255,255,255,0.07)',
+                  background: '#1e1e1e',
+                  borderColor: 'rgba(255,255,255,0.12)',
                   borderWidth: '1px',
                 }}
               >
@@ -283,7 +283,7 @@ export default async function CookbooksPage() {
                     <h3 className="ff font-bold text-sm leading-tight">{col.title}</h3>
                   </div>
                   <div className="flex items-start justify-between gap-1">
-                    <p style={{ color: '#999' }} className="text-xs leading-tight flex-1">
+                    <p style={{ color: '#aaa' }} className="text-xs leading-tight flex-1">
                       {col.desc}
                     </p>
                     <span
@@ -319,7 +319,7 @@ export default async function CookbooksPage() {
                   className="group relative rounded-2xl overflow-hidden border transition-all duration-300"
                   style={{
                     height: 120,
-                    borderColor: 'rgba(255,255,255,0.07)',
+                    borderColor: 'rgba(255,255,255,0.12)',
                     borderWidth: '1px',
                   }}
                 >
@@ -330,7 +330,7 @@ export default async function CookbooksPage() {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-4xl" style={{ background: '#1a1a1a' }}>
+                    <div className="w-full h-full flex items-center justify-center text-4xl" style={{ background: '#252525' }}>
                       🍽️
                     </div>
                   )}
