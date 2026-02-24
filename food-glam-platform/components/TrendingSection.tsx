@@ -16,13 +16,13 @@ interface TrendingRecipe {
 
 /* Rank indicator — medal for top 3, plain number otherwise */
 function RankBadge({ rank }: { rank: number }) {
-  if (rank === 1) return <span className="text-lg leading-none">🥇</span>
-  if (rank === 2) return <span className="text-lg leading-none">🥈</span>
-  if (rank === 3) return <span className="text-lg leading-none">🥉</span>
+  if (rank === 1) return <span className="text-xl leading-none drop-shadow-lg">🥇</span>
+  if (rank === 2) return <span className="text-xl leading-none drop-shadow-lg">🥈</span>
+  if (rank === 3) return <span className="text-xl leading-none drop-shadow-lg">🥉</span>
   return (
     <span
-      className="text-xs font-extrabold tabular-nums w-5 text-center"
-      style={{ color: '#555', fontFamily: "'Syne', sans-serif" }}
+      className="text-xs font-extrabold tabular-nums px-1.5 py-0.5 rounded-full"
+      style={{ background: 'rgba(0,0,0,0.55)', color: '#fff', fontFamily: "'Syne', sans-serif", backdropFilter: 'blur(4px)' }}
     >
       {rank}
     </span>
@@ -94,16 +94,9 @@ export default function TrendingSection() {
 
       {/* ── Loading skeleton ── */}
       {loading && (
-        <div className="p-3 space-y-2">
+        <div className="p-3 space-y-3">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="flex items-center gap-3 p-2">
-              <div className="w-5 h-5 rounded animate-pulse flex-shrink-0" style={{ background: '#222' }} />
-              <div className="w-14 h-14 rounded-xl animate-pulse flex-shrink-0" style={{ background: '#222' }} />
-              <div className="flex-1 space-y-2">
-                <div className="h-3 rounded animate-pulse" style={{ background: '#222', width: '75%' }} />
-                <div className="h-2.5 rounded animate-pulse" style={{ background: '#222', width: '45%' }} />
-              </div>
-            </div>
+            <div key={i} className="rounded-2xl overflow-hidden animate-pulse" style={{ height: 130, background: '#1a1a1a' }} />
           ))}
         </div>
       )}
@@ -117,74 +110,60 @@ export default function TrendingSection() {
 
       {/* ── List ── */}
       {!loading && enriched.length > 0 && (
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto p-3 space-y-3">
           {enriched.map((recipe, i) => (
             <Link
               key={recipe.id}
               href={`/recipes/${recipe.slug}`}
-              className="group flex items-center gap-3 px-3 py-2.5 transition-colors hover:bg-white/[0.03]"
-              style={{
-                borderBottom: i < enriched.length - 1
-                  ? '1px solid rgba(255,255,255,0.04)'
-                  : 'none',
-              }}
+              className="group relative block rounded-2xl overflow-hidden"
+              style={{ height: 130 }}
             >
-              {/* Rank */}
-              <div className="flex-shrink-0 w-6 flex items-center justify-center">
+              {/* Hero image */}
+              {recipe.hero_image_url ? (
+                <img
+                  src={recipe.hero_image_url}
+                  alt=""
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-3xl" style={{ background: '#1a1a1a' }}>
+                  🍽️
+                </div>
+              )}
+
+              {/* Gradient overlay */}
+              <div
+                className="absolute inset-0"
+                style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.15) 55%, transparent 100%)' }}
+              />
+
+              {/* Rank badge — top left */}
+              <div className="absolute top-2 left-2">
                 <RankBadge rank={i + 1} />
               </div>
 
-              {/* Thumbnail */}
-              <div
-                className="flex-shrink-0 rounded-xl overflow-hidden"
-                style={{ width: 56, height: 56 }}
-              >
-                {recipe.hero_image_url ? (
-                  <img
-                    src={recipe.hero_image_url}
-                    alt=""
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                ) : (
-                  <div
-                    className="w-full h-full flex items-center justify-center text-xl"
-                    style={{ background: '#1a1a1a' }}
-                  >
-                    🍽️
-                  </div>
-                )}
-              </div>
-
-              {/* Info */}
-              <div className="flex-1 min-w-0">
+              {/* Info overlay — bottom */}
+              <div className="absolute bottom-0 left-0 right-0 px-3 py-2.5">
                 <p
-                  className="text-sm font-semibold leading-snug line-clamp-2 group-hover:text-white transition-colors"
-                  style={{ color: '#ddd' }}
+                  className="text-xs font-bold leading-snug line-clamp-2 group-hover:text-white transition-colors mb-1"
+                  style={{ color: '#f0f0f0' }}
                 >
                   {recipe.title}
                 </p>
-                <div className="flex items-center gap-2 mt-1 flex-wrap">
+                <div className="flex items-center justify-between">
                   {recipe.created_by && (
-                    <span className="text-[11px] truncate max-w-[90px]" style={{ color: '#555' }}>
+                    <span className="text-[10px] truncate max-w-[110px]" style={{ color: '#aaa' }}>
                       {recipe.created_by.display_name}
                     </span>
                   )}
                   <span
-                    className="text-[11px] font-semibold flex items-center gap-0.5"
+                    className="text-[11px] font-bold flex items-center gap-0.5 flex-shrink-0"
                     style={{ color: '#ff4d6d' }}
                   >
                     ♥ {recipe.votes.toLocaleString()}
                   </span>
                 </div>
               </div>
-
-              {/* Arrow hint */}
-              <span
-                className="flex-shrink-0 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ color: '#555' }}
-              >
-                →
-              </span>
             </Link>
           ))}
         </div>
