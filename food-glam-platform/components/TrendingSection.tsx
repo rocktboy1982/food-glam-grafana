@@ -21,10 +21,10 @@ function RankBadge({ rank }: { rank: number }) {
   if (rank === 3) return <span className="text-xl leading-none drop-shadow-lg">🥉</span>
   return (
     <span
-      className="text-xs font-extrabold tabular-nums px-1.5 py-0.5 rounded-full"
-      style={{ background: 'rgba(0,0,0,0.55)', color: '#fff', fontFamily: "'Syne', sans-serif", backdropFilter: 'blur(4px)' }}
+      className="text-sm font-extrabold leading-none"
+      style={{ color: '#fff', textShadow: '0 1px 6px rgba(0,0,0,1)' }}
     >
-      {rank}
+      #{rank}
     </span>
   )
 }
