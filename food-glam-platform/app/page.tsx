@@ -440,14 +440,14 @@ export default function Home() {
             )}
           </div>
 
-          {/* COL 3: Trending */}
-          <div className="lg:col-span-1">
-            <TrendingSection />
-          </div>
-
-          {/* COL 4: Latest Chef Vlogs */}
+          {/* COL 3: Latest Chef Vlogs */}
           <div className="lg:col-span-1">
             <LatestChefVlogs />
+          </div>
+
+          {/* COL 4: Trending */}
+          <div className="lg:col-span-1">
+            <TrendingSection />
           </div>
         </div>
 
