@@ -23,6 +23,13 @@ interface VlogEntry {
     title: string
     hero_image_url: string
   }
+  sponsoredProduct?: {
+    name: string
+    imageUrl: string
+    linkUrl: string
+    description: string
+    disclosure: 'Ad' | 'Sponsored' | 'Partner' | 'Gifted'
+  }
   createdAt: string
   updatedAt: string
 }
@@ -346,6 +353,34 @@ export default function ChefPage() {
                                       className="font-semibold hover:underline" style={{ color: '#ff9500' }}>
                                       {item.data.attachedRecipe.title}
                                     </Link>
+                                  </div>
+                                )}
+
+                                {item.data.sponsoredProduct && (
+                                  <div className="mt-4 pt-4 rounded-lg p-3" style={{ background: 'rgba(212,160,23,0.08)', border: '1px solid rgba(212,160,23,0.2)', borderLeft: '3px solid #d4a017' }}>
+                                    <div className="relative mb-3">
+                                      <span className="absolute top-0 right-0 px-2 py-0.5 text-xs font-bold rounded-full" style={{ background: 'rgba(212,160,23,0.3)', color: '#d4a017' }}>
+                                        {item.data.sponsoredProduct.disclosure}
+                                      </span>
+                                      <div className="flex gap-3 items-start pr-16">
+                                        {item.data.sponsoredProduct.imageUrl && (
+                                          <img src={item.data.sponsoredProduct.imageUrl} alt="" className="w-16 h-16 rounded flex-shrink-0 object-cover" onError={() => {}} />
+                                        )}
+                                        <div className="flex-1 min-w-0">
+                                          <p className="font-semibold text-sm" style={{ color: '#f0f0f0' }}>{item.data.sponsoredProduct.name}</p>
+                                          <p className="text-xs leading-relaxed mt-1" style={{ color: '#999' }}>{item.data.sponsoredProduct.description}</p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <a
+                                      href={item.data.sponsoredProduct.linkUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-block text-xs font-semibold px-3 py-1.5 rounded-full transition-all hover:opacity-80"
+                                      style={{ background: 'rgba(212,160,23,0.15)', color: '#d4a017', border: '1px solid rgba(212,160,23,0.3)' }}
+                                    >
+                                      Shop now →
+                                    </a>
                                   </div>
                                 )}
 
