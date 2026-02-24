@@ -2,205 +2,190 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Clock, Users, Flame, ChefHat, CalendarPlus, Sparkles } from 'lucide-react'
 import type { TonightRecommendation } from '@/lib/recommendations'
 
-// ── Reason badge color mapping ───────────────────────────────────────────────
+/* ─── reason pill ────────────────────────────────────────────────────────── */
 
-function reasonStyle(reason: string): string {
-  if (reason === 'Trending')
-    return 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300'
-  if (reason === 'From your Cookbook')
-    return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300'
-  // "Popular in X" or "Similar to your saves"
-  return 'bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300'
+function ReasonPill({ reason }: { reason: string }) {
+  const cfg =
+    reason === 'Trending'
+      ? { bg: 'rgba(255,77,109,0.15)', color: '#ff4d6d', icon: '🔥' }
+      : reason === 'From your Cookbook'
+      ? { bg: 'rgba(34,197,94,0.15)', color: '#22c55e', icon: '📖' }
+      : { bg: 'rgba(96,165,250,0.15)', color: '#60a5fa', icon: '✨' }
+
+  return (
+    <span
+      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold"
+      style={{ background: cfg.bg, color: cfg.color }}
+    >
+      {cfg.icon} {reason}
+    </span>
+  )
 }
 
-function reasonIcon(reason: string) {
-  if (reason === 'Trending') return <Flame size={12} className="shrink-0" />
-  if (reason === 'From your Cookbook') return <ChefHat size={12} className="shrink-0" />
-  return <Sparkles size={12} className="shrink-0" />
-}
+/* ─── mock fallback data ─────────────────────────────────────────────────── */
 
-// ── Component ────────────────────────────────────────────────────────────────
+import { MOCK_RECIPES } from '@/lib/mock-data'
+
+const MOCK_RECS: TonightRecommendation[] = MOCK_RECIPES.slice(0, 5).map(r => ({
+  id: r.id,
+  title: r.title,
+  slug: r.slug,
+  summary: r.summary,
+  hero_image_url: r.hero_image_url,
+  approach_name: r.region ?? null,
+  cook_time_minutes: 30,
+  servings: r.servings ?? 4,
+  net_votes: r.votes,
+  reason: r.tag === 'Trending' ? 'Trending' : 'Popular in Global' as TonightRecommendation['reason'],
+  score: r.votes,
+}))
+
+/* ─── component ──────────────────────────────────────────────────────────── */
 
 export default function TonightCard() {
   const router = useRouter()
-  const [recommendations, setRecommendations] = useState<TonightRecommendation[]>([])
+  const [recs, setRecs] = useState<TonightRecommendation[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
+
+  /* timezone-aware label */
+  const hour = typeof window !== 'undefined' ? new Date().getHours() : 12
+  const isTonight = hour >= 18
+  const label  = isTonight ? "Tonight's Picks" : "Today's Picks"
+  const emoji  = isTonight ? '🌙' : '🍽️'
 
   useEffect(() => {
     fetch('/api/tonight')
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed')
-        return res.json()
-      })
-      .then((data) => {
-        setRecommendations(data.recommendations || [])
-        setLoading(false)
-      })
-      .catch(() => {
-        setError(true)
-        setLoading(false)
-      })
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(d => { setRecs(d.recommendations || []); setLoading(false) })
+      .catch(() => { setRecs(MOCK_RECS); setLoading(false) })
   }, [])
 
-  // ── Loading skeleton ───────────────────────────────────────────────────────
-
-  if (loading) {
-    return (
-      <section className="rounded-2xl border border-border/60 bg-gradient-to-br from-card via-card to-muted/30 p-6 shadow-sm">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="h-6 w-6 rounded-full bg-muted animate-pulse" />
-          <div className="h-5 w-40 rounded bg-muted animate-pulse" />
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="rounded-xl bg-muted/50 animate-pulse h-52" />
-          ))}
-        </div>
-      </section>
-    )
-  }
-
-  if (error || recommendations.length === 0) return null
-
-  // ── Card ───────────────────────────────────────────────────────────────────
-
   return (
-    <section className="rounded-2xl border border-border/60 bg-gradient-to-br from-card via-card to-muted/30 p-6 shadow-sm">
-      {/* Header */}
-      <div className="flex items-center gap-2 mb-5">
-        <Sparkles size={20} className="text-primary" />
-        <h2 className="text-xl font-bold tracking-tight">Tonight</h2>
-        <span className="text-sm text-muted-foreground ml-1">
-          — Personalized picks for your evening
+    <div
+      className="rounded-2xl overflow-hidden"
+      style={{ background: '#111', border: '1px solid rgba(255,255,255,0.08)' }}
+    >
+      {/* ── Header ── */}
+      <div
+        className="flex items-center justify-between px-4 py-3"
+        style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-base">{emoji}</span>
+          <span
+            className="font-bold text-sm tracking-wide"
+            style={{ fontFamily: "'Syne', sans-serif", color: '#f0f0f0' }}
+          >
+            {label}
+          </span>
+        </div>
+        <span className="text-[10px]" style={{ color: '#444' }}>
+          {isTonight ? 'For dinner tonight' : 'Meal ideas for today'}
         </span>
       </div>
 
-      {/* Recommendation items */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-        {recommendations.map((rec) => (
-          <article
-            key={rec.id}
-            className="group relative flex flex-col rounded-xl border border-border/40 bg-card overflow-hidden transition-all hover:shadow-md hover:border-primary/30 hover:-translate-y-0.5"
+      {/* ── Loading skeleton ── */}
+      {loading && (
+        <div className="p-3 space-y-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="flex gap-3 p-2 items-center">
+              <div className="w-14 h-14 rounded-xl animate-pulse flex-shrink-0" style={{ background: '#222' }} />
+              <div className="flex-1 space-y-2">
+                <div className="h-3 rounded animate-pulse" style={{ background: '#222', width: '80%' }} />
+                <div className="h-2.5 rounded animate-pulse" style={{ background: '#222', width: '50%' }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── Empty ── */}
+      {!loading && recs.length === 0 && (
+        <p className="px-4 py-10 text-sm text-center" style={{ color: '#444' }}>
+          No picks for now — check back later
+        </p>
+      )}
+
+      {/* ── Vertical list ── */}
+      {!loading && recs.length > 0 && (
+        <div>
+          {recs.map((rec, i) => (
+            <div
+              key={rec.id}
+              className="group flex gap-3 px-3 py-2.5 transition-colors hover:bg-white/[0.03] cursor-pointer"
+              style={{ borderBottom: i < recs.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}
+              onClick={() => router.push(`/recipes/${rec.slug}`)}
+            >
+              {/* Thumbnail */}
+              <div className="flex-shrink-0 rounded-xl overflow-hidden" style={{ width: 56, height: 56 }}>
+                <img
+                  src={rec.hero_image_url}
+                  alt=""
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+
+              {/* Info */}
+              <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
+                <p
+                  className="text-sm font-semibold leading-snug line-clamp-2 group-hover:text-white transition-colors"
+                  style={{ color: '#ddd' }}
+                >
+                  {rec.title}
+                </p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <ReasonPill reason={rec.reason} />
+                  {rec.cook_time_minutes && (
+                    <span className="text-[10px]" style={{ color: '#555' }}>
+                      ⏱ {rec.cook_time_minutes}m
+                    </span>
+                  )}
+                  {rec.net_votes > 0 && (
+                    <span className="text-[10px]" style={{ color: '#555' }}>
+                      ♥ {rec.net_votes}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Cook CTA */}
+              <button
+                onClick={e => { e.stopPropagation(); router.push(`/recipes/${rec.slug}?cook=true`) }}
+                className="flex-shrink-0 self-center px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-all"
+                style={{
+                  background: 'rgba(255,149,0,0.12)',
+                  color: '#ff9500',
+                  border: '1px solid rgba(255,149,0,0.2)',
+                }}
+              >
+                Cook
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── Footer ── */}
+      {!loading && recs.length > 0 && (
+        <div
+          className="px-4 py-2.5"
+          style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
+        >
+          <button
+            onClick={() => router.push('/tonight-recommendations')}
+            className="w-full text-center text-xs font-semibold py-1.5 rounded-xl transition-all"
+            style={{
+              background: isTonight ? 'rgba(255,149,0,0.08)' : 'rgba(96,165,250,0.08)',
+              color: isTonight ? '#ff9500' : '#60a5fa',
+              border: `1px solid ${isTonight ? 'rgba(255,149,0,0.15)' : 'rgba(96,165,250,0.15)'}`,
+            }}
           >
-            {/* Thumbnail */}
-            <div className="relative h-28 overflow-hidden">
-              <img
-                src={rec.hero_image_url}
-                alt={rec.title}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-              {/* Reason label overlay */}
-              <span
-                className={`absolute top-2 left-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold backdrop-blur-sm ${reasonStyle(rec.reason)}`}
-              >
-                {reasonIcon(rec.reason)}
-                {rec.reason}
-              </span>
-            </div>
-
-            {/* Content */}
-            <div className="flex flex-col flex-1 p-3 gap-1.5">
-              <h3
-                className="font-semibold text-sm leading-tight line-clamp-2 cursor-pointer hover:text-primary transition-colors"
-                onClick={() => router.push(`/recipes/${rec.slug}`)}
-              >
-                {rec.title}
-              </h3>
-
-              {/* Meta row */}
-              <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                {rec.cook_time_minutes != null && (
-                  <span className="inline-flex items-center gap-1">
-                    <Clock size={11} />
-                    {rec.cook_time_minutes}m
-                  </span>
-                )}
-                {rec.servings != null && (
-                  <span className="inline-flex items-center gap-1">
-                    <Users size={11} />
-                    {rec.servings}
-                  </span>
-                )}
-                {rec.net_votes > 0 && (
-                  <span className="inline-flex items-center gap-1">
-                    <Flame size={11} />
-                    {rec.net_votes}
-                  </span>
-                )}
-              </div>
-
-              {/* CTA buttons */}
-              <div className="flex gap-1.5 mt-auto pt-2">
-                <button
-                  onClick={() => router.push(`/recipes/${rec.slug}?cook=true`)}
-                  className="flex-1 bg-primary text-primary-foreground px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-1"
-                >
-                  <ChefHat size={12} />
-                  Cook
-                </button>
-                <button
-                  onClick={async () => {
-                    try {
-                      // Get or create default meal plan
-                      const plansRes = await fetch('/api/meal-plans')
-                      if (!plansRes.ok) {
-                        console.log('Please login to add to meal plan')
-                        return
-                      }
-                      
-                      const plans = await plansRes.json()
-                      let mealPlanId = plans[0]?.id
-                      
-                      // Create default meal plan if none exists
-                      if (!mealPlanId) {
-                        const createRes = await fetch('/api/meal-plans', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ 
-                            title: 'My Meal Plan',
-                            start_date: new Date().toISOString().split('T')[0]
-                          })
-                        })
-                        const newPlan = await createRes.json()
-                        mealPlanId = newPlan.id
-                      }
-                      
-                      // Add recipe to meal plan
-                      const entryRes = await fetch('/api/meal-plan-entries', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                          meal_plan_id: mealPlanId,
-                          date: new Date().toISOString().split('T')[0],
-                          meal_slot: 'dinner',
-                          post_id: rec.id,
-                          servings: rec.servings || 1,
-                          recipe_title: rec.title,
-                          recipe_image: rec.hero_image_url
-                        })
-                      })
-                      
-                      if (entryRes.ok) {
-                        console.log('Added to meal plan!')
-                      }
-                    } catch (err) {
-                      console.error('Failed to add to plan:', err)
-                    }
-                  }}
-                  className="flex-1 bg-muted text-muted-foreground px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-muted/80 transition-colors flex items-center justify-center gap-1"
-                >
-                  <CalendarPlus size={12} />
-                  Plan
-                </button>
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
-    </section>
+            {isTonight ? 'More tonight picks →' : 'More today picks →'}
+          </button>
+        </div>
+      )}
+    </div>
   )
 }

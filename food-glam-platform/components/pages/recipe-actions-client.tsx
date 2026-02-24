@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { usePreferredRecipes } from '@/lib/preferred-recipes';
 
 interface RecipeActionsClientProps {
   recipeId: string;
@@ -14,9 +15,21 @@ export default function RecipeActionsClient({ recipeId, slug, title }: RecipeAct
   const [saved, setSaved] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState(false);
+  const { addRecipe, removeRecipe, preferredIds } = usePreferredRecipes();
+
+  useEffect(() => {
+    setSaved(preferredIds.has(recipeId));
+  }, [preferredIds, recipeId]);
 
   const handleSave = async () => {
     try {
+      if (saved) {
+        removeRecipe(recipeId);
+      } else {
+        addRecipe({ id: recipeId, slug, title }, "manual");
+      }
+
+      // Also try API call for cookbook
       const res = await fetch('/api/collection-items', {
         method: saved ? 'DELETE' : 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -31,8 +44,7 @@ export default function RecipeActionsClient({ recipeId, slug, title }: RecipeAct
         throw new Error('Save failed');
       }
 
-      setSaved(!saved);
-      console.log(saved ? 'Removed from cookbook' : 'Saved to cookbook');
+      console.log(saved ? 'Removed from preferred' : 'Added to preferred');
     } catch (err) {
       console.error('Failed to save:', err);
     }
@@ -74,19 +86,15 @@ export default function RecipeActionsClient({ recipeId, slug, title }: RecipeAct
 
         <Button
           variant={saved ? "default" : "outline"}
-          className={`flex-1 min-w-[120px] gap-2 ${saved ? "bg-amber-500 hover:bg-amber-600 border-amber-500 text-white" : ""}`}
+          className={`flex-1 min-w-[140px] gap-2 ${saved ? "bg-amber-500 hover:bg-amber-600 border-amber-500 text-white" : ""}`}
           onClick={handleSave}
         >
           {saved ? (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1">
-              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-            </svg>
+            <span className="text-base">⭐</span>
           ) : (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-            </svg>
+            <span className="text-base">☆</span>
           )}
-          {saved ? "Saved" : "Save"}
+          {saved ? "Preferred" : "Save"}
         </Button>
       </div>
 

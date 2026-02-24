@@ -7,6 +7,7 @@ import RecipeAdvancedClient from "@/components/pages/recipe-advanced-client"
 import SimilarRecipesClient from "@/components/pages/similar-recipes-client"
 import RecipeIngredientsClient from "@/components/pages/recipe-ingredients-client"
 import RecipeActionsClient from "@/components/pages/recipe-actions-client"
+import RecipeCommentsClient from "@/components/pages/recipe-comments-client"
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import { MOCK_RECIPES } from '@/lib/mock-data'
 import { normalizeToEmbed } from '@/lib/embed'
@@ -85,6 +86,122 @@ const MOCK_RECIPE_DETAILS: Record<string, {
       'Serve with naan or basmati rice, garnished with cilantro.',
     ],
     nutrition: { calories: 540, protein: 42, carbs: 18, fat: 32 },
+  },
+  'vegetarian-senegalese-mafe': {
+    servings: 4, total_time: '55 min', prep_time: '15 min', cook_time: '40 min',
+    ingredients: [
+      '2 cups natural peanut butter (no sugar)', '400ml vegetable stock', '400g firm tofu, cubed',
+      '200g oyster mushrooms, torn', '2 onions, chopped', '3 garlic cloves, minced',
+      '1 tbsp dawadawa (fermented locust beans) — or 1 tsp fish-free miso', '2 tbsp tomato paste',
+      '1 scotch bonnet or habanero, whole', '2 tbsp palm oil or neutral oil', 'Salt to taste',
+      'Cooked rice or fonio to serve',
+    ],
+    steps: [
+      'Press tofu between paper towels for 10 min. Cut into 2 cm cubes.',
+      'Heat oil in a heavy pot. Fry tofu until golden on all sides; remove and set aside.',
+      'In the same pot, sauté onions until soft, about 7 min. Add garlic, cook 2 min.',
+      'Stir in tomato paste and dawadawa; cook 3 min until fragrant.',
+      'Whisk peanut butter into the vegetable stock until smooth. Pour into the pot.',
+      'Add the whole scotch bonnet and mushrooms. Simmer on low heat 20 min, stirring often to prevent sticking.',
+      'Return tofu. Simmer 10 more minutes. Season with salt. Remove the scotch bonnet before serving.',
+      'Serve over rice or fonio with a sprinkle of chopped spring onions.',
+    ],
+    nutrition: { calories: 380, protein: 16, carbs: 28, fat: 22 },
+  },
+  'simple-vegetarian-jollof-rice': {
+    servings: 6, total_time: '1 hr', prep_time: '15 min', cook_time: '45 min',
+    ingredients: [
+      '500g long-grain parboiled rice', '4 large tomatoes, blended', '2 red bell peppers, blended',
+      '2 scotch bonnets (adjust to heat preference)', '2 onions — 1 blended, 1 sliced',
+      '3 tbsp tomato paste', '500ml vegetable stock', '3 tbsp vegetable oil',
+      '2 bay leaves', '1 tsp dried thyme', '1 tsp ground coriander', '1 tsp smoked paprika',
+      'Salt and white pepper to taste',
+    ],
+    steps: [
+      'Blend tomatoes, red peppers, scotch bonnets, and 1 onion until smooth.',
+      'Heat oil in a wide pot. Fry the sliced onion until golden, about 8 min.',
+      'Add tomato paste; stir and fry 5 min until it darkens slightly.',
+      'Pour in the blended tomato mixture. Cook on medium heat 20 min, stirring, until reduced and the raw smell is gone.',
+      'Add stock, bay leaves, thyme, coriander, paprika, salt, and pepper. Bring to a boil.',
+      'Wash the rice until the water runs clear. Add to the pot — liquid should just cover the rice.',
+      'Cover tightly, reduce to the lowest heat, and cook 30 min. Do not lift the lid for the first 20 min.',
+      'Check: the rice should be cooked and slightly dry. The bottom crust (kanzo) is intentional and prized.',
+      'Remove bay leaves, fluff gently, and serve.',
+    ],
+    nutrition: { calories: 340, protein: 8, carbs: 68, fat: 6 },
+  },
+  'ghanaian-red-bean-stew-atidua': {
+    servings: 4, total_time: '1 hr 15 min', prep_time: '15 min', cook_time: '1 hr',
+    ingredients: [
+      '400g dried red cowpeas (or 2 × 400g cans, drained)', '3 tbsp red palm oil',
+      '2 onions, sliced', '4 garlic cloves, minced', '2 tbsp dawadawa (fermented locust beans)',
+      '2 tomatoes, chopped', '1 scotch bonnet, chopped', '1 tsp ground crayfish (optional)',
+      'Salt to taste', 'Cooked rice or boiled yam to serve',
+    ],
+    steps: [
+      'If using dried cowpeas, soak overnight, drain, then simmer in fresh water 45 min until tender.',
+      'Heat palm oil in a pot on medium. Add sliced onions and fry until soft and beginning to colour, 10 min.',
+      'Add garlic, scotch bonnet, and dawadawa. Stir and fry 3 min.',
+      'Add tomatoes and crayfish (if using). Cook 10 min until the tomatoes collapse.',
+      'Add the cooked (or canned) cowpeas with a splash of their cooking liquid.',
+      'Simmer 15 min, stirring occasionally, until the stew thickens and the beans have absorbed the flavours.',
+      'Season generously with salt. Serve with rice or boiled yam.',
+    ],
+    nutrition: { calories: 290, protein: 14, carbs: 42, fat: 8 },
+  },
+  'mandazi-mahamri-east-african-fried-dough': {
+    servings: 8, total_time: '1 hr 30 min', prep_time: '1 hr', cook_time: '30 min',
+    ingredients: [
+      '500g plain flour, plus extra for dusting', '2 tsp instant yeast', '2 tbsp caster sugar',
+      '1 tsp ground cardamom', '½ tsp ground cinnamon', '200ml coconut milk (full-fat)',
+      '60ml warm water', 'Pinch of salt', 'Vegetable oil for deep-frying',
+    ],
+    steps: [
+      'Mix flour, yeast, sugar, cardamom, cinnamon, and salt in a large bowl.',
+      'Make a well; pour in coconut milk and warm water. Mix until a soft dough forms.',
+      'Knead on a lightly floured surface for 8–10 min until smooth and elastic.',
+      'Place in a lightly oiled bowl, cover with a damp cloth, and rest 45 min until doubled.',
+      'Divide dough into 4 portions. Roll each into a circle about 5 mm thick, then cut into quarters.',
+      'Heat oil to 170°C (340°F). Fry mandazi in batches 3–4 min per side until puffed and golden.',
+      'Drain on paper towels. Serve warm, ideally with chai.',
+    ],
+    nutrition: { calories: 195, protein: 4, carbs: 32, fat: 6 },
+  },
+  'spiced-sorghum-millet-porridge': {
+    servings: 2, total_time: '20 min', prep_time: '5 min', cook_time: '15 min',
+    ingredients: [
+      '60g sorghum flour', '60g millet flour', '600ml water or oat milk',
+      '1 tsp ground cinnamon', '½ tsp ground ginger', '¼ tsp ground cloves',
+      '¼ tsp ground nutmeg', '2 tbsp coconut sugar or honey', 'Pinch of salt',
+      'To serve: sliced banana, toasted pumpkin seeds, a drizzle of coconut cream',
+    ],
+    steps: [
+      'Whisk sorghum and millet flours with 200ml of the liquid to form a smooth lump-free paste.',
+      'Bring remaining 400ml liquid to a gentle boil in a saucepan.',
+      'Pour the flour paste into the boiling liquid in a steady stream, whisking constantly.',
+      'Cook on medium-low heat, stirring continuously, for 10–12 min until thick and creamy.',
+      'Add cinnamon, ginger, cloves, nutmeg, sugar, and salt. Stir well and taste.',
+      'Pour into bowls. Top with banana, pumpkin seeds, and a swirl of coconut cream. Serve immediately.',
+    ],
+    nutrition: { calories: 220, protein: 6, carbs: 44, fat: 3 },
+  },
+  'waakye-ghanaian-rice-and-beans': {
+    servings: 6, total_time: '1 hr 30 min', prep_time: '20 min', cook_time: '1 hr 10 min',
+    ingredients: [
+      '400g black-eyed peas', '400g white rice (long-grain)', '6–8 dried sorghum leaf stems (or 1 tsp baking soda for colour)',
+      '1.2 litres water', '1 tsp salt',
+      'To serve: shito (Ghanaian black pepper sauce), fried plantain, boiled egg, gari, spaghetti',
+    ],
+    steps: [
+      'Rinse black-eyed peas. Place in a pot with sorghum stems and 1.2 litres water. Bring to boil.',
+      'Cook the peas on medium heat for 30–40 min until about 70% tender — they should still have some bite.',
+      'Remove and discard the sorghum stems (the liquid will have turned dark reddish-brown — this is correct).',
+      'Wash the rice until water runs clear. Add to the pot with the peas and their liquid.',
+      'Add salt. If the liquid does not fully cover the rice, add a little more water.',
+      'Cover tightly and cook on low heat 25–30 min until rice is cooked through and liquid is absorbed.',
+      'Fluff gently and serve with your choice of shito, fried plantain, boiled egg, gari, and spaghetti.',
+    ],
+    nutrition: { calories: 310, protein: 11, carbs: 62, fat: 3 },
   },
 }
 
@@ -196,6 +313,10 @@ export default async function RecipePage({ params }: RecipePageProps) {
     }
 
     const detail = getMockDetail(slug)
+    // Prefer the recipe's own nutrition over the detail fallback
+    const detailNutrition = detail.nutrition.calories === 400 && MOCK_RECIPE_DETAILS[slug] === undefined
+      ? { calories: mockRecipe.nutrition_per_serving?.calories ?? 400, protein: mockRecipe.nutrition_per_serving?.protein ?? 18, carbs: mockRecipe.nutrition_per_serving?.carbs ?? 45, fat: mockRecipe.nutrition_per_serving?.fat ?? 16 }
+      : detail.nutrition
     const ingredientSections: IngredientSection[] = [{ ingredients: detail.ingredients }]
     const steps = detail.steps
     const heroImage = mockRecipe.hero_image_url
@@ -205,7 +326,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
     const votes = mockRecipe.votes
 
     return (
-      <main className="min-h-screen pb-24 md:pb-8">
+      <main className="min-h-screen pb-24 md:pb-8" style={{ background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', color: '#111' }}>
         {/* Hero Section */}
         <div className="relative w-full h-[50vh] min-h-[320px] max-h-[480px] overflow-hidden">
           <img src={heroImage} alt={mockRecipe.title} className="w-full h-full object-cover" />
@@ -343,10 +464,15 @@ export default async function RecipePage({ params }: RecipePageProps) {
               </Card>
 
               <RecipeAdvancedClient
-                nutrition={detail.nutrition}
+                nutrition={detailNutrition}
                 fasting={undefined}
                 foodLog={false}
                 ingredients={detail.ingredients}
+              />
+
+              <RecipeCommentsClient
+                recipeId={mockRecipe.id}
+                slug={slug}
               />
             </div>
 
@@ -392,16 +518,16 @@ export default async function RecipePage({ params }: RecipePageProps) {
               </Card>
 
               {/* Nutrition */}
-              {detail.nutrition && (
+              {detailNutrition && (
                 <Card className="shadow-sm">
                   <CardContent className="p-4">
                     <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Nutrition per serving</p>
                     <div className="grid grid-cols-2 gap-2">
                       {([
-                        { label: 'Calories', value: detail.nutrition.calories, unit: 'kcal' },
-                        { label: 'Protein',  value: detail.nutrition.protein,  unit: 'g' },
-                        { label: 'Carbs',    value: detail.nutrition.carbs,    unit: 'g' },
-                        { label: 'Fat',      value: detail.nutrition.fat,      unit: 'g' },
+                        { label: 'Calories', value: detailNutrition.calories, unit: 'kcal' },
+                        { label: 'Protein',  value: detailNutrition.protein,  unit: 'g' },
+                        { label: 'Carbs',    value: detailNutrition.carbs,    unit: 'g' },
+                        { label: 'Fat',      value: detailNutrition.fat,      unit: 'g' },
                       ] as const).map(({ label, value, unit }) => (
                         <div key={label} className="bg-stone-50 rounded-lg p-2.5 text-center">
                           <p className="text-xs text-muted-foreground mb-0.5">{label}</p>
@@ -648,6 +774,11 @@ export default async function RecipePage({ params }: RecipePageProps) {
               fasting={undefined}
               foodLog={false}
               ingredients={ingredientSections.flatMap(s => s.ingredients)}
+            />
+
+            <RecipeCommentsClient
+              recipeId={post.id}
+              slug={slug}
             />
           </div>
 
