@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { ComposableMap, Geographies, Geography, ZoomableGroup, Sphere, Graticule } from 'react-simple-maps'
+import dynamic from 'next/dynamic'
 
 /* ─── Region metadata ──────────────────────────────────────────────────── */
 interface RegionInfo {
@@ -115,54 +115,158 @@ const COUNTRY_REGION: Record<string, string> = {
   '548': 'oceania', '090': 'oceania',
 }
 
-const GEO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
+/* ─── Dynamic Globe import (WebGL/Three.js cannot be SSR'd) ──────────────── */
+const Globe = dynamic(() => import('react-globe.gl'), { ssr: false })
+
+interface GeoJSONFeature {
+  type: 'Feature'
+  properties: {
+    ISO_N3: string
+    [key: string]: unknown
+  }
+  geometry: unknown
+}
 
 /* ─── Component ─────────────────────────────────────────────────────────── */
 export default function WorldMapPage() {
   const router = useRouter()
-  const [hoveredRegion, setHoveredRegion] = useState<string | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const globeEl = useRef<any>(null)
+  
+  const [hoveredPolygon, setHoveredPolygon] = useState<GeoJSONFeature | null>(null)
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null)
+  const [countries, setCountries] = useState<GeoJSONFeature[]>([])
+  const [globeReady, setGlobeReady] = useState(false)
+  const [dimensions, setDimensions] = useState({ width: 800, height: 600 })
 
-  const activeRegion = selectedRegion ?? hoveredRegion
-  const activeInfo = activeRegion ? regionById[activeRegion] : null
-
-  function handleRegionClick(id: string) {
-    setSelectedRegion(id)
-    setTimeout(() => router.push(`/cookbooks/region/${id}`), 300)
+  /* ─── Get region info from polygon ──────────────────────────────────────── */
+  const getRegionForPolygon = (polygon: any | null): RegionInfo | null => {
+    if (!polygon) return null
+    const regionId = COUNTRY_REGION[polygon?.properties?.ISO_N3]
+    return regionId ? regionById[regionId] : null
   }
 
-  // Memoize geography styling to avoid recreating on every render
-  const getGeographyStyle = (countryId: string) => {
-    const regionId = COUNTRY_REGION[countryId]
-    const region = regionId ? regionById[regionId] : null
-    const isActive = region && (hoveredRegion === region.id || selectedRegion === region.id)
+  const hoveredRegion = getRegionForPolygon(hoveredPolygon)
+  const activeInfo = hoveredRegion ?? (selectedRegion ? regionById[selectedRegion] : null)
+
+  /* ─── Fetch GeoJSON countries on mount ──────────────────────────────────── */
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const res = await fetch(
+          'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson'
+        )
+        const data = await res.json()
+        if (data.features) {
+          setCountries(data.features)
+          setGlobeReady(true)
+        }
+      } catch (error) {
+        console.error('Failed to load country data:', error)
+        setGlobeReady(true)
+      }
+    }
+    fetchCountries()
+  }, [])
+
+  /* ─── Initialize globe controls after ready ────────────────────────────── */
+  useEffect(() => {
+    if (!globeReady || !globeEl.current) return
     
-    return {
-      default: {
-        fill: region ? region.color : '#0f1520',
-        stroke: '#1a2340',
-        strokeWidth: 0.3,
-        outline: 'none',
-        opacity: region ? 0.75 : 1,
-        transition: 'all 0.2s ease',
-        cursor: region ? 'pointer' : 'default',
-      },
-      hover: region ? {
-        fill: region.color,
-        stroke: '#ffffff88',
-        strokeWidth: 1.5,
-        opacity: 1,
-        outline: 'none',
-        cursor: 'pointer',
-        filter: `drop-shadow(0 0 12px ${region.glow})`,
-      } : {},
-      pressed: region ? {
-        fill: region.color,
-        stroke: '#ffffff88',
-        strokeWidth: 1.5,
-        opacity: 1,
-        outline: 'none',
-      } : {},
+    const controls = globeEl.current.controls()
+    controls.autoRotate = true
+    controls.autoRotateSpeed = 0.4
+    controls.enableZoom = true
+    
+    // Set initial point of view
+    globeEl.current.pointOfView({ lat: 20, lng: 10, altitude: 2.2 }, 0)
+  }, [globeReady])
+
+  /* ─── Track container dimensions ────────────────────────────────────────── */
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (containerRef.current) {
+        setDimensions({
+          width: containerRef.current.clientWidth,
+          height: containerRef.current.clientHeight,
+        })
+      }
+    }
+    
+    updateDimensions()
+    window.addEventListener('resize', updateDimensions)
+    return () => window.removeEventListener('resize', updateDimensions)
+  }, [])
+
+  /* ─── Polygon hover handler ─────────────────────────────────────────────── */
+  const handlePolygonHover = (polygon: any | null) => {
+    setHoveredPolygon(polygon)
+    if (globeEl.current) {
+      globeEl.current.controls().autoRotate = !polygon
+    }
+  }
+
+  /* ─── Polygon click handler ────────────────────────────────────────────── */
+  const handlePolygonClick = (polygon: any) => {
+    const regionId = COUNTRY_REGION[polygon?.properties?.ISO_N3]
+    if (!regionId) return
+    
+    setSelectedRegion(regionId)
+    if (globeEl.current) {
+      globeEl.current.controls().autoRotate = false
+    }
+    
+    setTimeout(() => router.push(`/cookbooks/region/${regionId}`), 400)
+  }
+
+  /* ─── Get polygon color based on hover state ────────────────────────────── */
+  const getPolygonColor = (polygon: any | null): string => {
+    if (!polygon) return 'rgba(30,40,60,0.6)'
+    
+    const regionId = COUNTRY_REGION[polygon?.properties?.ISO_N3]
+    if (!regionId) return 'rgba(30,40,60,0.6)'
+    
+    const region = regionById[regionId]
+    if (!region) return 'rgba(30,40,60,0.6)'
+    
+    const isHovered = hoveredPolygon?.properties?.ISO_N3 === polygon?.properties?.ISO_N3
+    const opacity = isHovered ? 1 : 0.85
+    
+    // Parse hex color and apply opacity
+    const hex = region.color
+    const r = parseInt(hex.slice(1, 3), 16)
+    const g = parseInt(hex.slice(3, 5), 16)
+    const b = parseInt(hex.slice(5, 7), 16)
+    
+    return `rgba(${r},${g},${b},${opacity})`
+  }
+
+  /* ─── Get polygon altitude (elevation) ──────────────────────────────────── */
+  const getPolygonAltitude = (polygon: any | null): number => {
+    if (!polygon) return 0
+    
+    const regionId = COUNTRY_REGION[polygon?.properties?.ISO_N3]
+    if (!regionId) return 0
+    
+    const isHovered = hoveredPolygon?.properties?.ISO_N3 === polygon?.properties?.ISO_N3
+    return isHovered ? 0.025 : 0.005
+  }
+
+  /* ─── Region list click ────────────────────────────────────────────────── */
+  const handleRegionListClick = (regionId: string) => {
+    const region = regionById[regionId]
+    if (!region) return
+    
+    setSelectedRegion(regionId)
+    
+    // Find a country in this region to fly to
+    const countryCode = Object.entries(COUNTRY_REGION).find(([_, id]) => id === regionId)?.[0]
+    if (countryCode && globeEl.current) {
+      const countryFeature = countries.find(f => f.properties.ISO_N3 === countryCode)
+      if (countryFeature && countryFeature.geometry) {
+        // Simple center calculation from geometry bounds
+        globeEl.current.pointOfView({ lat: 15, lng: 10, altitude: 1.8 }, 800)
+      }
     }
   }
 
@@ -196,70 +300,48 @@ export default function WorldMapPage() {
       {/* ── Map + Panel layout ── */}
       <div className="flex flex-1 min-h-0" style={{ minHeight: 560 }}>
 
-        {/* ── Real World Map ── */}
-        <div className="flex-1 relative overflow-hidden" style={{ background: 'radial-gradient(ellipse at 50% 60%, #0d1a3a 0%, #080b14 100%)' }}>
-          <ComposableMap projection="geoNaturalEarth1" projectionConfig={{ scale: 160, center: [0, 20] }}>
-            <defs>
-              {/* SVG glow filters for each region */}
-              {REGIONS.map(r => (
-                <filter key={`glow-${r.id}`} id={`glow-${r.id}`} x="-50%" y="-50%" width="200%" height="200%">
-                  <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />
-                  <feFlood floodColor={r.glow} floodOpacity="1" result="color" />
-                  <feComposite in="color" in2="blur" operator="in" result="glow" />
-                  <feMerge>
-                    <feMergeNode in="glow" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              ))}
-            </defs>
-            
-            <ZoomableGroup>
-              <Sphere id="sphere" fill="#080b14" stroke="rgba(255,255,255,0.04)" strokeWidth={0.5} />
-              <Graticule stroke="rgba(255,255,255,0.03)" strokeWidth={0.3} />
-              
-              <Geographies geography={GEO_URL}>
-                {({ geographies }) =>
-                  geographies.map((geo: any) => {
-                    const regionId = COUNTRY_REGION[geo.id]
-                    const region = regionId ? regionById[regionId] : null
-                    const isActive = region && (hoveredRegion === region.id || selectedRegion === region.id)
-                    
-                    return (
-                      <Geography
-                        key={geo.rsmKey}
-                        geography={geo}
-                        style={getGeographyStyle(geo.id)}
-                        onMouseEnter={() => {
-                          if (region) setHoveredRegion(region.id)
-                        }}
-                        onMouseLeave={() => {
-                          if (region) setHoveredRegion(null)
-                        }}
-                        onClick={() => {
-                          if (region) handleRegionClick(region.id)
-                        }}
-                      />
-                    )
-                  })
-                }
-              </Geographies>
-            </ZoomableGroup>
-          </ComposableMap>
-
-          {/* Ocean labels */}
-          <div
-            className="absolute bottom-6 left-8 text-xs font-bold uppercase tracking-widest"
-            style={{ color: 'rgba(255,255,255,0.06)', letterSpacing: '0.25em', pointerEvents: 'none' }}
-          >
-            Pacific Ocean
-          </div>
-          <div
-            className="absolute bottom-6 right-12 text-xs font-bold uppercase tracking-widest"
-            style={{ color: 'rgba(255,255,255,0.04)', letterSpacing: '0.25em', pointerEvents: 'none' }}
-          >
-            Indian Ocean
-          </div>
+        {/* ── 3D Globe ── */}
+        <div
+          ref={containerRef}
+          className="flex-1 relative overflow-hidden"
+          style={{
+            background: '#000008',
+            filter: activeInfo ? `drop-shadow(0 0 40px ${activeInfo.glow})` : 'none',
+            transition: 'filter 0.3s ease',
+          }}
+        >
+          {globeReady && countries.length > 0 ? (
+            <Globe
+              ref={globeEl}
+              width={dimensions.width}
+              height={dimensions.height}
+              globeImageUrl="//cdn.jsdelivr.net/npm/three-globe/example/img/earth-dark.jpg"
+              backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
+              backgroundColor="rgba(0,0,0,0)"
+              atmosphereColor="rgba(80,130,255,0.2)"
+              atmosphereAltitude={0.12}
+              polygonsData={countries}
+              polygonCapColor={(polygon: any) => getPolygonColor(polygon)}
+              polygonSideColor={() => 'rgba(0,0,0,0.3)'}
+              polygonStrokeColor={() => '#111'}
+              polygonAltitude={(polygon: any) => getPolygonAltitude(polygon)}
+              polygonLabel={(polygon: any) => {
+                const regionId = COUNTRY_REGION[polygon?.properties?.ISO_N3]
+                const region = regionId ? regionById[regionId] : null
+                return region ? `<strong>${region.label}</strong>` : 'Unknown'
+              }}
+              onPolygonHover={handlePolygonHover}
+              onPolygonClick={handlePolygonClick}
+              polygonsTransitionDuration={200}
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center" style={{ background: '#000008' }}>
+              <div className="text-center">
+                <div className="text-4xl mb-4 animate-spin">🌍</div>
+                <p className="text-sm" style={{ color: '#555' }}>Loading globe...</p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ── Info Panel ── */}
@@ -300,7 +382,10 @@ export default function WorldMapPage() {
 
                 {/* CTA button */}
                 <button
-                  onClick={() => handleRegionClick(activeInfo.id)}
+                  onClick={() => {
+                    setSelectedRegion(activeInfo.id)
+                    setTimeout(() => router.push(`/cookbooks/region/${activeInfo.id}`), 300)
+                  }}
                   className="w-full py-3 rounded-xl text-sm font-bold transition-all"
                   style={{
                     background: activeInfo.color,
@@ -315,7 +400,7 @@ export default function WorldMapPage() {
               <div className="flex flex-col items-center justify-center h-full text-center">
                 <div className="text-5xl mb-4 pulse-slow">🌍</div>
                 <p className="text-sm font-medium" style={{ color: '#444' }}>
-                  Hover a region<br />on the map
+                  Hover a region<br />on the globe
                 </p>
               </div>
             )}
@@ -331,13 +416,20 @@ export default function WorldMapPage() {
               {REGIONS.map(r => (
                 <button
                   key={r.id}
-                  onClick={() => handleRegionClick(r.id)}
-                  onMouseEnter={() => setHoveredRegion(r.id)}
-                  onMouseLeave={() => setHoveredRegion(null)}
+                  onClick={() => handleRegionListClick(r.id)}
+                  onMouseEnter={() => {
+                    // Find and hover a country in this region
+                    const countryCode = Object.entries(COUNTRY_REGION).find(([_, id]) => id === r.id)?.[0]
+                    if (countryCode) {
+                      const feature = countries.find(f => f.properties.ISO_N3 === countryCode)
+                      if (feature) setHoveredPolygon(feature as GeoJSONFeature)
+                    }
+                  }}
+                  onMouseLeave={() => setHoveredPolygon(null)}
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors"
                   style={{
-                    background: hoveredRegion === r.id || selectedRegion === r.id ? 'rgba(255,255,255,0.04)' : 'transparent',
-                    borderLeft: hoveredRegion === r.id || selectedRegion === r.id ? `3px solid ${r.color}` : '3px solid transparent',
+                    background: selectedRegion === r.id || hoveredRegion?.id === r.id ? 'rgba(255,255,255,0.04)' : 'transparent',
+                    borderLeft: selectedRegion === r.id || hoveredRegion?.id === r.id ? `3px solid ${r.color}` : '3px solid transparent',
                   }}
                 >
                   <span className="text-base flex-shrink-0">{r.emoji}</span>
