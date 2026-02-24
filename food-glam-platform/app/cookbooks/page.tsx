@@ -61,23 +61,11 @@ export default async function CookbooksPage() {
       {/* ── Hero header ── */}
       <div className="px-6 pt-10 pb-8" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#ff9500' }}>Explore</p>
-        <div className="flex items-end justify-between gap-4 flex-wrap">
-          <div>
-            <h1 className="ff text-4xl font-extrabold tracking-tight mb-2">Global Cookbooks</h1>
-            <p className="text-sm" style={{ color: '#555' }}>
-              Recipes by cuisine, region, and curated collections from around the world.
-            </p>
-          </div>
-          <Link
-            href="/cookbooks/map"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all mb-1"
-            style={{ background: 'rgba(255,149,0,0.1)', color: '#ff9500', border: '1px solid rgba(255,149,0,0.25)' }}
-          >
-            🗺️ Interactive Map
-          </Link>
-        </div>
+        <h1 className="ff text-4xl font-extrabold tracking-tight mb-2">Global Cookbooks</h1>
+        <p className="text-sm" style={{ color: '#555' }}>
+          Recipes by cuisine, region, and curated collections from around the world.
+        </p>
       </div>
-
       <div className="px-6 py-8 max-w-7xl mx-auto space-y-14">
 
         {hasCuisines ? (
