@@ -64,7 +64,7 @@ const contentTypes = [
 
 export default function SubmitClient() {
   return (
-    <main className="container mx-auto px-4 py-12 max-w-3xl">
+    <main className="min-h-screen container mx-auto px-4 py-12 max-w-3xl" style={{ background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', color: '#111' }}>
       <div className="mb-10">
         <h1 className="text-3xl font-bold tracking-tight mb-2">Create something</h1>
         <p className="text-muted-foreground">Choose what you&apos;d like to share with the community.</p>
