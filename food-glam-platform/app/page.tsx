@@ -7,6 +7,7 @@ import LatestChefVlogs from '@/components/LatestChefVlogs'
 import TrendingSection from '@/components/TrendingSection'
 import { REGION_META } from '@/lib/recipe-taxonomy'
 import { MOCK_RECIPES } from '@/lib/mock-data'
+import { MOCK_CHEF_POSTS, MOCK_CHEF_PROFILES } from '@/lib/mock-chef-data'
 import { usePreferredRecipes } from '@/lib/preferred-recipes'
 
 /* ─── types ────────────────────────────────────────────────────────────── */
@@ -265,26 +266,86 @@ export default function Home() {
             ))}
           </div>
 
-          {/* story viewer (inline preview, no modal) */}
-          {activeStory !== null && (
-            <div className="slide-up mt-4 rounded-2xl overflow-hidden relative" style={{ height: 260 }}>
-              <img
-                src={CHEFS[activeStory].recipeImg}
-                alt=""
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)' }} />
-              <button
-                onClick={() => setActiveStory(null)}
-                className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center text-sm"
-                style={{ background: 'rgba(0,0,0,0.5)' }}
-              >✕</button>
-              <div className="absolute bottom-4 left-4">
-                <p className="text-xs text-gray-400 mb-0.5">{CHEFS[activeStory].handle}</p>
-                <p className="font-semibold text-lg ff-display leading-tight">{CHEFS[activeStory].name}'s latest</p>
+          {/* story viewer */}
+          {activeStory !== null && (() => {
+            const chef = CHEFS[activeStory]
+            const handleKey = chef.handle.replace(/^@/, '')
+            // Latest post for this chef, or fall back to the recipe image
+            const latestPost = MOCK_CHEF_POSTS
+              .filter(p => p.chef_handle === handleKey)
+              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0] ?? null
+            const profile = MOCK_CHEF_PROFILES.find(p => p.handle === handleKey) ?? null
+            const img = latestPost?.hero_image_url ?? chef.recipeImg
+            const postTitle = latestPost?.title ?? chef.cuisine
+            const postDesc = latestPost?.description ?? null
+            const postSlug = latestPost?.slug ?? null
+            return (
+              <div className="slide-up mt-4 rounded-2xl overflow-hidden" style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)' }}>
+                {/* Hero image */}
+                <div className="relative" style={{ height: 200 }}>
+                  <img src={img} alt={postTitle} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 55%)' }} />
+                  {/* Close */}
+                  <button
+                    onClick={() => setActiveStory(null)}
+                    className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white"
+                    style={{ background: 'rgba(0,0,0,0.55)' }}
+                  >✕</button>
+                  {/* Post type label */}
+                  <span className="absolute top-3 left-3 text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: 'rgba(255,149,0,0.85)', color: '#fff' }}>
+                    {latestPost ? 'Latest post' : 'Latest recipe'}
+                  </span>
+                  {/* Title overlay */}
+                  <div className="absolute bottom-3 left-4 right-4">
+                    <p className="font-semibold text-base leading-snug text-white line-clamp-2">{postTitle}</p>
+                  </div>
+                </div>
+
+                {/* Body */}
+                <div className="p-4">
+                  {/* Chef info row */}
+                  <div className="flex items-center gap-2.5 mb-3">
+                    <img src={chef.avatar} alt={chef.name} className="w-9 h-9 rounded-full object-cover flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-white leading-tight truncate">{chef.name}</p>
+                      <p className="text-[11px] text-gray-400 truncate">{chef.handle} · {(chef.followers / 1000).toFixed(1)}k followers</p>
+                    </div>
+                    <Link
+                      href={`/chefs/${handleKey}`}
+                      onClick={() => setActiveStory(null)}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-full flex-shrink-0"
+                      style={{ background: 'rgba(255,255,255,0.1)', color: '#ccc' }}
+                    >
+                      View profile
+                    </Link>
+                  </div>
+
+                  {/* Bio snippet (only if no post desc) */}
+                  {!postDesc && profile?.bio && (
+                    <p className="text-xs text-gray-400 mb-3 line-clamp-2">{profile.bio}</p>
+                  )}
+
+                  {/* Post description */}
+                  {postDesc && (
+                    <p className="text-xs text-gray-300 leading-relaxed mb-3 line-clamp-3">{postDesc}</p>
+                  )}
+
+                  {/* CTA */}
+                  {postSlug && (
+                    <Link
+                      href={`/recipes/${postSlug}`}
+                      onClick={() => setActiveStory(null)}
+                      className="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl text-sm font-semibold transition-opacity hover:opacity-90"
+                      style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}
+                    >
+                      View Recipe
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
+                    </Link>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )
+          })()}
         </section>
 
         {/* ════════════════════════════════════════════════════════
