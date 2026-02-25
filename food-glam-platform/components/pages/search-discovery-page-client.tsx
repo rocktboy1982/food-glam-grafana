@@ -11,7 +11,6 @@ import {
   Flame,
   Clock,
   Sparkles,
-  ChefHat,
   Loader2,
   SearchX,
 } from 'lucide-react'
@@ -655,20 +654,6 @@ function SearchDiscoveryPageClientContent() {
                 </div>
               </div>
 
-              {/* Tested Only toggle */}
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-stone-700 flex items-center gap-1.5">
-                  <ChefHat className="w-3.5 h-3.5 text-amber-600" />
-                  Tested Recipes Only
-                </span>
-                <button
-                  onClick={handleTestedToggle}
-                  className={`relative w-10 h-5.5 rounded-full transition-colors ${isTested ? 'bg-amber-500' : 'bg-stone-200'}`}
-                  style={{ height: '22px', width: '40px' }}
-                >
-                  <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${isTested ? 'translate-x-[18px]' : 'translate-x-0'}`} />
-                </button>
-              </div>
 
               {/* Quality pills */}
               <div>
@@ -710,38 +695,25 @@ function SearchDiscoveryPageClientContent() {
                 </div>
               </div>
 
-              {/* Type radio buttons */}
-              <div>
-                <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">
-                  Content Type
-                </label>
-                <div className="space-y-1.5">
-                  {POST_TYPES.map(pt => {
-                    const isActive = type === pt.value
-                    return (
-                      <label
-                        key={pt.value}
-                        className={`flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
-                          isActive ? 'bg-amber-50 text-amber-800' : 'hover:bg-stone-50 text-stone-600'
-                        }`}
-                      >
-                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
-                          isActive
-                            ? 'border-amber-500'
-                            : 'border-stone-300'
-                        }`}>
-                          {isActive && (
-                            <div className="w-2 h-2 rounded-full bg-amber-500" />
-                          )}
-                        </div>
-                        <span className="text-sm">{pt.label}</span>
-                      </label>
-                    )
-                  })}
-                </div>
-              </div>
             </div>
           </aside>
+
+          {/* ---- Content Type tabs ---- */}
+          <div className="flex gap-1 mb-5 bg-stone-100 rounded-xl p-1">
+            {POST_TYPES.map(pt => (
+              <button
+                key={pt.value}
+                onClick={() => handleTypeChange(pt.value)}
+                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
+                  type === pt.value
+                    ? 'bg-white text-stone-900 shadow-sm'
+                    : 'text-stone-500 hover:text-stone-700'
+                }`}
+              >
+                {pt.label}
+              </button>
+            ))}
+          </div>
 
           {/* ---- Results area ---- */}
           <div className="flex-1 min-w-0">

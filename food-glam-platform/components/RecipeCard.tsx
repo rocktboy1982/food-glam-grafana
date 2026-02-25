@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Heart, MessageSquare, Share2, Bookmark, Clock, Users, ChefHat } from 'lucide-react'
-import { useToast } from '@/components/ui/use-toast'
+import Link from 'next/link'
+import { Heart, MessageSquare, Share2, Bookmark, Clock } from 'lucide-react'
 
 interface RecipeCardProps {
   id: string
@@ -37,6 +37,10 @@ interface RecipeCardProps {
     name: string
     slug: string
   } | null
+  // Nutrition & timing (optional — not all call sites pass these yet)
+  nutrition_per_serving?: { calories: number; protein: number; carbs: number; fat: number } | null
+  cook_time_minutes?: number | null
+  servings?: number | null
 }
 
 export default function RecipeCard({
@@ -57,11 +61,12 @@ export default function RecipeCard({
   created_by,
   is_saved: initialIsSaved,
   cookbook,
-  chapter
+  chapter,
+  nutrition_per_serving,
+  cook_time_minutes,
 }: RecipeCardProps) {
 
   const router = useRouter()
-  // const { toast } = useToast()
   const [isSaved, setIsSaved] = useState(initialIsSaved)
   const [voteCount, setVoteCount] = useState(votes)
   const [userVote, setUserVote] = useState<number | null>(null)
@@ -73,15 +78,10 @@ export default function RecipeCard({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ value })
       })
-
       if (!res.ok) {
-        if (res.status === 401) {
-          console.log('Please login to vote')
-          return
-        }
+        if (res.status === 401) return
         throw new Error('Vote failed')
       }
-
       const data = await res.json()
       setVoteCount(data.netVotes)
       setUserVote(data.userVote)
@@ -97,17 +97,11 @@ export default function RecipeCard({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ post_id: id })
       })
-
       if (!res.ok) {
-        if (res.status === 401) {
-          console.log('Please login to save recipes')
-          return
-        }
+        if (res.status === 401) return
         throw new Error('Save failed')
       }
-
       setIsSaved(!isSaved)
-      console.log(isSaved ? 'Removed from cookbook' : 'Saved to cookbook')
     } catch (err) {
       console.error('Failed to save:', err)
     }
@@ -123,7 +117,6 @@ export default function RecipeCard({
         })
       } else {
         await navigator.clipboard.writeText(`${window.location.origin}/recipes/${slug}`)
-        console.log('Link copied to clipboard!')
       }
     } catch (err) {
       if (err instanceof Error && err.name !== 'AbortError') {
@@ -134,22 +127,15 @@ export default function RecipeCard({
 
   const handleAddToPlan = async () => {
     try {
-      // Get or create default meal plan
       const plansRes = await fetch('/api/meal-plans')
-      if (!plansRes.ok) {
-        console.log('Please login to add to meal plan')
-        return
-      }
-      
+      if (!plansRes.ok) return
       const plans = await plansRes.json()
       let mealPlanId = plans[0]?.id
-      
-      // Create default meal plan if none exists
       if (!mealPlanId) {
         const createRes = await fetch('/api/meal-plans', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             title: 'My Meal Plan',
             start_date: new Date().toISOString().split('T')[0]
           })
@@ -157,9 +143,7 @@ export default function RecipeCard({
         const newPlan = await createRes.json()
         mealPlanId = newPlan.id
       }
-      
-      // Add recipe to meal plan
-      const entryRes = await fetch('/api/meal-plan-entries', {
+      await fetch('/api/meal-plan-entries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -172,127 +156,175 @@ export default function RecipeCard({
           recipe_image: hero_image_url
         })
       })
-      
-      if (entryRes.ok) {
-        console.log('Added to meal plan!')
-      }
     } catch (err) {
       console.error('Failed to add to plan:', err)
     }
   }
 
-  const handleFollowCreator = () => {
-    console.log('Follow coming soon!')
-  }
+  const calories = nutrition_per_serving?.calories
 
   return (
-    <div className="border rounded-lg p-4 flex flex-col bg-card shadow-sm relative">
-      <img src={hero_image_url} alt={title} className="w-full h-40 object-cover rounded-md mb-3" />
-      <span className="absolute top-2 left-2 bg-primary text-primary-foreground px-2 py-1 rounded text-xs font-bold shadow">{tag}</span>
-      {badges && badges.length > 0 && (
-        <div className="absolute top-2 right-2 flex gap-1">
-          {badges.map(badge => (
-            <span key={badge} className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-bold shadow">{badge}</span>
+    <div className="border rounded-xl overflow-hidden flex flex-col bg-card shadow-sm hover:shadow-md transition-shadow">
+      {/* Image */}
+      <div className="relative">
+        <img
+          src={hero_image_url}
+          alt={title}
+          className="w-full h-44 object-cover"
+          onClick={() => router.push(`/recipes/${slug}`)}
+          style={{ cursor: 'pointer' }}
+        />
+        {/* Tag badge top-left */}
+        {tag && (
+          <span className="absolute top-2 left-2 bg-amber-500 text-white px-2 py-0.5 rounded-full text-xs font-bold shadow">
+            {tag}
+          </span>
+        )}
+        {/* Tested badge top-right */}
+        {is_tested && (
+          <span className="absolute top-2 right-2 bg-green-500 text-white px-2 py-0.5 rounded-full text-xs font-bold shadow">
+            Tested ✓
+          </span>
+        )}
+        {/* Calorie badge bottom-right */}
+        {calories && (
+          <span className="absolute bottom-2 right-2 bg-black/60 text-white px-2 py-0.5 rounded-full text-xs font-medium backdrop-blur-sm">
+            {calories} kcal
+          </span>
+        )}
+        {/* Cook time badge bottom-left */}
+        {cook_time_minutes && (
+          <span className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-0.5 rounded-full text-xs font-medium backdrop-blur-sm flex items-center gap-1">
+            <Clock size={10} />
+            {cook_time_minutes}m
+          </span>
+        )}
+      </div>
+
+      <div className="p-4 flex flex-col flex-1">
+        {/* Cookbook breadcrumb */}
+        {cookbook && (
+          <div className="text-xs text-muted-foreground mb-2">
+            <span
+              onClick={() => router.push(`/cookbooks/${cookbook.slug}`)}
+              className="hover:text-primary cursor-pointer"
+            >
+              📚 {cookbook.title}
+            </span>
+            {chapter && (
+              <>
+                <span className="mx-1">›</span>
+                <span>{chapter.name}</span>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Title */}
+        <h3
+          className="font-semibold text-base mb-1 line-clamp-2 cursor-pointer hover:text-amber-700 transition-colors"
+          onClick={() => router.push(`/recipes/${slug}`)}
+        >
+          {title}
+        </h3>
+
+        {/* Summary */}
+        <p className="text-sm text-muted-foreground mb-3 line-clamp-2 flex-1">
+          {summary || `${region} • ${voteCount} upvotes`}
+        </p>
+
+        {/* Quality score + tags row */}
+        <div className="flex items-center gap-1.5 flex-wrap mb-3">
+          {quality_score && (
+            <span className="inline-flex items-center gap-0.5 text-xs font-semibold text-amber-600 mr-1">
+              ★ {quality_score.toFixed(1)}
+            </span>
+          )}
+          {dietTags.slice(0, 2).map((t) => (
+            <Link
+              key={t}
+              href={`/search?diet_tags=${encodeURIComponent(t)}`}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-[10px] font-medium capitalize hover:bg-blue-200 transition-colors"
+            >
+              {t}
+            </Link>
+          ))}
+          {foodTags.slice(0, 2).map((t) => (
+            <Link
+              key={t}
+              href={`/search?food_tags=${encodeURIComponent(t)}`}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-[10px] font-medium capitalize hover:bg-amber-200 transition-colors"
+            >
+              {t}
+            </Link>
           ))}
         </div>
-      )}
-      <h3 className="font-semibold text-lg mb-1">{title}</h3>
-      <p className="text-sm text-muted-foreground mb-2">{summary || `${region} • ${votes} upvotes • ${comments} comments`}</p>
-      {cookbook && (
-        <div className="text-xs text-muted-foreground mb-2">
-          <span 
-            onClick={() => router.push(`/cookbooks/${cookbook.slug}`)}
-            className="hover:text-primary cursor-pointer"
+
+        {/* Actions */}
+        <div className="flex items-center gap-1.5 mb-3 flex-wrap">
+          <button
+            onClick={() => router.push(`/recipes/${slug}`)}
+            className="bg-amber-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-amber-600 transition-colors"
           >
-            📚 {cookbook.title}
-          </span>
-          {chapter && (
-            <>
-              <span className="mx-1">›</span>
-              <span className="text-muted-foreground">{chapter.name}</span>
-            </>
-          )}
+            View Recipe
+          </button>
+          <button
+            onClick={handleSave}
+            className={`px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 font-medium transition-colors ${
+              isSaved ? 'bg-amber-100 text-amber-800' : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
+          >
+            <Bookmark size={12} className={isSaved ? 'fill-current' : ''} />
+            {isSaved ? 'Saved' : 'Save'}
+          </button>
+          <button
+            onClick={() => handleVote(1)}
+            className={`px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 font-medium transition-colors ${
+              userVote === 1 ? 'bg-rose-100 text-rose-700' : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
+          >
+            <Heart size={12} className={userVote === 1 ? 'fill-current' : ''} />
+            {voteCount}
+          </button>
+          <button
+            onClick={handleShare}
+            className="bg-muted text-muted-foreground px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 hover:bg-muted/80 transition-colors"
+          >
+            <Share2 size={12} />
+            Share
+          </button>
+          <button
+            onClick={handleAddToPlan}
+            className="bg-muted text-muted-foreground px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 hover:bg-muted/80 transition-colors"
+          >
+            <Clock size={12} />
+            Plan
+          </button>
+          <button
+            onClick={() => router.push(`/recipes/${slug}#comments`)}
+            className="bg-muted text-muted-foreground px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 hover:bg-muted/80 transition-colors"
+          >
+            <MessageSquare size={12} />
+            {comments}
+          </button>
         </div>
-      )}
-      <div className="flex gap-2 text-xs mb-2 flex-wrap">
-        {dietTags.map(tag => (
-          <span key={tag} className="bg-blue-100 text-blue-800 px-2 py-1 rounded">{tag}</span>
-        ))}
-        {foodTags.slice(0, 2).map(tag => (
-          <span key={tag} className="bg-purple-100 text-purple-800 px-2 py-1 rounded">{tag}</span>
-        ))}
-      </div>
-      <div className="flex gap-2 mb-2">
-        <button
-          onClick={() => router.push(`/recipes/${slug}`)}
-          className="bg-primary text-primary-foreground px-4 py-1 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors"
-        >
-          View Recipe
-        </button>
-        <button
-          onClick={() => console.log('Cook mode coming soon!')}
-          className="bg-secondary text-secondary-foreground px-4 py-1 rounded-md text-sm font-medium hover:bg-secondary/80 transition-colors"
-        >
-          Cook
-        </button>
-      </div>
-      <div className="flex gap-2 mb-2 flex-wrap">
-        <button
-          onClick={handleSave}
-          className={`px-3 py-1 rounded text-xs flex items-center gap-1 ${isSaved ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}
-        >
-          <Bookmark size={14} className={isSaved ? 'fill-current' : ''} />
-          {isSaved ? 'Saved' : 'Save'}
-        </button>
-        <button
-          onClick={() => handleVote(1)}
-          className={`px-3 py-1 rounded text-xs flex items-center gap-1 ${userVote === 1 ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}
-        >
-          <Heart size={14} className={userVote === 1 ? 'fill-current' : ''} />
-          Upvote
-        </button>
-        <button
-          onClick={handleShare}
-          className="bg-muted px-3 py-1 rounded text-xs flex items-center gap-1"
-        >
-          <Share2 size={14} />
-          Share
-        </button>
-        <button
-          onClick={handleAddToPlan}
-          className="bg-muted px-3 py-1 rounded text-xs flex items-center gap-1"
-        >
-          <Clock size={14} />
-          Add to Plan
-        </button>
-      </div>
-      <div className="flex gap-2 mb-2">
-        <button
-          onClick={() => router.push(`/recipes/${slug}#comments`)}
-          className="bg-muted px-3 py-1 rounded text-xs flex items-center gap-1"
-        >
-          <MessageSquare size={14} />
-          Comment ({comments})
-        </button>
-      </div>
-      <div className="border-t pt-2 mt-2">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden">
+
+        {/* Creator */}
+        <div className="border-t pt-2 mt-auto flex items-center gap-2">
+          <div className="w-7 h-7 rounded-full bg-stone-200 overflow-hidden flex-shrink-0">
             {created_by.avatar_url ? (
-              <img src={created_by.avatar_url} alt={created_by.display_name} />
+              <img src={created_by.avatar_url} alt={created_by.display_name} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-xs">
+              <div className="w-full h-full flex items-center justify-center text-xs font-bold">
                 {created_by.display_name[0]}
               </div>
             )}
           </div>
-          <span className="text-sm text-muted-foreground">By {created_by.display_name}</span>
-          <button
-            onClick={handleFollowCreator}
-            className="text-xs text-primary hover:underline ml-auto"
-          >
-            Follow
-          </button>
+          <span className="text-xs text-muted-foreground truncate flex-1">
+            {created_by.display_name}
+          </span>
         </div>
       </div>
     </div>
