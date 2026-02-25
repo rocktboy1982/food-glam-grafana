@@ -13,13 +13,14 @@ const NAV_ITEMS = [
   { href: '/me/preferred',  label: '⭐ Preferred', icon: '⭐' },
   { href: '/me/cookbook',   label: 'My Cookbook', icon: '🍴' },
   { href: '/me/watchlist',  label: 'Watchlist',  icon: '👁' },
-  { href: '/chefs/me/new-post', label: '+ Chef Post', icon: '✍️' },
+  { href: '/chefs/me/new-post', label: '+ Chef Post',   icon: '✍️' },
+  { href: '/submit/recipe',    label: '+ Add Recipe', icon: '🍽️' },
 ]
 
 const MOBILE_TABS = [
   { href: '/',                   icon: '🏠', label: 'Home'    },
   { href: '/search',             icon: '🔍', label: 'Explore' },
-  { href: '/chefs/me/new-post',  icon: '✍️', label: 'Post'   },
+  { href: '/submit/recipe',    icon: '🍽️', label: 'Recipe'  },
   { href: '/plan',               icon: '📅', label: 'Plan'   },
   { href: '/me',                 icon: '👤', label: 'Profile' },
 ]
