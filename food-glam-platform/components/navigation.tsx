@@ -33,7 +33,18 @@ function useMockUser() {
   const [hydrated, setHydrated] = useState(false)
   useEffect(() => {
     try {
-      const raw = localStorage.getItem('mock_user')
+      let raw = localStorage.getItem('mock_user')
+      // Auto-seed a demo user so the site works without Google sign-in
+      if (!raw) {
+        const demo: MockUser = {
+          id: 'mock-user-demo',
+          display_name: 'Demo Chef',
+          handle: '@demochef',
+          avatar_url: null,
+        }
+        localStorage.setItem('mock_user', JSON.stringify(demo))
+        raw = JSON.stringify(demo)
+      }
       if (raw) setUser(JSON.parse(raw))
     } catch { /* ignore */ }
     setHydrated(true)
