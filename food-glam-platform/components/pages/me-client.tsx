@@ -42,7 +42,7 @@ export default function MeClientPage() {
   };
 
   return (
-    <main className="container mx-auto px-4 py-8 flex flex-col gap-8 max-w-xl">
+    <main className="min-h-screen" style={{ background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', color: '#111' }}><div className="container mx-auto px-4 py-8 flex flex-col gap-8 max-w-xl">
       <section className="text-center">
         <h1 className="text-3xl font-bold mb-2">Profile</h1>
         <p className="text-muted-foreground mb-4">Manage your account, modes, and settings.</p>
@@ -177,6 +177,6 @@ export default function MeClientPage() {
           Start Onboarding
         </button>
       </section>
-    </main>
+    </div></main>
   );
 }
