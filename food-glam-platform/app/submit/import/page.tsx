@@ -27,7 +27,7 @@ export default function ImportRecipePage() {
   }
 
   return (
-    <div className="min-h-screen container mx-auto px-4 py-8" style={{ background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', color: '#111' }}>
+    <div className="min-h-screen container mx-auto px-4 py-8" style={{ background: '#dde3ee', color: '#111' }}>
       <h1 className="text-3xl font-bold mb-4">Import Recipe from URL</h1>
       <div className="flex gap-2 mb-4">
         <input 

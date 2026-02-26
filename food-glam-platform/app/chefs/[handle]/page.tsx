@@ -85,14 +85,25 @@ export default function ChefPage() {
     setHydrated(true)
   }, [])
 
-  // Load API posts
+  // Load API posts + merge localStorage profile override
   useEffect(() => {
     if (!handle) return
     fetch(`/api/chefs/${handle}/posts`)
       .then(r => r.json())
       .then(data => {
         if (data.error) { setLoading(false); return }
-        setProfile(data.profile)
+        const base: ChefProfile = data.profile
+        try {
+          const raw = localStorage.getItem(`chef_profile_override_${handle}`)
+          if (raw) {
+            const ov = JSON.parse(raw)
+            if (ov.display_name) base.display_name = ov.display_name
+            if (ov.bio)          base.bio          = ov.bio
+            if (ov.avatar_url)   base.avatar_url   = ov.avatar_url
+            if (ov.banner_url)   base.banner_url   = ov.banner_url
+          }
+        } catch { /* ignore */ }
+        setProfile(base)
         setPosts(data.posts)
         setIsFollowing(data.profile.is_following)
         setFollowerCount(data.profile.follower_count)
@@ -109,14 +120,30 @@ export default function ChefPage() {
       try {
         const entries = JSON.parse(entriesStr) as VlogEntry[]
         setVlogEntries(entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()))
-      } catch {}
+      } catch { /* ignore */ }
     }
+    // Re-apply profile override once localStorage is accessible
+    setProfile(prev => {
+      if (!prev) return prev
+      try {
+        const raw = localStorage.getItem(`chef_profile_override_${handle}`)
+        if (!raw) return prev
+        const ov = JSON.parse(raw)
+        return {
+          ...prev,
+          ...(ov.display_name && { display_name: ov.display_name }),
+          ...(ov.bio          && { bio:          ov.bio }),
+          ...(ov.avatar_url   && { avatar_url:   ov.avatar_url }),
+          ...(ov.banner_url   && { banner_url:   ov.banner_url }),
+        }
+      } catch { return prev }
+    })
   }, [handle, hydrated])
 
   /* ── loading skeleton ── */
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', color: '#111' }}>
+      <div style={{ minHeight: '100vh', background: '#dde3ee', color: '#111' }}>
         <div className="animate-pulse">
           <div style={{ height: 220, background: '#e8e8e8' }} />
           <div className="px-4 pt-16 space-y-3">
@@ -131,7 +158,7 @@ export default function ChefPage() {
   /* ── not found ── */
   if (!profile) {
     return (
-      <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', color: '#111' }}
+      <div style={{ minHeight: '100vh', background: '#dde3ee', color: '#111' }}
         className="flex flex-col items-center justify-center gap-4">
         <p className="text-2xl">😕</p>
         <p className="text-lg font-semibold">Chef not found</p>
@@ -141,7 +168,7 @@ export default function ChefPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', color: '#111', fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: '#dde3ee', color: '#111', fontFamily: "'Inter', sans-serif" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap');.ff-display{font-family:'Syne',sans-serif;}`}</style>
 
       {/* ── Banner ── */}
@@ -171,12 +198,12 @@ export default function ChefPage() {
             src={profile.avatar_url}
             alt={profile.display_name}
             className="rounded-full object-cover border-4"
-            style={{ width: 88, height: 88, borderColor: '#fdf8f0' }}
+            style={{ width: 88, height: 88, borderColor: '#dde3ee' }}
           />
           {profile.tier !== 'user' && (
             <span
               className="absolute bottom-0 right-0 flex items-center justify-center rounded-full"
-              style={{ width: 24, height: 24, background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', border: '2px solid #fdf8f0' }}
+              style={{ width: 24, height: 24, background: '#dde3ee', border: '2px solid #dde3ee' }}
             >
               <TierStar tier={profile.tier} size={16} />
             </span>
@@ -202,19 +229,30 @@ export default function ChefPage() {
             <p className="text-sm" style={{ color: '#888' }}>@{profile.handle}</p>
           </div>
 
-          {/* follow button */}
-          <button
-            onClick={() => {
-              setIsFollowing(f => !f)
-              setFollowerCount(c => isFollowing ? c - 1 : c + 1)
-            }}
-            className="flex-shrink-0 px-5 py-2 rounded-full text-sm font-bold transition-all"
-            style={isFollowing
-              ? { background: 'rgba(0,0,0,0.08)', color: '#333', border: '1px solid rgba(0,0,0,0.15)' }
-              : { background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}
-          >
-            {isFollowing ? '✓ Following' : '+ Follow'}
-          </button>
+          {/* owner: edit profile | others: follow */}
+          {mockUser && mockUser.handle === handle ? (
+            <Link
+              href="/me/profile/edit"
+              className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold transition-all"
+              style={{ background: 'rgba(0,0,0,0.06)', color: '#333', border: '1px solid rgba(0,0,0,0.15)' }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit Profile
+            </Link>
+          ) : (
+            <button
+              onClick={() => {
+                setIsFollowing(f => !f)
+                setFollowerCount(c => isFollowing ? c - 1 : c + 1)
+              }}
+              className="flex-shrink-0 px-5 py-2 rounded-full text-sm font-bold transition-all"
+              style={isFollowing
+                ? { background: 'rgba(0,0,0,0.08)', color: '#333', border: '1px solid rgba(0,0,0,0.15)' }
+                : { background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}
+            >
+              {isFollowing ? '✓ Following' : '+ Follow'}
+            </button>
+          )}
         </div>
 
         {/* bio */}

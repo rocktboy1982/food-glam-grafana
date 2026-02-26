@@ -53,7 +53,7 @@ export default function MeClientPage() {
   };
 
   return (
-    <main className="min-h-screen" style={{ background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', color: '#111' }}><div className="container mx-auto px-4 py-8 flex flex-col gap-8 max-w-xl">
+    <main className="min-h-screen" style={{ background: '#dde3ee', color: '#111' }}><div className="container mx-auto px-4 py-8 flex flex-col gap-8 max-w-xl">
       <section className="text-center">
         <h1 className="text-3xl font-bold mb-2" style={{ fontFamily: "'Syne', sans-serif" }}>Profile</h1>
         <p className="mb-4 text-sm" style={{ color: '#777' }}>Manage your account, modes, and settings.</p>

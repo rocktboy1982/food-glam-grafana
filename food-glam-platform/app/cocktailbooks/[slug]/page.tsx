@@ -30,10 +30,10 @@ export default async function CocktailBookDetailPage({ params }: { params: Promi
   return (
     <main
       className="min-h-screen"
-      style={{ background: 'linear-gradient(to bottom, #0d1117, #111827)', color: '#f0f0f0', fontFamily: "'Inter', sans-serif" }}
+      style={{ background: '#dde3ee', color: '#111', fontFamily: "'Inter', sans-serif" }}
     >
       <div className="container mx-auto px-4 py-8">
-        <nav className="text-sm mb-6" style={{ color: '#888' }}>
+        <nav className="text-sm mb-6" style={{ color: '#555' }}>
           <Link href="/cocktailbooks" className="hover:text-purple-400 transition-colors">Cocktail Books</Link>
           <span className="mx-2">›</span>
           <span style={{ color: '#ccc' }}>{cookbook.title}</span>
@@ -47,44 +47,44 @@ export default async function CocktailBookDetailPage({ params }: { params: Promi
           />
         )}
 
-        <h1 className="text-3xl font-bold mb-1" style={{ color: '#f0f0f0' }}>{cookbook.title}</h1>
+        <h1 className="text-3xl font-bold mb-1" style={{ color: '#111' }}>{cookbook.title}</h1>
         {cookbook.description && (
-          <p className="mb-4" style={{ color: '#888' }}>{cookbook.description}</p>
+          <p className="mb-4" style={{ color: '#555' }}>{cookbook.description}</p>
         )}
 
         {owner && (
           <div className="flex items-center gap-2 mb-8">
-            <div className="w-8 h-8 rounded-full overflow-hidden" style={{ background: '#1a1f2e' }}>
+            <div className="w-8 h-8 rounded-full overflow-hidden" style={{ background: '#c8cfe0' }}>
               {owner.avatar_url ? (
                 <img src={owner.avatar_url} alt={owner.display_name} className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-xs font-bold" style={{ color: '#a78bfa' }}>
+                <div className="w-full h-full flex items-center justify-center text-xs font-bold" style={{ color: '#7c3aed' }}>
                   {owner.display_name[0]}
                 </div>
               )}
             </div>
-            <span className="text-sm" style={{ color: '#888' }}>By {owner.display_name}</span>
+            <span className="text-sm" style={{ color: '#555' }}>By {owner.display_name}</span>
           </div>
         )}
 
-        <h2 className="text-xl font-semibold mb-4" style={{ color: '#f0f0f0' }}>Chapters</h2>
+        <h2 className="text-xl font-semibold mb-4" style={{ color: '#111' }}>Chapters</h2>
         {chapters && chapters.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {chapters.map((chapter) => (
               <div
                 key={chapter.id}
                 className="rounded-xl p-4 border transition-all cursor-pointer"
-                style={{ background: '#1a1f2e', borderColor: 'rgba(255,255,255,0.08)' }}
+                style={{ background: 'rgba(255,255,255,0.5)', borderColor: 'rgba(0,0,0,0.1)' }}
               >
-                <h3 className="font-semibold text-sm mb-1" style={{ color: '#f0f0f0' }}>{chapter.name}</h3>
+                <h3 className="font-semibold text-sm mb-1" style={{ color: '#111' }}>{chapter.name}</h3>
                 {chapter.description && (
-                  <p className="text-xs" style={{ color: '#888' }}>{chapter.description}</p>
+                  <p className="text-xs" style={{ color: '#555' }}>{chapter.description}</p>
                 )}
               </div>
             ))}
           </div>
         ) : (
-          <p style={{ color: '#888' }}>No chapters yet.</p>
+          <p style={{ color: '#555' }}>No chapters yet.</p>
         )}
       </div>
     </main>

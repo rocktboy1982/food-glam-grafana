@@ -255,6 +255,41 @@ export default function AdminClient() {
   const [reportCategory, setReportCategory] = useState<ReportCategory>('all')
   const [selectedReports, setSelectedReports] = useState<Set<string>>(new Set())
 
+  /* load live reports from API and merge with mock */
+  useEffect(() => {
+    const reasonToCategory = (r: string): Exclude<ReportCategory, 'all'> => {
+      if (r === 'spam' || r === 'plagiarism') return 'spam'
+      if (r === 'offensive') return 'nudity'
+      if (r === 'harmful') return 'harassment'
+      if (r === 'incorrect') return 'misinformation'
+      return 'spam'
+    }
+    fetch('/api/report')
+      .then(res => res.json())
+      .then((live: Array<{ contentId: string; contentType: string; contentTitle: string; count: number; deactivated: boolean; reports: Array<{ id: string; reason: string; reportedAt: string; reporterHandle: string }> }>) => {
+        if (!Array.isArray(live) || live.length === 0) return
+        const mapped: ReportItem[] = live.flatMap(rec =>
+          rec.reports.map(r => ({
+            id: r.id,
+            title: rec.contentTitle,
+            reason: r.reason.replace(/_/g, ' '),
+            category: reasonToCategory(r.reason),
+            reporter: `@${r.reporterHandle}`,
+            date: new Date(r.reportedAt).toLocaleString(),
+            img: '',
+            slug: rec.contentId,
+            status: (rec.deactivated ? 'actioned' : 'open') as 'open' | 'actioned',
+          }))
+        )
+        setReports(prev => {
+          const existingIds = new Set(prev.map(r => r.id))
+          const fresh = mapped.filter(r => !existingIds.has(r.id))
+          return fresh.length ? [...fresh, ...prev] : prev
+        })
+      })
+      .catch(() => { /* API not available — mock data stays */ })
+  }, [])
+
   /* audit log */
   const [auditLog, setAuditLog] = useState<AuditEntry[]>([])
   const auditCounter = useRef(0)

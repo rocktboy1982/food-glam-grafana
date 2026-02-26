@@ -15,7 +15,7 @@ export default async function RegionCookbookPage({
 
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#dde3ee' }}>
         <div className="text-muted-foreground">Loading...</div>
       </div>
     }>

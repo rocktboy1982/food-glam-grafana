@@ -127,7 +127,7 @@ export default function RegionCookbookClient({ region }: { region: string }) {
   return (
     <main
       className="min-h-screen"
-      style={{ background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', color: '#111' }}
+      style={{ background: '#dde3ee', color: '#111' }}
     >
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Breadcrumb */}

@@ -5,6 +5,8 @@ import { useParams, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { MOCK_COCKTAILS } from '@/lib/mock-data'
 import type { MockCocktail } from '@/lib/mock-data'
+import ReportButton from '@/components/ReportButton'
+import RecipeRating from '@/components/RecipeRating'
 
 /* ── Extended cocktail with full recipe fields ─────────────────────────── */
 interface CocktailDetail extends MockCocktail {
@@ -87,7 +89,7 @@ export default function CocktailDetailPage() {
   // Loading
   if (cocktail === undefined) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0d1117' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#dde3ee' }}>
         <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     )
@@ -106,7 +108,7 @@ export default function CocktailDetailPage() {
     cocktail.difficulty === 'medium' ? '#fbbf24' : '#f87171'
 
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom, #0d1117, #111827)', color: '#f0f0f0', fontFamily: "'Inter', sans-serif" }}>
+    <div className="min-h-screen" style={{ background: '#dde3ee', color: '#111', fontFamily: "'Inter', sans-serif" }}>
 
       {/* ── Hero ── */}
       <div className="relative w-full" style={{ maxHeight: 480, overflow: 'hidden' }}>
@@ -118,15 +120,16 @@ export default function CocktailDetailPage() {
             style={{ maxHeight: 480, minHeight: 280 }}
           />
         ) : (
-          <div className="w-full h-64 flex items-center justify-center text-5xl" style={{ background: '#1a1a2e' }}>
+          <div className="w-full h-64 flex items-center justify-center text-5xl" style={{ background: '#c8cfe0' }}>
             🍹
           </div>
         )}
         {/* Gradient overlay */}
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(13,17,23,1) 0%, rgba(13,17,23,0.3) 60%, transparent 100%)' }} />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(200,208,224,1) 0%, rgba(200,208,224,0.3) 60%, transparent 100%)' }} />
 
         {/* Breadcrumb */}
-        <nav className="absolute top-4 left-4 flex items-center gap-2 text-xs" style={{ color: 'rgba(255,255,255,0.7)' }}>
+        <nav className="absolute top-4 left-4 flex items-center gap-2 text-xs" style={{ color: 'rgba(0,0,0,0.6)' }}>
           <Link href="/cocktailbooks" className="hover:text-violet-300 transition-colors">Cocktail Books</Link>
           <span>/</span>
           <Link href="/search?mode=cocktails" className="hover:text-violet-300 transition-colors">Cocktails</Link>
@@ -146,12 +149,12 @@ export default function CocktailDetailPage() {
               {isAlcoholic ? '🥃 Alcoholic' : '🍃 Non-Alcoholic'}
             </Pill>
             {spirit && (
-              <Pill style={{ background: 'rgba(255,255,255,0.07)', color: '#ccc', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <Pill style={{ background: 'rgba(0,0,0,0.06)', color: '#555', border: '1px solid rgba(0,0,0,0.1)' }}>
                 {spirit}
               </Pill>
             )}
             {isAlcoholic && cocktail.abv != null && cocktail.abv > 0 && (
-              <Pill style={{ background: 'rgba(0,0,0,0.4)', color: '#aaa', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <Pill style={{ background: 'rgba(0,0,0,0.05)', color: '#444', border: '1px solid rgba(0,0,0,0.08)' }}>
                 {cocktail.abv}% ABV
               </Pill>
             )}
@@ -159,10 +162,10 @@ export default function CocktailDetailPage() {
               {cocktail.difficulty}
             </Pill>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2" style={{ color: '#111' }}>
             {cocktail.title}
           </h1>
-          <p className="text-slate-400 text-base leading-relaxed max-w-2xl">{cocktail.summary}</p>
+          <p className="text-base leading-relaxed max-w-2xl" style={{ color: '#555' }}>{cocktail.summary}</p>
         </div>
 
         {/* ── Two-column layout ── */}
@@ -178,25 +181,25 @@ export default function CocktailDetailPage() {
                 { label: 'Difficulty', value: cocktail.difficulty },
                 { label: 'Votes', value: `♥ ${cocktail.votes.toLocaleString()}` },
               ].map(stat => (
-                <div key={stat.label} className="rounded-xl p-4 text-center" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                  <p className="text-xl font-bold text-violet-300 capitalize">{stat.value}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">{stat.label}</p>
+                <div key={stat.label} className="rounded-xl p-4 text-center" style={{ background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(0,0,0,0.08)' }}>
+                  <p className="text-xl font-bold capitalize" style={{ color: '#7c3aed' }}>{stat.value}</p>
+                  <p className="text-xs mt-0.5" style={{ color: '#888' }}>{stat.label}</p>
                 </div>
               ))}
             </div>
 
             {/* Glassware / Garnish */}
             {(cocktail.glassware || cocktail.garnish) && (
-              <div className="flex flex-wrap gap-4 text-sm text-slate-300">
+            <div className="flex flex-wrap gap-4 text-sm" style={{ color: '#555' }}>
                 {cocktail.glassware && (
                   <div className="flex items-center gap-1.5">
-                    <span className="text-slate-500">🥂 Glass:</span>
+                    <span style={{ color: '#888' }}>🥂 Glass:</span>
                     <span>{cocktail.glassware}</span>
                   </div>
                 )}
                 {cocktail.garnish && (
                   <div className="flex items-center gap-1.5">
-                    <span className="text-slate-500">🌿 Garnish:</span>
+                    <span style={{ color: '#888' }}>🌿 Garnish:</span>
                     <span>{cocktail.garnish}</span>
                   </div>
                 )}
@@ -205,7 +208,7 @@ export default function CocktailDetailPage() {
 
             {/* Ingredients */}
             <section>
-              <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: '#111' }}>
                 <span className="w-1 h-5 rounded-full inline-block" style={{ background: '#7c3aed' }} />
                 Ingredients
               </h2>
@@ -214,18 +217,18 @@ export default function CocktailDetailPage() {
                   {cocktail.ingredients.map((ing, i) => (
                     <li key={i} className="flex items-start gap-3 text-sm">
                       <span className="mt-2 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: '#7c3aed' }} />
-                      <span className="text-slate-300">{ing}</span>
+                      <span style={{ color: '#333' }}>{ing}</span>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-slate-500 text-sm italic">No ingredients listed.</p>
+                <p className="text-sm italic" style={{ color: '#888' }}>No ingredients listed.</p>
               )}
             </section>
 
             {/* Method / Steps */}
             <section>
-              <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: '#111' }}>
                 <span className="w-1 h-5 rounded-full inline-block" style={{ background: '#7c3aed' }} />
                 Method
               </h2>
@@ -239,12 +242,12 @@ export default function CocktailDetailPage() {
                       >
                         {i + 1}
                       </span>
-                      <p className="text-slate-300 text-sm leading-relaxed pt-1.5">{step}</p>
+                      <p className="text-sm leading-relaxed pt-1.5" style={{ color: '#333' }}>{step}</p>
                     </li>
                   ))}
                 </ol>
               ) : (
-                <p className="text-slate-500 text-sm italic">No method steps listed.</p>
+                <p className="text-sm italic" style={{ color: '#888' }}>No method steps listed.</p>
               )}
             </section>
 
@@ -272,25 +275,12 @@ export default function CocktailDetailPage() {
               <ChefCard chef={cocktail.created_by} />
             </div>
 
-            {/* Quality score */}
-            {cocktail.quality_score > 0 && (
-              <div className="rounded-2xl p-5" style={{ background: '#f9f5ff', border: '1px solid rgba(124,58,237,0.15)' }}>
-                <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#7c3aed' }}>Rating</h3>
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl font-bold" style={{ color: '#111' }}>{cocktail.quality_score.toFixed(1)}</span>
-                  <div className="flex gap-0.5">
-                    {Array.from({ length: 5 }, (_, i) => (
-                      <svg key={i} viewBox="0 0 24 24" className="w-4 h-4" fill={i < Math.round(cocktail.quality_score) ? '#a78bfa' : 'none'} stroke="#a78bfa" strokeWidth="1.5">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
-                      </svg>
-                    ))}
-                  </div>
-                </div>
-                {cocktail.is_tested && (
-                  <p className="text-xs mt-2" style={{ color: '#059669' }}>✓ Kitchen-tested</p>
-                )}
-              </div>
-            )}
+            {/* Community rating */}
+            <RecipeRating
+              recipeId={cocktail.id}
+              initialVotes={cocktail.votes}
+              initialQualityScore={cocktail.quality_score}
+            />
 
             {/* CTAs */}
             <div className="space-y-2">
@@ -308,6 +298,9 @@ export default function CocktailDetailPage() {
               >
                 Browse all cocktails →
               </Link>
+            </div>
+            <div className="pt-1 flex justify-center">
+              <ReportButton contentId={cocktail.id} contentType="cocktail" contentTitle={cocktail.title} variant="full" />
             </div>
 
           </div>

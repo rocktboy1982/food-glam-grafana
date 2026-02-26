@@ -486,6 +486,9 @@ export default function Home() {
                           <button onClick={async () => { const url = `${window.location.origin}/recipes/${recipe.slug}`; if (navigator.share) await navigator.share({ title: recipe.title, url }); else await navigator.clipboard.writeText(url) }} style={{ color: '#888' }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                           </button>
+                          <button onClick={e => { e.stopPropagation(); router.push(`/recipes/${recipe.slug}/print`) }} style={{ color: '#888' }} title="Print recipe">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                          </button>
                         </div>
                         <button onClick={() => toggleSave(recipe)} style={{ color: saved ? '#ff9500' : '#888' }} className="transition-transform active:scale-110">
                           <svg width="17" height="17" viewBox="0 0 24 24" fill={saved ? '#ff9500' : 'none'} stroke={saved ? '#ff9500' : '#888'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>

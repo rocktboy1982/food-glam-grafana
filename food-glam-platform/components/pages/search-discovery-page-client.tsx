@@ -537,17 +537,17 @@ function SearchDiscoveryPageClientContent() {
   const cocktailTotalPages = Math.max(1, Math.ceil(cocktailTotal / PER_PAGE))
 
   return (
-    <main className={`min-h-screen ${mode === 'cocktails' ? 'bg-gradient-to-b from-slate-900 to-slate-800' : 'bg-gradient-to-b from-amber-50/40 to-white'}`}>
+    <main className="min-h-screen" style={{ background: '#dde3ee' }}>
 
       {/* ---- Mode toggle: Recipes / Cocktails ---- */}
       <div className="flex justify-center pt-4 pb-0">
-        <div className={`inline-flex rounded-full p-1 ${mode === 'cocktails' ? 'bg-slate-700' : 'bg-stone-100'}`}>
+        <div className="inline-flex rounded-full p-1 bg-white/60">
           <button
             onClick={() => switchMode('recipes')}
             className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${
               mode === 'recipes'
                 ? 'bg-amber-500 text-white shadow'
-                : mode === 'cocktails' ? 'text-slate-300 hover:text-white' : 'text-stone-500 hover:text-stone-800'
+                : 'text-stone-500 hover:text-stone-800'
             }`}
           >
             🍽️ Recipes
@@ -666,12 +666,12 @@ function SearchDiscoveryPageClientContent() {
 
             {/* ====== COCKTAIL SIDEBAR ====== */}
             {mode === 'cocktails' && (
-              <div className="rounded-2xl border p-5 space-y-6 sticky top-4" style={{ background: '#1e2130', borderColor: 'rgba(255,255,255,0.08)' }}>
-                <h2 className="text-sm font-semibold uppercase tracking-wider" style={{ color: '#a78bfa' }}>Filters</h2>
+              <div className="rounded-2xl border p-5 space-y-6 sticky top-4" style={{ background: 'rgba(255,255,255,0.65)', borderColor: 'rgba(0,0,0,0.1)' }}>
+                <h2 className="text-sm font-semibold uppercase tracking-wider" style={{ color: '#7c3aed' }}>Filters</h2>
 
                 {/* Category */}
                 <div>
-                  <label className="block text-xs font-medium uppercase tracking-wider mb-2" style={{ color: '#888' }}>Category</label>
+                  <label className="block text-xs font-medium uppercase tracking-wider mb-2" style={{ color: '#555' }}>Category</label>
                   <div className="flex flex-col gap-1.5">
                     {([['', 'All Drinks', '🍹'], ['alcoholic', 'Alcoholic', '🥃'], ['non-alcoholic', 'Non-Alcoholic', '🍃']] as const).map(([val, label, emoji]) => (
                       <button
@@ -680,7 +680,7 @@ function SearchDiscoveryPageClientContent() {
                         className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left"
                         style={cocktailCategory === val
                           ? { background: '#7c3aed', color: '#fff' }
-                          : { background: 'rgba(255,255,255,0.05)', color: '#ccc' }
+                          : { background: 'rgba(0,0,0,0.06)', color: '#444' }
                         }
                       >
                         <span>{emoji}</span> {label}
@@ -692,7 +692,7 @@ function SearchDiscoveryPageClientContent() {
                 {/* Spirit */}
                 {(cocktailCategory === '' || cocktailCategory === 'alcoholic') && (
                   <div>
-                    <label className="block text-xs font-medium uppercase tracking-wider mb-2" style={{ color: '#888' }}>Spirit</label>
+                    <label className="block text-xs font-medium uppercase tracking-wider mb-2" style={{ color: '#555' }}>Spirit</label>
                     <div className="flex flex-wrap gap-1.5">
                       {SPIRITS.map(sp => (
                         <button
@@ -701,7 +701,7 @@ function SearchDiscoveryPageClientContent() {
                           className="px-2.5 py-1 rounded-full text-xs font-medium transition-all"
                           style={cocktailSpirit === sp.value
                             ? { background: '#7c3aed', color: '#fff' }
-                            : { background: 'rgba(255,255,255,0.07)', color: '#ccc' }
+                            : { background: 'rgba(0,0,0,0.06)', color: '#444' }
                           }
                         >
                           {sp.label}
@@ -713,7 +713,7 @@ function SearchDiscoveryPageClientContent() {
 
                 {/* Difficulty */}
                 <div>
-                  <label className="block text-xs font-medium uppercase tracking-wider mb-2" style={{ color: '#888' }}>Difficulty</label>
+                  <label className="block text-xs font-medium uppercase tracking-wider mb-2" style={{ color: '#555' }}>Difficulty</label>
                   <div className="flex flex-wrap gap-1.5">
                     {([['', 'Any'], ['easy', 'Easy'], ['medium', 'Medium'], ['hard', 'Hard']] as const).map(([val, label]) => (
                       <button
@@ -722,7 +722,7 @@ function SearchDiscoveryPageClientContent() {
                           fetchCocktails(query, cocktailCategory, cocktailSpirit, sort, 1)
                         }}
                         className="px-2.5 py-1 rounded-full text-xs font-medium transition-all"
-                        style={{ background: 'rgba(255,255,255,0.07)', color: '#ccc' }}
+                        style={{ background: 'rgba(0,0,0,0.06)', color: '#444' }}
                       >
                         {label}
                       </button>
@@ -980,7 +980,7 @@ function SearchDiscoveryPageClientContent() {
                     className="animate-in fade-in slide-in-from-bottom-2 h-full"
                     style={{ animationDelay: `${idx * 40}ms`, animationFillMode: 'both', animationDuration: '300ms' }}
                   >
-                    <div className="rounded-xl overflow-hidden flex flex-col h-full border transition-all hover:shadow-xl" style={{ background: '#1e2130', borderColor: 'rgba(255,255,255,0.08)' }}>
+                    <div className="rounded-xl overflow-hidden flex flex-col h-full border transition-all hover:shadow-lg" style={{ background: 'rgba(255,255,255,0.75)', borderColor: 'rgba(0,0,0,0.1)' }}>
                       {/* Image */}
                       <div className="relative">
                         <img src={c.hero_image_url} alt={c.title} className="w-full h-44 object-cover" />
@@ -1003,23 +1003,23 @@ function SearchDiscoveryPageClientContent() {
                       </div>
                       {/* Content */}
                       <div className="p-4 flex flex-col flex-1">
-                        <h3 className="font-semibold text-base mb-1 line-clamp-2" style={{ color: '#f0f0f0' }}>{c.title}</h3>
-                        <p className="text-sm mb-3 line-clamp-2 flex-1" style={{ color: '#888' }}>{c.summary}</p>
+                        <h3 className="font-semibold text-base mb-1 line-clamp-2" style={{ color: '#111' }}>{c.title}</h3>
+                        <p className="text-sm mb-3 line-clamp-2 flex-1" style={{ color: '#555' }}>{c.summary}</p>
                         {/* Tags */}
                         <div className="flex flex-wrap gap-1.5 mb-3">
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium" style={{ background: 'rgba(124,58,237,0.2)', color: '#a78bfa' }}>
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium" style={{ background: 'rgba(124,58,237,0.12)', color: '#7c3aed' }}>
                             {c.spiritLabel}
                           </span>
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium" style={{ background: 'rgba(255,255,255,0.07)', color: '#999' }}>
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium" style={{ background: 'rgba(0,0,0,0.07)', color: '#555' }}>
                             {c.difficulty}
                           </span>
                           {c.tags.slice(0, 2).map(t => (
-                            <span key={t} className="px-2 py-0.5 rounded-full text-[10px] font-medium capitalize" style={{ background: 'rgba(255,255,255,0.05)', color: '#888' }}>{t}</span>
+                            <span key={t} className="px-2 py-0.5 rounded-full text-[10px] font-medium capitalize" style={{ background: 'rgba(0,0,0,0.05)', color: '#666' }}>{t}</span>
                           ))}
                         </div>
                         {/* Actions */}
-                        <div className="flex items-center gap-2 pt-2 border-t" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
-                          <span className="text-xs" style={{ color: '#a78bfa' }}>♥ {c.votes}</span>
+                        <div className="flex items-center gap-2 pt-2 border-t" style={{ borderColor: 'rgba(0,0,0,0.08)' }}>
+                          <span className="text-xs" style={{ color: '#7c3aed' }}>♥ {c.votes}</span>
                           <span className="text-xs" style={{ color: '#888' }}>★ {c.quality_score.toFixed(1)}</span>
                           <span className="text-xs ml-auto" style={{ color: '#888' }}>Serves {c.serves}</span>
                         </div>
@@ -1113,7 +1113,7 @@ function SearchDiscoveryPageClientContent() {
 export default function SearchDiscoveryPageClient() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#dde3ee' }}>
         <div className="text-muted-foreground">Loading search...</div>
       </div>
     }>

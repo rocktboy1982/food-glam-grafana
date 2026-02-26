@@ -209,7 +209,7 @@ function SubmitCocktailPageContent() {
   if (showPreview) {
     const spirit = SPIRITS.find(s => s.value === form.spirit)
     return (
-      <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom, #0d1117, #111827)', color: '#f0f0f0' }}>
+      <div className="min-h-screen" style={{ background: '#dde3ee', color: '#111' }}>
         <div className="max-w-3xl mx-auto px-4 py-10">
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-2xl font-bold text-white">Preview</h1>
@@ -274,7 +274,7 @@ function SubmitCocktailPageContent() {
 
   /* ── Main form ── */
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom, #0d1117, #111827)', color: '#f0f0f0' }}>
+    <div className="min-h-screen" style={{ background: '#dde3ee', color: '#111' }}>
       <div className="max-w-3xl mx-auto px-4 py-10">
 
         {/* Header */}
@@ -646,7 +646,7 @@ function SubmitCocktailPageContent() {
 export default function SubmitCocktailPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0d1117' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#dde3ee' }}>
         <div className="text-slate-400">Loading...</div>
       </div>
     }>

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { usePreferredRecipes } from '@/lib/preferred-recipes';
+import ReportButton from '@/components/ReportButton';
 
 interface ExportData {
   servings?: number;
@@ -210,6 +211,8 @@ export default function RecipeActionsClient({ recipeId, slug, title, exportData 
           Export
         </Button>
       </div>
+
+        <ReportButton contentId={recipeId} contentType="recipe" contentTitle={title} variant="full" />
 
       {/* Export dropdown */}
       {exportOpen && (

@@ -376,7 +376,7 @@ function SubmitRecipePageContent() {
     const country = availableCountries.find(c => c.id === form.countryId)
     const region  = ALL_REGIONS.find(r => r.id === form.regionId)
     return (
-      <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', color: '#111' }}><div className="max-w-3xl mx-auto px-4 py-10">
+      <div className="min-h-screen" style={{ background: '#dde3ee', color: '#111' }}><div className="max-w-3xl mx-auto px-4 py-10">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold">Preview</h1>
           <Button variant="outline" onClick={() => setShowPreview(false)}>Back to editor</Button>
@@ -451,7 +451,7 @@ function SubmitRecipePageContent() {
 
   /* ── main form ───────────────────────────────────────────── */
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', color: '#111' }}><div className="max-w-3xl mx-auto px-4 py-10">
+    <div className="min-h-screen" style={{ background: '#dde3ee', color: '#111' }}><div className="max-w-3xl mx-auto px-4 py-10">
       {/* Header */}
       <div className="flex items-center gap-3 mb-8">
         <Link href="/submit" className="text-muted-foreground hover:text-foreground transition-colors">

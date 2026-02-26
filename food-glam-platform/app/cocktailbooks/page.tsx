@@ -117,7 +117,7 @@ export default function CocktailBooksPage() {
   return (
     <main
       className="min-h-screen"
-      style={{ background: 'linear-gradient(to bottom, #0d1117, #111827)', color: '#f0f0f0', fontFamily: "'Inter', sans-serif" }}
+      style={{ background: '#dde3ee', color: '#111', fontFamily: "'Inter', sans-serif" }}
     >
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap');.ff{font-family:'Syne',sans-serif;}`}</style>
 
@@ -164,7 +164,7 @@ export default function CocktailBooksPage() {
         {/* ── SPIRIT FAMILIES ── */}
         <section>
           <div className="mb-6">
-            <h2 className="ff text-xl font-bold mb-1" style={{ color: '#f0f0f0' }}>Browse by Spirit</h2>
+            <h2 className="ff text-xl font-bold mb-1" style={{ color: '#111' }}>Browse by Spirit</h2>
             <p style={{ color: '#888' }} className="text-xs">Explore cocktail recipes organised by base spirit</p>
           </div>
 
@@ -175,10 +175,10 @@ export default function CocktailBooksPage() {
                 href={`/search?q=${encodeURIComponent(spirit.slug)}&mode=cocktails`}
                 className="group relative flex flex-col rounded-[12px] overflow-hidden border transition-all duration-300"
                 style={{
-                  borderColor: 'rgba(255,255,255,0.08)',
+                  borderColor: 'rgba(0,0,0,0.08)',
                   borderWidth: '1px',
                   height: '160px',
-                  background: '#1a1f2e',
+                  background: '#fff',
                 }}
               >
                 {/* Image */}
@@ -191,9 +191,9 @@ export default function CocktailBooksPage() {
                 </div>
 
                 {/* Text */}
-                <div className="flex-1 px-3 py-2 flex flex-col justify-between" style={{ background: '#1a1f2e' }}>
+                <div className="flex-1 px-3 py-2 flex flex-col justify-between" style={{ background: '#fff' }}>
                   <div>
-                    <h3 className="ff text-sm font-bold leading-tight truncate" style={{ color: '#f0f0f0' }}>
+                    <h3 className="ff text-sm font-bold leading-tight truncate" style={{ color: '#111' }}>
                       {spirit.emoji} {spirit.family}
                     </h3>
                     <p style={{ color: '#888' }} className="text-xs line-clamp-1">{spirit.desc}</p>
@@ -213,7 +213,7 @@ export default function CocktailBooksPage() {
 
         {/* ── FEATURED COLLECTIONS ── */}
         <section>
-          <h2 className="ff text-xl font-bold mb-5" style={{ color: '#f0f0f0' }}>Featured Collections</h2>
+          <h2 className="ff text-xl font-bold mb-5" style={{ color: '#111' }}>Featured Collections</h2>
           <div className="flex gap-4 overflow-x-auto pb-2 snap-x">
             {COCKTAIL_COLLECTIONS.map((col) => (
               <Link
@@ -223,8 +223,8 @@ export default function CocktailBooksPage() {
                 style={{
                   width: '200px',
                   height: '180px',
-                  background: '#1a1f2e',
-                  borderColor: 'rgba(255,255,255,0.08)',
+                  background: '#fff',
+                  borderColor: 'rgba(0,0,0,0.08)',
                   borderWidth: '1px',
                 }}
               >
@@ -241,7 +241,7 @@ export default function CocktailBooksPage() {
                 <div className="flex-1 px-3 py-2.5 flex flex-col justify-between">
                   <div>
                     <p className="text-2xl leading-none mb-1">{col.emoji}</p>
-                    <h3 className="ff font-bold text-sm leading-tight" style={{ color: '#f0f0f0' }}>{col.title}</h3>
+                    <h3 className="ff font-bold text-sm leading-tight" style={{ color: '#111' }}>{col.title}</h3>
                   </div>
                   <div className="flex items-start justify-between gap-1">
                     <p style={{ color: '#888' }} className="text-xs leading-tight flex-1">{col.desc}</p>
@@ -266,7 +266,7 @@ export default function CocktailBooksPage() {
 
         {/* ── QUICK LINKS ── */}
         <section>
-          <h2 className="ff text-xl font-bold mb-5" style={{ color: '#f0f0f0' }}>Explore More</h2>
+          <h2 className="ff text-xl font-bold mb-5" style={{ color: '#111' }}>Explore More</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
               { label: 'All Cocktails', href: '/search?mode=cocktails', emoji: '🍸' },
@@ -279,9 +279,9 @@ export default function CocktailBooksPage() {
                 href={link.href}
                 className="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all"
                 style={{
-                  background: '#1a1f2e',
-                  borderColor: 'rgba(255,255,255,0.08)',
-                  color: '#ccc',
+                  background: '#fff',
+                  borderColor: 'rgba(0,0,0,0.08)',
+                  color: '#555',
                 }}
               >
                 <span className="text-xl">{link.emoji}</span>

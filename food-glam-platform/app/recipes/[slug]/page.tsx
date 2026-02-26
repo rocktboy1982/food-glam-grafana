@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { voteOnPost } from '@/app/actions'
+import { voteOnPost as _voteOnPost } from '@/app/actions'
 import RecipeAdvancedClient from "@/components/pages/recipe-advanced-client"
 import SimilarRecipesClient from "@/components/pages/similar-recipes-client"
 import RecipeIngredientsClient from "@/components/pages/recipe-ingredients-client"
@@ -12,6 +12,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server'
 import { MOCK_RECIPES } from '@/lib/mock-data'
 import { normalizeToEmbed } from '@/lib/embed'
 import FollowChefButton from '@/components/pages/follow-chef-button'
+import RecipeRating, { StarDisplay } from '@/components/RecipeRating'
 
 // Rich mock recipe details keyed by slug
 const MOCK_RECIPE_DETAILS: Record<string, {
@@ -327,7 +328,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
     const votes = mockRecipe.votes
 
     return (
-      <main className="min-h-screen pb-24 md:pb-8" style={{ background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', color: '#111' }}>
+      <main className="min-h-screen pb-24 md:pb-8" style={{ background: '#dde3ee', color: '#111' }}>
         {/* Hero Section */}
         <div className="relative w-full h-[50vh] min-h-[320px] max-h-[480px] overflow-hidden">
           <img src={heroImage} alt={mockRecipe.title} className="w-full h-full object-cover" />
@@ -374,7 +375,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
                   </svg>
-                  {votes} votes
+                  <StarDisplay votes={votes} size={14} showCount={true} />
                 </span>
               </div>
             </div>
@@ -491,6 +492,12 @@ export default async function RecipePage({ params }: RecipePageProps) {
 
             {/* Sidebar */}
             <div className="space-y-4">
+              {/* Community rating */}
+              <RecipeRating
+                recipeId={mockRecipe.id}
+                initialVotes={mockRecipe.votes}
+                initialQualityScore={mockRecipe.quality_score}
+              />
               {/* Tags */}
               <Card className="shadow-sm">
                 <CardContent className="p-4">
@@ -673,7 +680,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
                 </svg>
-                {votes} votes
+                <StarDisplay votes={votes} size={14} showCount={true} />
               </span>
             </div>
           </div>
@@ -811,28 +818,12 @@ export default async function RecipePage({ params }: RecipePageProps) {
           {/* Right Column - Sidebar */}
           <div className="space-y-4">
 
-            {/* Vote card */}
-            <Card className="shadow-sm">
-              <CardContent className="p-4 space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Rate this recipe</p>
-                <form action={async () => { 'use server'; await voteOnPost(post.id, 1) }}>
-                  <Button type="submit" variant="outline" className="w-full justify-start gap-2 mb-2">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
-                    </svg>
-                    Upvote
-                  </Button>
-                </form>
-                <form action={async () => { 'use server'; await voteOnPost(post.id, -1) }}>
-                  <Button type="submit" variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/>
-                    </svg>
-                    Downvote
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
+            {/* Rating card */}
+            <RecipeRating
+              recipeId={post.id}
+              initialVotes={votes}
+              initialQualityScore={Math.min(5, Math.max(1, 1 + (votes / Math.max(votes, 50)) * 4))}
+            />
 
             {/* Creator card */}
             {creator && (
