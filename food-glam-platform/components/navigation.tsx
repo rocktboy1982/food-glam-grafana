@@ -9,19 +9,23 @@ import { useEffect, useState, useRef } from 'react'
 const NAV_ITEMS = [
   { href: '/',              label: 'Explore',    icon: '🏠' },
   { href: '/cookbooks',     label: 'Cookbooks',  icon: '📖' },
+  { href: '/cocktailbooks', label: 'Cocktails',  icon: '🍹' },
   { href: '/plan',          label: 'Meal Plan',  icon: '📅' },
   { href: '/me/preferred',  label: '⭐ Preferred', icon: '⭐' },
   { href: '/me/cookbook',   label: 'My Cookbook', icon: '🍴' },
-  { href: '/me/watchlist',  label: 'Watchlist',  icon: '👁' },
+
   { href: '/chefs/me/new-post', label: '+ Chef Post',   icon: '✍️' },
-  { href: '/submit/recipe',    label: '+ Add Recipe', icon: '🍽️' },
+  { href: '/submit/recipe',    label: '+ Add Recipe',   icon: '🍽️' },
+  { href: '/submit/cocktail',   label: '+ Add Beverage', icon: '🍹' },
 ]
 
 const MOBILE_TABS = [
   { href: '/',                   icon: '🏠', label: 'Home'    },
   { href: '/search',             icon: '🔍', label: 'Explore' },
+  { href: '/cocktailbooks', icon: '🍹', label: 'Cocktails' },
   { href: '/submit/recipe',    icon: '🍽️', label: 'Recipe'  },
-  { href: '/plan',               icon: '📅', label: 'Plan'   },
+  { href: '/submit/cocktail',   icon: '🍹', label: 'Drink'   },
+  { href: '/rankings',           icon: '🏆', label: 'Rank'    },
   { href: '/me',                 icon: '👤', label: 'Profile' },
 ]
 
@@ -40,7 +44,7 @@ function useMockUser() {
         const demo: MockUser = {
           id: 'mock-user-demo',
           display_name: 'Demo Chef',
-          handle: '@demochef',
+          handle: 'demochef',
           avatar_url: null,
         }
         localStorage.setItem('mock_user', JSON.stringify(demo))

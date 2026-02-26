@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 interface MockUser {
   id: string
@@ -44,7 +44,7 @@ const MOCK_COMMENTS: Comment[] = [
       handle: 'jamescooks',
       avatar: 'https://i.pravatar.cc/150?img=15'
     },
-    text: 'Quick question - can I substitute the main ingredient? I\'m allergic to one of them.',
+    text: "Quick question - can I substitute the main ingredient? I'm allergic to one of them.",
     createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000)
   },
   {
@@ -59,6 +59,44 @@ const MOCK_COMMENTS: Comment[] = [
   }
 ]
 
+/* ─── captcha helpers ────────────────────────────────────────────────────── */
+
+type CaptchaType = 'math' | 'checkbox'
+
+interface MathChallenge {
+  type: 'math'
+  a: number
+  b: number
+  op: '+' | '-'
+  answer: number
+}
+
+interface CheckboxChallenge {
+  type: 'checkbox'
+}
+
+type Challenge = MathChallenge | CheckboxChallenge
+
+let captchaCounter = 0 // alternates every submit attempt
+
+function generateChallenge(): Challenge {
+  captchaCounter++
+  const type: CaptchaType = captchaCounter % 2 === 0 ? 'checkbox' : 'math'
+
+  if (type === 'math') {
+    const a = Math.floor(Math.random() * 9) + 1
+    const b = Math.floor(Math.random() * 9) + 1
+    const ops: Array<'+' | '-'> = ['+', '-']
+    const op = ops[Math.floor(Math.random() * ops.length)]
+    const answer = op === '+' ? a + b : a - b
+    return { type: 'math', a, b, op, answer }
+  }
+
+  return { type: 'checkbox' }
+}
+
+/* ─── time helper ────────────────────────────────────────────────────────── */
+
 function timeAgo(date: Date): string {
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
@@ -72,23 +110,37 @@ function timeAgo(date: Date): string {
   return `${diffDays}d ago`
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   COMPONENT
+═══════════════════════════════════════════════════════════════════════════ */
+
 export default function RecipeCommentsClient({ recipeId, slug }: RecipeCommentsClientProps) {
   const [mockUser, setMockUser] = useState<MockUser | null>(null)
   const [comments, setComments] = useState<Comment[]>(MOCK_COMMENTS)
   const [newComment, setNewComment] = useState('')
   const [hydrated, setHydrated] = useState(false)
 
+  /* captcha state */
+  const [challenge, setChallenge] = useState<Challenge | null>(null)
+  const [mathInput, setMathInput] = useState('')
+  const [checkboxChecked, setCheckboxChecked] = useState(false)
+  const [captchaError, setCaptchaError] = useState('')
+  const [captchaPassed, setCaptchaPassed] = useState(false)
+
+  /* honeypot — invisible field; bots fill it, humans don't */
+  const honeypotRef = useRef<HTMLInputElement>(null)
+
   useEffect(() => {
     const userStr = localStorage.getItem('mock_user')
     if (userStr) {
-      try {
-        setMockUser(JSON.parse(userStr))
-      } catch {}
+      try { setMockUser(JSON.parse(userStr)) } catch { /* ignore */ }
     }
     setHydrated(true)
   }, [])
 
   if (!hydrated) return null
+
+  /* ── logged-out gate ──────────────────────────────────────────────────── */
 
   if (!mockUser) {
     return (
@@ -100,9 +152,11 @@ export default function RecipeCommentsClient({ recipeId, slug }: RecipeCommentsC
             <path d="M7 11V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v4"/>
           </svg>
           <p className="text-center text-sm" style={{ color: '#888' }}>Sign in to read and post comments</p>
-          <Link href={`/auth/signin?redirect=/recipes/${slug}`}
+          <Link
+            href={`/auth/signin?redirect=/recipes/${slug}`}
             className="px-6 py-2 rounded-full text-sm font-semibold text-white"
-            style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)' }}>
+            style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)' }}
+          >
             Sign In
           </Link>
         </div>
@@ -110,11 +164,69 @@ export default function RecipeCommentsClient({ recipeId, slug }: RecipeCommentsC
     )
   }
 
-  const handlePostComment = () => {
+  /* ── captcha verification ─────────────────────────────────────────────── */
+
+  function openCaptcha() {
+    setCaptchaError('')
+    setMathInput('')
+    setCheckboxChecked(false)
+    setCaptchaPassed(false)
+    setChallenge(generateChallenge())
+  }
+
+  function verifyCaptcha(): boolean {
+    /* honeypot check — if filled, silently reject */
+    if (honeypotRef.current?.value) return false
+
+    if (!challenge) return false
+
+    if (challenge.type === 'math') {
+      if (parseInt(mathInput, 10) !== challenge.answer) {
+        setCaptchaError('Incorrect answer. Try again.')
+        /* regenerate so the numbers change */
+        setChallenge(generateChallenge())
+        setMathInput('')
+        return false
+      }
+    }
+
+    if (challenge.type === 'checkbox') {
+      if (!checkboxChecked) {
+        setCaptchaError('Please confirm you are not a robot.')
+        return false
+      }
+    }
+
+    setCaptchaPassed(true)
+    setChallenge(null)
+    setCaptchaError('')
+    return true
+  }
+
+  /* ── post comment ─────────────────────────────────────────────────────── */
+
+  function handlePostComment() {
     if (!newComment.trim()) return
 
+    /* captcha not yet shown — open it */
+    if (!captchaPassed && !challenge) {
+      openCaptcha()
+      return
+    }
+
+    /* captcha shown but not yet verified */
+    if (!captchaPassed && challenge) {
+      const ok = verifyCaptcha()
+      if (!ok) return
+    }
+
+    /* honeypot final check */
+    if (honeypotRef.current?.value) return
+
+    if (!mockUser) return
+
     const comment: Comment = {
-      id: String(comments.length + 1),
+      id: String(Date.now()),
       author: {
         name: mockUser.display_name,
         handle: mockUser.handle,
@@ -126,11 +238,14 @@ export default function RecipeCommentsClient({ recipeId, slug }: RecipeCommentsC
 
     setComments([comment, ...comments])
     setNewComment('')
+    setCaptchaPassed(false) /* require captcha again for next comment */
   }
+
+  /* ── render ───────────────────────────────────────────────────────────── */
 
   return (
     <div id="comments" className="mt-8 pt-6 border-t" style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
-      <p className="ff-display text-lg font-bold mb-4">Comments</p>
+      <p className="ff-display text-lg font-bold mb-4">Comments ({comments.length})</p>
 
       {/* Comments list */}
       <div className="space-y-4 mb-6">
@@ -154,11 +269,12 @@ export default function RecipeCommentsClient({ recipeId, slug }: RecipeCommentsC
         ))}
       </div>
 
-      {/* New comment input */}
+      {/* Comment input box */}
       <div className="rounded-2xl p-4" style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.1)' }}>
+        {/* Author row */}
         <div className="flex gap-3 mb-3">
           <img
-            src={mockUser.avatar_url || `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`}
+            src={mockUser.avatar_url || `https://i.pravatar.cc/150?img=5`}
             alt={mockUser.display_name}
             className="w-10 h-10 rounded-full object-cover flex-shrink-0"
           />
@@ -167,6 +283,17 @@ export default function RecipeCommentsClient({ recipeId, slug }: RecipeCommentsC
             <p className="text-xs" style={{ color: '#666' }}>@{mockUser.handle}</p>
           </div>
         </div>
+
+        {/* Honeypot — visually hidden, accessible only to bots */}
+        <input
+          ref={honeypotRef}
+          type="text"
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }}
+        />
 
         <textarea
           value={newComment}
@@ -181,13 +308,69 @@ export default function RecipeCommentsClient({ recipeId, slug }: RecipeCommentsC
           rows={3}
         />
 
+        {/* ── Captcha challenge (appears after first Post click) ── */}
+        {challenge && !captchaPassed && (
+          <div
+            className="mb-3 rounded-xl p-4"
+            style={{ background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.1)' }}
+          >
+            {challenge.type === 'math' && (
+              <div>
+                <p className="text-xs font-semibold mb-2" style={{ color: '#555' }}>
+                  Quick check — what is {challenge.a} {challenge.op} {challenge.b}?
+                </p>
+                <input
+                  type="number"
+                  value={mathInput}
+                  onChange={e => { setMathInput(e.target.value); setCaptchaError('') }}
+                  placeholder="Your answer"
+                  className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none"
+                  style={{
+                    background: '#fff',
+                    border: captchaError ? '1px solid #ff4d6d' : '1px solid rgba(0,0,0,0.15)',
+                    color: '#111'
+                  }}
+                  onKeyDown={e => e.key === 'Enter' && handlePostComment()}
+                />
+              </div>
+            )}
+
+            {challenge.type === 'checkbox' && (
+              <label className="flex items-center gap-3 cursor-pointer select-none">
+                <div
+                  onClick={() => { setCheckboxChecked(v => !v); setCaptchaError('') }}
+                  className="w-5 h-5 rounded flex items-center justify-center flex-shrink-0 transition-all"
+                  style={{
+                    background: checkboxChecked ? 'linear-gradient(135deg,#ff4d6d,#ff9500)' : '#fff',
+                    border: captchaError ? '1.5px solid #ff4d6d' : '1.5px solid rgba(0,0,0,0.25)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {checkboxChecked && (
+                    <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                      <path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
+                </div>
+                <span className="text-sm" style={{ color: '#444' }}>I am not a robot</span>
+                <span className="ml-auto text-[10px] font-mono" style={{ color: '#bbb' }}>🛡 protected</span>
+              </label>
+            )}
+
+            {captchaError && (
+              <p className="mt-2 text-xs" style={{ color: '#ff4d6d' }}>{captchaError}</p>
+            )}
+          </div>
+        )}
+
         <div className="flex justify-end">
           <button
             onClick={handlePostComment}
             disabled={!newComment.trim()}
             className="px-5 py-2 rounded-full text-sm font-semibold text-white transition-opacity disabled:opacity-50"
-            style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)' }}>
-            Post
+            style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)' }}
+          >
+            {challenge && !captchaPassed ? 'Verify & Post' : 'Post'}
           </button>
         </div>
       </div>

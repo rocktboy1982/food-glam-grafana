@@ -149,7 +149,7 @@ export default async function CookbooksPage() {
 
           {/* Bottom: Headline + Subtitle */}
           <div>
-            <h1 className="ff text-5xl font-extrabold tracking-tight mb-3 leading-tight">
+            <h1 className="ff text-5xl font-extrabold tracking-tight mb-3 leading-tight" style={{ color: '#fff' }}>
               The World on a Plate
             </h1>
             <p className="text-lg" style={{ color: '#eee' }}>

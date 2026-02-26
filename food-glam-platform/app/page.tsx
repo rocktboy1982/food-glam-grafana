@@ -348,6 +348,7 @@ export default function Home() {
           })()}
         </section>
 
+
         {/* ════════════════════════════════════════════════════════
             FEED TABS
         ════════════════════════════════════════════════════════ */}
@@ -493,7 +494,10 @@ export default function Home() {
                       {recipe.dietTags.length > 0 && (
                         <div className="flex gap-1.5 px-3 pb-3 flex-wrap">
                           {recipe.dietTags.map(t => (
-                            <span key={t} className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: 'rgba(255,255,255,0.08)', color: '#aaa' }}>{t}</span>
+                            <Link key={t} href={`/search?diet_tags=${encodeURIComponent(t)}`}
+                              onClick={e => e.stopPropagation()}
+                              className="text-[10px] px-2 py-0.5 rounded-full hover:opacity-80 transition-opacity"
+                              style={{ background: 'rgba(255,255,255,0.08)', color: '#aaa' }}>{t}</Link>
                           ))}
                         </div>
                       )}

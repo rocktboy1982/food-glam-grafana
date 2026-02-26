@@ -95,6 +95,16 @@ export default async function PrintRecipePage({ params }: PrintPageProps) {
     return (
       <>
         <style>{`
+          @media screen {
+            body { background: #fff !important; color: #111 !important; }
+            .print-container { background: #fff; color: #111; }
+            .print-trigger { position: fixed; bottom: 24px; right: 24px; z-index: 50; }
+            a { color: #555; }
+            h1, h2, h3 { color: #111; }
+            .text-muted-foreground { color: #666 !important; }
+            .border-b { border-color: #e5e7eb !important; }
+            .bg-stone-50 { background: #f9fafb !important; }
+          }
           @media print {
             nav, footer, .no-print { display: none !important; }
             body { margin: 0; padding: 0; font-size: 11pt; line-height: 1.5; color: #000; background: #fff; }
@@ -107,9 +117,6 @@ export default async function PrintRecipePage({ params }: PrintPageProps) {
             .print-step { break-inside: avoid; }
             a { text-decoration: none; color: #000; }
             img { max-width: 100%; height: auto; }
-          }
-          @media screen {
-            .print-trigger { position: fixed; bottom: 24px; right: 24px; z-index: 50; }
           }
         `}</style>
 
@@ -216,10 +223,18 @@ export default async function PrintRecipePage({ params }: PrintPageProps) {
 
   return (
     <>
-      {/* Print-specific styles */}
       <style>{`
+        @media screen {
+          body { background: #fff !important; color: #111 !important; }
+          .print-container { background: #fff; color: #111; }
+          .print-trigger { position: fixed; bottom: 24px; right: 24px; z-index: 50; }
+          a { color: #555; }
+          h1, h2, h3 { color: #111; }
+          .text-muted-foreground { color: #666 !important; }
+          .border-b { border-color: #e5e7eb !important; }
+          .bg-stone-50 { background: #f9fafb !important; }
+        }
         @media print {
-          /* Hide nav, scrollbars, browser chrome */
           nav, footer, .no-print { display: none !important; }
           body { margin: 0; padding: 0; font-size: 11pt; line-height: 1.5; color: #000; background: #fff; }
           @page { margin: 1.5cm 2cm; }
@@ -231,9 +246,6 @@ export default async function PrintRecipePage({ params }: PrintPageProps) {
           .print-step { break-inside: avoid; }
           a { text-decoration: none; color: #000; }
           img { max-width: 100%; height: auto; }
-        }
-        @media screen {
-          .print-trigger { position: fixed; bottom: 24px; right: 24px; z-index: 50; }
         }
       `}</style>
 

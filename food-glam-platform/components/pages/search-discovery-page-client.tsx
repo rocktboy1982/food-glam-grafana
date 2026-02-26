@@ -16,6 +16,8 @@ import {
 } from 'lucide-react'
 import RecipeCard from '@/components/RecipeCard'
 import { REGION_META } from '@/lib/recipe-taxonomy'
+import type { MockCocktail } from '@/lib/mock-data'
+
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -65,6 +67,14 @@ interface SearchResponse {
     cookbook_id: string
     chapter_id: string
   }
+}
+
+interface CocktailResponse {
+  cocktails: MockCocktail[]
+  total: number
+  page: number
+  per_page: number
+  has_more: boolean
 }
 
 /* ------------------------------------------------------------------ */
@@ -154,12 +164,6 @@ const DIET_TAGS = [
   'whole30',
 ]
 
-const POST_TYPES = [
-  { value: 'recipe', label: 'Recipes' },
-  { value: 'short', label: 'Shorts' },
-  { value: 'video', label: 'Videos' },
-  { value: 'image', label: 'Images' },
-]
 
 const SORT_OPTIONS = [
   { value: 'relevance', label: 'Relevance', icon: Sparkles },
@@ -169,6 +173,18 @@ const SORT_OPTIONS = [
 
 const PER_PAGE = 12
 
+const SPIRITS = [
+  { value: '', label: 'All Spirits' },
+  { value: 'whisky',   label: '🥃 Whisky' },
+  { value: 'gin',      label: '🌿 Gin' },
+  { value: 'rum',      label: '🍹 Rum' },
+  { value: 'tequila',  label: '🌵 Tequila' },
+  { value: 'vodka',    label: '🧊 Vodka' },
+  { value: 'brandy',   label: '🍇 Brandy' },
+  { value: 'liqueur',  label: '🍊 Liqueur' },
+  { value: 'wine',     label: '🍾 Wine' },
+]
+
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
@@ -177,6 +193,11 @@ function SearchDiscoveryPageClientContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
+  // ---- Mode toggle: recipes | cocktails ----
+  const [mode, setMode] = useState<'recipes' | 'cocktails'>(
+    searchParams.get('mode') === 'cocktails' ? 'cocktails' : 'recipes'
+  )
+
   // ---- State from URL params ----
   const [query, setQuery] = useState(searchParams.get('q') || '')
   const [approach, setApproach] = useState(searchParams.get('approach') || '')
@@ -184,7 +205,7 @@ function SearchDiscoveryPageClientContent() {
     const raw = searchParams.get('diet_tags')
     return raw ? raw.split(',').filter(Boolean) : []
   })
-  const [type, setType] = useState(searchParams.get('type') || 'recipe')
+
   const [sort, setSort] = useState(searchParams.get('sort') || 'relevance')
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1', 10) || 1)
   const [foodTags, setFoodTags] = useState<string[]>(() => {
@@ -198,6 +219,15 @@ function SearchDiscoveryPageClientContent() {
   const [cookbookId, setCookbookId] = useState(searchParams.get('cookbook_id') || '')
   const [chapterId, setChapterId] = useState(searchParams.get('chapter_id') || '')
   const [calMax, setCalMax] = useState(parseInt(searchParams.get('cal_max') || '0') || 0)
+
+  // ---- Cocktail-specific state ----
+  const [cocktails, setCocktails] = useState<MockCocktail[]>([])
+  const [cocktailTotal, setCocktailTotal] = useState(0)
+  const [cocktailHasMore, setCocktailHasMore] = useState(false)
+  const [cocktailCategory, setCocktailCategory] = useState<'' | 'alcoholic' | 'non-alcoholic'>(
+    (searchParams.get('category') as '' | 'alcoholic' | 'non-alcoholic') || ''
+  )
+  const [cocktailSpirit, setCocktailSpirit] = useState(searchParams.get('spirit') || '')
 
   // ---- UI state ----
   const [recipes, setRecipes] = useState<Recipe[]>([])
@@ -276,12 +306,51 @@ function SearchDiscoveryPageClientContent() {
     }
   }, [])
 
+  // ---- Fetch cocktail results ----
+  const fetchCocktails = useCallback(async (
+    searchQuery: string,
+    category: '' | 'alcoholic' | 'non-alcoholic',
+    spirit: string,
+    searchSort: string,
+    searchPage: number,
+  ) => {
+    abortRef.current?.abort()
+    abortRef.current = new AbortController()
+    setLoading(true)
+    const params = new URLSearchParams()
+    if (searchQuery) params.set('q', searchQuery)
+    if (category) params.set('category', category)
+    if (spirit) params.set('spirit', spirit)
+    params.set('sort', searchSort)
+    params.set('page', String(searchPage))
+    params.set('per_page', String(PER_PAGE))
+    try {
+      const res = await fetch(`/api/search/cocktails?${params.toString()}`, {
+        signal: abortRef.current.signal,
+      })
+      if (!res.ok) throw new Error('Cocktail search failed')
+      const data: CocktailResponse = await res.json()
+      setCocktails(data.cocktails)
+      setCocktailTotal(data.total)
+      setCocktailHasMore(data.has_more)
+      setInitialLoad(false)
+    } catch (e) {
+      if ((e as Error)?.name === 'AbortError') return
+      setCocktails([])
+      setCocktailTotal(0)
+      setCocktailHasMore(false)
+      setInitialLoad(false)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
   // ---- Trigger search on filter changes ----
   const triggerSearch = useCallback((
     newQuery?: string,
     newApproach?: string,
     newDietTags?: string[],
-    newType?: string,
+
     newSort?: string,
     newPage?: number,
     newFoodTags?: string[],
@@ -293,7 +362,7 @@ function SearchDiscoveryPageClientContent() {
     const q = newQuery ?? query
     const a = newApproach ?? approach
     const d = newDietTags ?? dietTags
-    const t = newType ?? type
+    const t = 'recipe'
     const s = newSort ?? sort
     const p = newPage ?? 1
     const ft = newFoodTags ?? foodTags
@@ -307,7 +376,7 @@ function SearchDiscoveryPageClientContent() {
       q,
       approach: a,
       diet_tags: d.join(','),
-      type: t !== 'recipe' ? t : '',
+      type: '',
       sort: s !== 'relevance' ? s : '',
       food_tags: ft.join(','),
       is_tested: it ? 'true' : '',
@@ -318,7 +387,7 @@ function SearchDiscoveryPageClientContent() {
     })
 
     fetchResults(q, a, d, t, s, p, ft, it, tf, qm, cm)
-  }, [query, approach, dietTags, type, sort, foodTags, isTested, tagFilter, qualityMin, calMax, fetchResults, updateURL])
+  }, [query, approach, dietTags, sort, foodTags, isTested, tagFilter, qualityMin, calMax, fetchResults, updateURL])
 
   // ---- Debounced search for text input ----
   const handleQueryChange = (value: string) => {
@@ -326,7 +395,7 @@ function SearchDiscoveryPageClientContent() {
     setPage(1)
     if (debounceRef.current) clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => {
-      triggerSearch(value, undefined, undefined, undefined, undefined, 1)
+      triggerSearch(value, undefined, undefined, undefined, 1)
     }, 350)
   }
 
@@ -334,7 +403,7 @@ function SearchDiscoveryPageClientContent() {
   const handleApproachChange = (val: string) => {
     setApproach(val)
     setPage(1)
-    triggerSearch(undefined, val, undefined, undefined, undefined, 1)
+    triggerSearch(undefined, val, undefined, undefined, 1)
   }
 
   const handleDietTagToggle = (tag: string) => {
@@ -343,57 +412,52 @@ function SearchDiscoveryPageClientContent() {
       : [...dietTags, tag]
     setDietTags(next)
     setPage(1)
-    triggerSearch(undefined, undefined, next, undefined, undefined, 1)
+    triggerSearch(undefined, undefined, next, undefined, 1)
   }
 
   const handleFoodTagToggle = (tag: string) => {
     const next = foodTags.includes(tag) ? foodTags.filter(t => t !== tag) : [...foodTags, tag]
     setFoodTags(next)
     setPage(1)
-    triggerSearch(undefined, undefined, undefined, undefined, undefined, 1, next)
+    triggerSearch(undefined, undefined, undefined, undefined, 1, next)
   }
 
   const handleTestedToggle = () => {
     const next = !isTested
     setIsTested(next)
     setPage(1)
-    triggerSearch(undefined, undefined, undefined, undefined, undefined, 1, undefined, next)
+    triggerSearch(undefined, undefined, undefined, undefined, 1, undefined, next)
   }
 
   const handleTagFilterChange = (val: string) => {
     const next = tagFilter === val ? '' : val
     setTagFilter(next)
     setPage(1)
-    triggerSearch(undefined, undefined, undefined, undefined, undefined, 1, undefined, undefined, next)
+    triggerSearch(undefined, undefined, undefined, undefined, 1, undefined, undefined, next)
   }
 
   const handleQualityMinChange = (val: number) => {
     setQualityMin(val)
     setPage(1)
-    triggerSearch(undefined, undefined, undefined, undefined, undefined, 1, undefined, undefined, undefined, val, undefined)
+    triggerSearch(undefined, undefined, undefined, undefined, 1, undefined, undefined, undefined, val)
   }
 
   const handleCalMaxChange = (val: number) => {
     setCalMax(val)
     setPage(1)
-    triggerSearch(undefined, undefined, undefined, undefined, undefined, 1, undefined, undefined, undefined, undefined, val)
+    triggerSearch(undefined, undefined, undefined, undefined, 1, undefined, undefined, undefined, undefined, val)
   }
 
-  const handleTypeChange = (val: string) => {
-    setType(val)
-    setPage(1)
-    triggerSearch(undefined, undefined, undefined, val, undefined, 1)
-  }
 
   const handleSortChange = (val: string) => {
     setSort(val)
     setPage(1)
-    triggerSearch(undefined, undefined, undefined, undefined, val, 1)
+    triggerSearch(undefined, undefined, undefined, val, 1)
   }
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage)
-    triggerSearch(undefined, undefined, undefined, undefined, undefined, newPage)
+    triggerSearch(undefined, undefined, undefined, undefined, newPage)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -401,7 +465,7 @@ function SearchDiscoveryPageClientContent() {
     setQuery('')
     setApproach('')
     setDietTags([])
-    setType('recipe')
+
     setSort('relevance')
     setFoodTags([])
     setIsTested(false)
@@ -409,14 +473,51 @@ function SearchDiscoveryPageClientContent() {
     setQualityMin(0)
     setCalMax(0)
     setPage(1)
-    triggerSearch('', '', [], 'recipe', 'relevance', 1, [], false, '', 0, 0)
+    triggerSearch('', '', [], 'relevance', 1, [], false, '', 0, 0)
   }
 
-  const hasActiveFilters = query || approach || dietTags.length > 0 || type !== 'recipe' || sort !== 'relevance' || foodTags.length > 0 || isTested || tagFilter || qualityMin > 0 || calMax > 0 || cookbookId || chapterId
+  // ---- Mode switch ----
+  const switchMode = (newMode: 'recipes' | 'cocktails') => {
+    setMode(newMode)
+    setInitialLoad(true)
+    setPage(1)
+    if (newMode === 'cocktails') {
+      router.replace('/search?mode=cocktails', { scroll: false })
+      fetchCocktails(query, cocktailCategory, cocktailSpirit, 'trending', 1)
+    } else {
+      router.replace('/search', { scroll: false })
+      fetchResults(query, approach, dietTags, 'recipe', sort, 1, foodTags, isTested, tagFilter, qualityMin, calMax)
+    }
+  }
+
+  // ---- Cocktail-specific handlers ----
+  const handleCocktailCategoryChange = (cat: '' | 'alcoholic' | 'non-alcoholic') => {
+    setCocktailCategory(cat)
+    setPage(1)
+    fetchCocktails(query, cat, cocktailSpirit, sort, 1)
+  }
+
+  const handleCocktailSpiritChange = (sp: string) => {
+    setCocktailSpirit(sp)
+    setPage(1)
+    fetchCocktails(query, cocktailCategory, sp, sort, 1)
+  }
+
+  const handleCocktailPageChange = (newPage: number) => {
+    setPage(newPage)
+    fetchCocktails(query, cocktailCategory, cocktailSpirit, sort, newPage)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const hasActiveFilters = query || approach || dietTags.length > 0 || sort !== 'relevance' || foodTags.length > 0 || isTested || tagFilter || qualityMin > 0 || calMax > 0 || cookbookId || chapterId
 
   // ---- Initial load ----
   useEffect(() => {
-    fetchResults(query, approach, dietTags, type, sort, page, foodTags, isTested, tagFilter, qualityMin, calMax)
+    if (mode === 'cocktails') {
+      fetchCocktails(query, cocktailCategory, cocktailSpirit, 'trending', page)
+    } else {
+      fetchResults(query, approach, dietTags, 'recipe', sort, page, foodTags, isTested, tagFilter, qualityMin, calMax)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -424,7 +525,7 @@ function SearchDiscoveryPageClientContent() {
   const activeFilterCount = [
     approach ? 1 : 0,
     dietTags.length > 0 ? 1 : 0,
-    type !== 'recipe' ? 1 : 0,
+
     foodTags.length > 0 ? 1 : 0,
     isTested ? 1 : 0,
     tagFilter ? 1 : 0,
@@ -433,27 +534,61 @@ function SearchDiscoveryPageClientContent() {
   ].reduce((a, b) => a + b, 0)
 
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE))
+  const cocktailTotalPages = Math.max(1, Math.ceil(cocktailTotal / PER_PAGE))
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-amber-50/40 to-white">
+    <main className={`min-h-screen ${mode === 'cocktails' ? 'bg-gradient-to-b from-slate-900 to-slate-800' : 'bg-gradient-to-b from-amber-50/40 to-white'}`}>
+
+      {/* ---- Mode toggle: Recipes / Cocktails ---- */}
+      <div className="flex justify-center pt-4 pb-0">
+        <div className={`inline-flex rounded-full p-1 ${mode === 'cocktails' ? 'bg-slate-700' : 'bg-stone-100'}`}>
+          <button
+            onClick={() => switchMode('recipes')}
+            className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${
+              mode === 'recipes'
+                ? 'bg-amber-500 text-white shadow'
+                : mode === 'cocktails' ? 'text-slate-300 hover:text-white' : 'text-stone-500 hover:text-stone-800'
+            }`}
+          >
+            🍽️ Recipes
+          </button>
+          <button
+            onClick={() => switchMode('cocktails')}
+            className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${
+              mode === 'cocktails'
+                ? 'bg-violet-600 text-white shadow'
+                : 'text-stone-500 hover:text-stone-800'
+            }`}
+          >
+            🍹 Cocktails
+          </button>
+        </div>
+      </div>
       {/* ---- Hero search bar ---- */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-stone-900 via-stone-800 to-amber-900 text-white">
+      <section className={`relative overflow-hidden text-white ${
+        mode === 'cocktails'
+          ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-violet-900'
+          : 'bg-gradient-to-br from-stone-900 via-stone-800 to-amber-900'
+      }`}>
         {/* Decorative grain overlay */}
         <div className="absolute inset-0 opacity-[0.03]" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
         }} />
         {/* Decorative circles */}
-        <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-amber-600/10 blur-3xl" />
-        <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-orange-500/10 blur-3xl" />
+        <div className={`absolute -top-24 -right-24 w-96 h-96 rounded-full blur-3xl ${mode === 'cocktails' ? 'bg-violet-600/10' : 'bg-amber-600/10'}`} />
+        <div className={`absolute -bottom-32 -left-32 w-80 h-80 rounded-full blur-3xl ${mode === 'cocktails' ? 'bg-purple-500/10' : 'bg-orange-500/10'}`} />
 
         <div className="relative container mx-auto px-4 py-12 md:py-16">
           <div className="max-w-2xl mx-auto text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3"
                 style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
-              Discover Recipes
+              {mode === 'cocktails' ? 'Discover Cocktails' : 'Discover Recipes'}
             </h1>
             <p className="text-stone-300 text-base md:text-lg">
-              Search by title, filter by approach &amp; diet, find your next meal.
+              {mode === 'cocktails'
+                ? 'Search cocktail recipes — filter by alcoholic or non-alcoholic.'
+                : 'Search by title, filter by approach & diet, find your next meal.'
+              }
             </p>
           </div>
 
@@ -465,8 +600,8 @@ function SearchDiscoveryPageClientContent() {
                 type="text"
                 value={query}
                 onChange={(e) => handleQueryChange(e.target.value)}
-                placeholder="Search recipes by title or keyword..."
-                className="w-full pl-12 pr-12 py-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder:text-stone-400 text-lg focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
+                placeholder={mode === 'cocktails' ? 'Search cocktails, spirits, tags...' : 'Search recipes by title or keyword...'}
+                className={`w-full pl-12 pr-12 py-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder:text-stone-400 text-lg focus:outline-none focus:ring-2 transition-all ${mode === 'cocktails' ? 'focus:ring-violet-500/50 focus:border-violet-500/50' : 'focus:ring-amber-500/50 focus:border-amber-500/50'}`}
               />
               {query && (
                 <button
@@ -490,7 +625,7 @@ function SearchDiscoveryPageClientContent() {
                   onClick={() => handleSortChange(opt.value)}
                   className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
                     isActive
-                      ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/25'
+                      ? `${mode === 'cocktails' ? 'bg-violet-600 shadow-violet-500/25' : 'bg-amber-500 shadow-amber-500/25'} text-white shadow-lg`
                       : 'bg-white/10 text-stone-300 hover:bg-white/20'
                   }`}
                 >
@@ -528,199 +663,186 @@ function SearchDiscoveryPageClientContent() {
 
           {/* ---- Sidebar filters ---- */}
           <aside className={`lg:w-64 lg:flex-shrink-0 ${filtersOpen ? 'block' : 'hidden lg:block'}`}>
-            <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-5 space-y-6 sticky top-4">
-              {/* Header */}
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm font-semibold text-stone-800 uppercase tracking-wider">Filters</h2>
-                {hasActiveFilters && (
-                  <button
-                    onClick={clearAllFilters}
-                    className="text-xs text-amber-600 hover:text-amber-700 font-medium"
-                  >
-                    Clear all
-                  </button>
-                )}
-              </div>
 
-              {/* Region pills — continent grouped */}
-              {/* Region pills — continent grouped, collapsible */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider">Region</label>
-                  {approach && (
-                    <button onClick={() => handleApproachChange('')} className="text-[10px] text-amber-600 hover:text-amber-700 font-medium">Clear</button>
+            {/* ====== COCKTAIL SIDEBAR ====== */}
+            {mode === 'cocktails' && (
+              <div className="rounded-2xl border p-5 space-y-6 sticky top-4" style={{ background: '#1e2130', borderColor: 'rgba(255,255,255,0.08)' }}>
+                <h2 className="text-sm font-semibold uppercase tracking-wider" style={{ color: '#a78bfa' }}>Filters</h2>
+
+                {/* Category */}
+                <div>
+                  <label className="block text-xs font-medium uppercase tracking-wider mb-2" style={{ color: '#888' }}>Category</label>
+                  <div className="flex flex-col gap-1.5">
+                    {([['', 'All Drinks', '🍹'], ['alcoholic', 'Alcoholic', '🥃'], ['non-alcoholic', 'Non-Alcoholic', '🍃']] as const).map(([val, label, emoji]) => (
+                      <button
+                        key={val}
+                        onClick={() => handleCocktailCategoryChange(val)}
+                        className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left"
+                        style={cocktailCategory === val
+                          ? { background: '#7c3aed', color: '#fff' }
+                          : { background: 'rgba(255,255,255,0.05)', color: '#ccc' }
+                        }
+                      >
+                        <span>{emoji}</span> {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Spirit */}
+                {(cocktailCategory === '' || cocktailCategory === 'alcoholic') && (
+                  <div>
+                    <label className="block text-xs font-medium uppercase tracking-wider mb-2" style={{ color: '#888' }}>Spirit</label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {SPIRITS.map(sp => (
+                        <button
+                          key={sp.value}
+                          onClick={() => handleCocktailSpiritChange(sp.value)}
+                          className="px-2.5 py-1 rounded-full text-xs font-medium transition-all"
+                          style={cocktailSpirit === sp.value
+                            ? { background: '#7c3aed', color: '#fff' }
+                            : { background: 'rgba(255,255,255,0.07)', color: '#ccc' }
+                          }
+                        >
+                          {sp.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Difficulty */}
+                <div>
+                  <label className="block text-xs font-medium uppercase tracking-wider mb-2" style={{ color: '#888' }}>Difficulty</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {([['', 'Any'], ['easy', 'Easy'], ['medium', 'Medium'], ['hard', 'Hard']] as const).map(([val, label]) => (
+                      <button
+                        key={val}
+                        onClick={() => {
+                          fetchCocktails(query, cocktailCategory, cocktailSpirit, sort, 1)
+                        }}
+                        className="px-2.5 py-1 rounded-full text-xs font-medium transition-all"
+                        style={{ background: 'rgba(255,255,255,0.07)', color: '#ccc' }}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ====== RECIPE SIDEBAR ====== */}
+            {mode === 'recipes' && (
+              <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-5 space-y-6 sticky top-4">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm font-semibold text-stone-800 uppercase tracking-wider">Filters</h2>
+                  {hasActiveFilters && (
+                    <button onClick={clearAllFilters} className="text-xs text-amber-600 hover:text-amber-700 font-medium">
+                      Clear all
+                    </button>
                   )}
                 </div>
-                {/* Compact select dropdown — 1 line, no height waste */}
-                <select
-                  value={approach}
-                  onChange={e => handleApproachChange(e.target.value)}
-                  className="w-full text-xs rounded-lg border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-stone-700 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 cursor-pointer"
-                >
-                  <option value="">🌍 All Regions</option>
-                  {REGION_GROUPS.map(group => (
-                    <optgroup key={group.continent} label={group.continent}>
-                      {group.regions.map(id => {
-                        const r = REGION_META[id]
-                        return (
-                          <option key={id} value={id}>{r.emoji} {r.label}</option>
-                        )
-                      })}
-                    </optgroup>
-                  ))}
-                </select>
-              </div>
 
-              {/* Food Tags — grouped */}
-              <div>
-                <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">Food Tags</label>
-                <div className="space-y-3 max-h-52 overflow-y-auto pr-1">
-                  {FOOD_TAG_GROUPS.map(group => (
-                    <div key={group.label}>
-                      <p className="text-[10px] font-semibold uppercase tracking-widest text-stone-400 mb-1.5">{group.label}</p>
-                      <div className="flex flex-wrap gap-1">
-                        {group.tags.map(tag => {
-                          const isActive = foodTags.includes(tag)
-                          return (
-                            <button
-                              key={tag}
-                              onClick={() => handleFoodTagToggle(tag)}
-                              className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize transition-all ${
-                                isActive
-                                  ? 'bg-orange-500 text-white shadow-sm'
-                                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-                              }`}
-                            >
-                              {tag}
-                            </button>
-                          )
+                {/* Region */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider">Region</label>
+                    {approach && (<button onClick={() => handleApproachChange('')} className="text-[10px] text-amber-600 hover:text-amber-700 font-medium">Clear</button>)}
+                  </div>
+                  <select value={approach} onChange={e => handleApproachChange(e.target.value)} className="w-full text-xs rounded-lg border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-stone-700 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 cursor-pointer">
+                    <option value="">🌍 All Regions</option>
+                    {REGION_GROUPS.map(group => (
+                      <optgroup key={group.continent} label={group.continent}>
+                        {group.regions.map(id => {
+                          const r = REGION_META[id]
+                          return (<option key={id} value={id}>{r.emoji} {r.label}</option>)
                         })}
-                      </div>
-                    </div>
-                  ))}
+                      </optgroup>
+                    ))}
+                  </select>
                 </div>
-              </div>
 
-              {/* Diet tags checkboxes */}
-              <div>
-                <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">
-                  Diet &amp; Preferences
-                </label>
-                <div className="space-y-1.5 max-h-64 overflow-y-auto">
-                  {DIET_TAGS.map(tag => {
-                    const isChecked = dietTags.includes(tag)
-                    return (
-                      <label
-                        key={tag}
-                        className={`flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
-                          isChecked ? 'bg-amber-50 text-amber-800' : 'hover:bg-stone-50 text-stone-600'
-                        }`}
-                      >
-                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
-                          isChecked
-                            ? 'bg-amber-500 border-amber-500'
-                            : 'border-stone-300'
-                        }`}>
-                          {isChecked && (
-                            <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                            </svg>
-                          )}
+                {/* Food Tags */}
+                <div>
+                  <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">Food Tags</label>
+                  <div className="space-y-3 max-h-52 overflow-y-auto pr-1">
+                    {FOOD_TAG_GROUPS.map(group => (
+                      <div key={group.label}>
+                        <p className="text-[10px] font-semibold uppercase tracking-widest text-stone-400 mb-1.5">{group.label}</p>
+                        <div className="flex flex-wrap gap-1">
+                          {group.tags.map(tag => {
+                            const isActive = foodTags.includes(tag)
+                            return (
+                              <button key={tag} onClick={() => handleFoodTagToggle(tag)} className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize transition-all ${isActive ? 'bg-orange-500 text-white shadow-sm' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>
+                                {tag}
+                              </button>
+                            )
+                          })}
                         </div>
-                        <span className="text-sm capitalize">{tag.replace('-', ' ')}</span>
-                      </label>
-                    )
-                  })}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Diet tags */}
+                <div>
+                  <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">Diet &amp; Preferences</label>
+                  <div className="space-y-1.5 max-h-64 overflow-y-auto">
+                    {DIET_TAGS.map(tag => {
+                      const isChecked = dietTags.includes(tag)
+                      return (
+                        <label key={tag} className={`flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer transition-colors ${isChecked ? 'bg-amber-50 text-amber-800' : 'hover:bg-stone-50 text-stone-600'}`}>
+                          <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${isChecked ? 'bg-amber-500 border-amber-500' : 'border-stone-300'}`}>
+                            {isChecked && (<svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>)}
+                          </div>
+                          <span className="text-sm capitalize">{tag.replace('-', ' ')}</span>
+                        </label>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Status */}
+                <div>
+                  <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">Status</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {STATUS_TAGS.map(tag => (
+                      <button key={tag} onClick={() => handleTagFilterChange(tag)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${tagFilter === tag ? 'bg-violet-500 text-white shadow-sm' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>{tag}</button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Quality */}
+                <div>
+                  <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">Min Quality</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {QUALITY_OPTIONS.map(opt => (
+                      <button key={opt.value} onClick={() => handleQualityMinChange(opt.value)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${qualityMin === opt.value ? 'bg-emerald-500 text-white shadow-sm' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>{opt.label}</button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Calories */}
+                <div>
+                  <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">Max Calories</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {CALORIE_OPTIONS.map(opt => (
+                      <button key={opt.value} onClick={() => handleCalMaxChange(opt.value)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${calMax === opt.value ? 'bg-rose-500 text-white shadow-sm' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>{opt.label}</button>
+                    ))}
+                  </div>
                 </div>
               </div>
-
-              {/* Status pills */}
-              <div>
-                <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">Status</label>
-                <div className="flex flex-wrap gap-1.5">
-                  {STATUS_TAGS.map(tag => (
-                    <button
-                      key={tag}
-                      onClick={() => handleTagFilterChange(tag)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                        tagFilter === tag
-                          ? 'bg-violet-500 text-white shadow-sm'
-                          : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-                      }`}
-                    >
-                      {tag}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-
-              {/* Quality pills */}
-              <div>
-                <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">Min Quality</label>
-                <div className="flex flex-wrap gap-1.5">
-                  {QUALITY_OPTIONS.map(opt => (
-                    <button
-                      key={opt.value}
-                      onClick={() => handleQualityMinChange(opt.value)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                        qualityMin === opt.value
-                          ? 'bg-emerald-500 text-white shadow-sm'
-                          : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Calories pills */}
-              <div>
-                <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">Max Calories</label>
-                <div className="flex flex-wrap gap-1.5">
-                  {CALORIE_OPTIONS.map(opt => (
-                    <button
-                      key={opt.value}
-                      onClick={() => handleCalMaxChange(opt.value)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                        calMax === opt.value
-                          ? 'bg-rose-500 text-white shadow-sm'
-                          : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-            </div>
+            )}
           </aside>
-
-          {/* ---- Content Type tabs ---- */}
-          <div className="flex gap-1 mb-5 bg-stone-100 rounded-xl p-1">
-            {POST_TYPES.map(pt => (
-              <button
-                key={pt.value}
-                onClick={() => handleTypeChange(pt.value)}
-                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
-                  type === pt.value
-                    ? 'bg-white text-stone-900 shadow-sm'
-                    : 'text-stone-500 hover:text-stone-700'
-                }`}
-              >
-                {pt.label}
-              </button>
-            ))}
-          </div>
 
           {/* ---- Results area ---- */}
           <div className="flex-1 min-w-0">
             {/* Results header */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <p className="text-sm text-stone-500">
+                <p className={`text-sm ${mode === 'cocktails' ? 'text-slate-400' : 'text-stone-500'}`}>
                   {loading ? (
                     <span className="flex items-center gap-1.5">
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -728,8 +850,13 @@ function SearchDiscoveryPageClientContent() {
                     </span>
                   ) : (
                     <>
-                      <span className="font-semibold text-stone-800">{total}</span>{' '}
-                      {total === 1 ? 'recipe' : 'recipes'} found
+                      <span className={`font-semibold ${mode === 'cocktails' ? 'text-white' : 'text-stone-800'}`}>
+                        {mode === 'cocktails' ? cocktailTotal : total}
+                      </span>{' '}
+                      {mode === 'cocktails'
+                        ? (cocktailTotal === 1 ? 'cocktail' : 'cocktails') + ' found'
+                        : (total === 1 ? 'recipe' : 'recipes') + ' found'
+                      }
                     </>
                   )}
                 </p>
@@ -825,36 +952,91 @@ function SearchDiscoveryPageClientContent() {
             )}
 
             {/* Empty state */}
-            {!loading && !initialLoad && recipes.length === 0 && (
+            {!loading && !initialLoad && (mode === 'cocktails' ? cocktails.length === 0 : recipes.length === 0) && (
               <div className="flex flex-col items-center justify-center py-20 text-center">
-                <div className="w-20 h-20 rounded-full bg-stone-100 flex items-center justify-center mb-5">
-                  <SearchX className="w-9 h-9 text-stone-400" />
+                <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-5 ${mode === 'cocktails' ? 'bg-slate-700' : 'bg-stone-100'}`}>
+                  <SearchX className={`w-9 h-9 ${mode === 'cocktails' ? 'text-slate-400' : 'text-stone-400'}`} />
                 </div>
-                <h3 className="text-lg font-semibold text-stone-800 mb-2">No recipes found</h3>
-                <p className="text-stone-500 text-sm max-w-sm mb-6">
-                  {query
-                    ? `No results for "${query}". Try different keywords or adjust your filters.`
-                    : 'No recipes match the current filters. Try broadening your search.'
-                  }
+                <h3 className={`text-lg font-semibold mb-2 ${mode === 'cocktails' ? 'text-white' : 'text-stone-800'}`}>
+                  No {mode === 'cocktails' ? 'cocktails' : 'recipes'} found
+                </h3>
+                <p className={`text-sm max-w-sm mb-6 ${mode === 'cocktails' ? 'text-slate-400' : 'text-stone-500'}`}>
+                  {query ? `No results for "${query}". Try different keywords or adjust your filters.` : 'Nothing matches the current filters. Try broadening your search.'}
                 </p>
-                {hasActiveFilters && (
-                  <button
-                    onClick={clearAllFilters}
-                    className="px-5 py-2.5 rounded-xl bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors"
-                  >
+                {mode === 'recipes' && hasActiveFilters && (
+                  <button onClick={clearAllFilters} className="px-5 py-2.5 rounded-xl bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors">
                     Clear all filters
                   </button>
                 )}
               </div>
             )}
 
-            {/* Results grid */}
-            {!loading && recipes.length > 0 && (
+            {/* ====== COCKTAIL RESULTS GRID ====== */}
+            {mode === 'cocktails' && !loading && cocktails.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                {cocktails.map((c, idx) => (
+                  <div
+                    key={c.id}
+                    className="animate-in fade-in slide-in-from-bottom-2 h-full"
+                    style={{ animationDelay: `${idx * 40}ms`, animationFillMode: 'both', animationDuration: '300ms' }}
+                  >
+                    <div className="rounded-xl overflow-hidden flex flex-col h-full border transition-all hover:shadow-xl" style={{ background: '#1e2130', borderColor: 'rgba(255,255,255,0.08)' }}>
+                      {/* Image */}
+                      <div className="relative">
+                        <img src={c.hero_image_url} alt={c.title} className="w-full h-44 object-cover" />
+                        {/* Category badge */}
+                        <span
+                          className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-xs font-bold shadow"
+                          style={c.category === 'alcoholic'
+                            ? { background: '#7c3aed', color: '#fff' }
+                            : { background: '#059669', color: '#fff' }
+                          }
+                        >
+                          {c.category === 'alcoholic' ? '🥃 Alcoholic' : '🍃 Non-Alc'}
+                        </span>
+                        {/* ABV badge */}
+                        {c.abv !== null && c.abv > 0 && (
+                          <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-xs font-bold" style={{ background: 'rgba(0,0,0,0.6)', color: '#fff' }}>
+                            {c.abv}% ABV
+                          </span>
+                        )}
+                      </div>
+                      {/* Content */}
+                      <div className="p-4 flex flex-col flex-1">
+                        <h3 className="font-semibold text-base mb-1 line-clamp-2" style={{ color: '#f0f0f0' }}>{c.title}</h3>
+                        <p className="text-sm mb-3 line-clamp-2 flex-1" style={{ color: '#888' }}>{c.summary}</p>
+                        {/* Tags */}
+                        <div className="flex flex-wrap gap-1.5 mb-3">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium" style={{ background: 'rgba(124,58,237,0.2)', color: '#a78bfa' }}>
+                            {c.spiritLabel}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium" style={{ background: 'rgba(255,255,255,0.07)', color: '#999' }}>
+                            {c.difficulty}
+                          </span>
+                          {c.tags.slice(0, 2).map(t => (
+                            <span key={t} className="px-2 py-0.5 rounded-full text-[10px] font-medium capitalize" style={{ background: 'rgba(255,255,255,0.05)', color: '#888' }}>{t}</span>
+                          ))}
+                        </div>
+                        {/* Actions */}
+                        <div className="flex items-center gap-2 pt-2 border-t" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+                          <span className="text-xs" style={{ color: '#a78bfa' }}>♥ {c.votes}</span>
+                          <span className="text-xs" style={{ color: '#888' }}>★ {c.quality_score.toFixed(1)}</span>
+                          <span className="text-xs ml-auto" style={{ color: '#888' }}>Serves {c.serves}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* ====== RECIPE RESULTS GRID ====== */}
+            {mode === 'recipes' && !loading && recipes.length > 0 && (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                 {recipes.map((recipe, idx) => (
                   <div
                     key={recipe.id}
-                    className="animate-in fade-in slide-in-from-bottom-2"
+                    className="animate-in fade-in slide-in-from-bottom-2 h-full"
                     style={{ animationDelay: `${idx * 40}ms`, animationFillMode: 'both', animationDuration: '300ms' }}
                   >
                     <RecipeCard
@@ -881,61 +1063,41 @@ function SearchDiscoveryPageClientContent() {
             )}
 
             {/* Pagination */}
-            {!loading && total > PER_PAGE && (
+            {!loading && (mode === 'cocktails' ? cocktailTotal : total) > PER_PAGE && (
               <div className="flex items-center justify-center gap-2 mt-10">
                 <button
-                  onClick={() => handlePageChange(page - 1)}
+                  onClick={() => mode === 'cocktails' ? handleCocktailPageChange(page - 1) : handlePageChange(page - 1)}
                   disabled={page <= 1}
-                  className="px-4 py-2.5 rounded-xl border border-stone-200 bg-white text-sm font-medium text-stone-700 hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className={`px-4 py-2.5 rounded-xl border text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-colors ${mode === 'cocktails' ? 'border-slate-600 bg-slate-700 text-slate-200 hover:bg-slate-600' : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'}`}
                 >
                   Previous
                 </button>
-
-                {/* Page numbers */}
                 <div className="flex items-center gap-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1)
-                    .filter(p => {
-                      // Show first, last, and pages near current
-                      if (p === 1 || p === totalPages) return true
-                      if (Math.abs(p - page) <= 1) return true
-                      return false
-                    })
+                  {Array.from({ length: mode === 'cocktails' ? cocktailTotalPages : totalPages }, (_, i) => i + 1)
+                    .filter(p => p === 1 || p === (mode === 'cocktails' ? cocktailTotalPages : totalPages) || Math.abs(p - page) <= 1)
                     .reduce<(number | 'ellipsis')[]>((acc, p, i, arr) => {
-                      if (i > 0 && p - (arr[i - 1] as number) > 1) {
-                        acc.push('ellipsis')
-                      }
+                      if (i > 0 && p - (arr[i - 1] as number) > 1) acc.push('ellipsis')
                       acc.push(p)
                       return acc
                     }, [])
                     .map((item, i) => {
-                      if (item === 'ellipsis') {
-                        return (
-                          <span key={`e-${i}`} className="px-2 py-2 text-stone-400 text-sm">
-                            ...
-                          </span>
-                        )
-                      }
+                      if (item === 'ellipsis') return <span key={`e-${i}`} className="px-2 py-2 text-stone-400 text-sm">...</span>
                       const p = item as number
                       return (
                         <button
                           key={p}
-                          onClick={() => handlePageChange(p)}
-                          className={`w-10 h-10 rounded-xl text-sm font-medium transition-colors ${
-                            p === page
-                              ? 'bg-stone-900 text-white shadow-sm'
-                              : 'bg-white border border-stone-200 text-stone-600 hover:bg-stone-50'
-                          }`}
+                          onClick={() => mode === 'cocktails' ? handleCocktailPageChange(p) : handlePageChange(p)}
+                          className={`w-10 h-10 rounded-xl text-sm font-medium transition-colors ${p === page ? (mode === 'cocktails' ? 'bg-violet-600 text-white' : 'bg-stone-900 text-white') : (mode === 'cocktails' ? 'bg-slate-700 border border-slate-600 text-slate-300 hover:bg-slate-600' : 'bg-white border border-stone-200 text-stone-600 hover:bg-stone-50')}`}
                         >
                           {p}
                         </button>
                       )
                     })}
                 </div>
-
                 <button
-                  onClick={() => handlePageChange(page + 1)}
-                  disabled={!hasMore}
-                  className="px-4 py-2.5 rounded-xl border border-stone-200 bg-white text-sm font-medium text-stone-700 hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  onClick={() => mode === 'cocktails' ? handleCocktailPageChange(page + 1) : handlePageChange(page + 1)}
+                  disabled={mode === 'cocktails' ? !cocktailHasMore : !hasMore}
+                  className={`px-4 py-2.5 rounded-xl border text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-colors ${mode === 'cocktails' ? 'border-slate-600 bg-slate-700 text-slate-200 hover:bg-slate-600' : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'}`}
                 >
                   Next
                 </button>

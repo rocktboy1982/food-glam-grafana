@@ -11,6 +11,7 @@ import RecipeCommentsClient from "@/components/pages/recipe-comments-client"
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import { MOCK_RECIPES } from '@/lib/mock-data'
 import { normalizeToEmbed } from '@/lib/embed'
+import FollowChefButton from '@/components/pages/follow-chef-button'
 
 // Rich mock recipe details keyed by slug
 const MOCK_RECIPE_DETAILS: Record<string, {
@@ -400,6 +401,18 @@ export default async function RecipePage({ params }: RecipePageProps) {
                     recipeId={mockRecipe.id}
                     slug={slug}
                     title={mockRecipe.title}
+                    exportData={{
+                      servings: detail.servings,
+                      total_time: detail.total_time,
+                      prep_time: detail.prep_time,
+                      cook_time: detail.cook_time,
+                      ingredients: detail.ingredients,
+                      steps: detail.steps,
+                      nutrition: detailNutrition,
+                      region: mockRecipe.region,
+                      dietTags: mockRecipe.dietTags,
+                      creator: `${mockRecipe.created_by.display_name} (@${mockRecipe.created_by.handle})`,
+                    }}
                   />
                 </CardContent>
               </Card>
@@ -514,6 +527,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
                       <p className="text-xs text-muted-foreground">{creator.handle}</p>
                     </div>
                   </div>
+                  <FollowChefButton handle={creator.handle} displayName={creator.display_name} />
                 </CardContent>
               </Card>
 
@@ -680,6 +694,18 @@ export default async function RecipePage({ params }: RecipePageProps) {
                   recipeId={post.id}
                   slug={slug}
                   title={post.title}
+                  exportData={{
+                    servings,
+                    total_time: totalTime ?? undefined,
+                    prep_time: prepTime ?? undefined,
+                    cook_time: cookTime ?? undefined,
+                    ingredients: ingredientSections.flatMap(s => s.ingredients),
+                    steps,
+                    nutrition: recipeData.nutrition_per_serving as { calories: number; protein: number; carbs: number; fat: number } | undefined,
+                    region: approach?.name,
+                    dietTags,
+                    creator: creator ? `${creator.display_name} (@${creator.handle})` : undefined,
+                  }}
                 />
               </CardContent>
             </Card>
@@ -832,15 +858,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
                       <p className="text-xs text-muted-foreground">@{creator.handle}</p>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="w-full mt-3 gap-1.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                      <circle cx="8.5" cy="7" r="4"/>
-                      <line x1="20" y1="8" x2="20" y2="14"/>
-                      <line x1="23" y1="11" x2="17" y2="11"/>
-                    </svg>
-                    Follow
-                  </Button>
+                  <FollowChefButton handle={creator.handle} displayName={creator.display_name} />
                 </CardContent>
               </Card>
             )}

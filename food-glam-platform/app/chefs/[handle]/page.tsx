@@ -188,15 +188,15 @@ export default function ChefPage() {
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="ff-display text-2xl font-bold leading-tight">{profile.display_name}</h1>
-              {profile.tier !== 'user' && (
-                <span
-                  className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                  style={profile.tier === 'pro'
-                    ? { background: 'rgba(255,77,109,0.18)', color: '#ff4d6d', border: '1px solid rgba(255,77,109,0.3)' }
-                    : { background: 'rgba(224,224,224,0.12)', color: '#e0e0e0', border: '1px solid rgba(255,255,255,0.2)' }}
-                >
-                  {TIER_LABEL[profile.tier]}
-                </span>
+        {profile.tier !== 'user' && (
+          <span
+            className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+            style={profile.tier === 'pro'
+              ? { background: 'rgba(255,77,109,0.15)', color: '#c0392b', border: '1px solid rgba(255,77,109,0.3)' }
+              : { background: 'rgba(100,100,100,0.1)', color: '#555', border: '1px solid rgba(0,0,0,0.15)' }}
+          >
+            {TIER_LABEL[profile.tier]}
+          </span>
               )}
             </div>
             <p className="text-sm" style={{ color: '#888' }}>@{profile.handle}</p>
@@ -296,7 +296,7 @@ export default function ChefPage() {
                                   />
                                   <div className="absolute top-2 left-2">
                                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ background: 'rgba(255,149,0,0.9)', backdropFilter: 'blur(4px)' }}>
-                                      🎥 Vlog
+                      🍽️ Recipe
                                     </span>
                                   </div>
                                 </Link>

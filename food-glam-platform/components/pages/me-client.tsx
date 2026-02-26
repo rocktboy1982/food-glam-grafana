@@ -6,12 +6,23 @@ import { supabase } from "@/lib/supabase-client";
 import SignInButton from "@/components/auth/signin-button";
 import Link from "next/link";
 
+interface MockUser { id: string; display_name: string; handle: string; avatar_url: string | null }
+
 export default function MeClientPage() {
   const { flags, loading, setOverride } = useFeatureFlags();
   const healthMode = !!flags.healthMode;
   const powerMode = !!flags.powerMode;
 
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<{ email?: string; user_metadata?: { full_name?: string }; id: string } | null>(null);
+  const [mockUser, setMockUser] = useState<MockUser | null>(null);
+
+  // Load mock user from localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('mock_user');
+      if (raw) setMockUser(JSON.parse(raw));
+    } catch { /* ignore */ }
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -44,11 +55,28 @@ export default function MeClientPage() {
   return (
     <main className="min-h-screen" style={{ background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', color: '#111' }}><div className="container mx-auto px-4 py-8 flex flex-col gap-8 max-w-xl">
       <section className="text-center">
-        <h1 className="text-3xl font-bold mb-2">Profile</h1>
-        <p className="text-muted-foreground mb-4">Manage your account, modes, and settings.</p>
-        <div className="w-20 h-20 mx-auto rounded-full bg-muted mb-2 flex items-center justify-center text-3xl select-none">
-          👤
+        <h1 className="text-3xl font-bold mb-2" style={{ fontFamily: "'Syne', sans-serif" }}>Profile</h1>
+        <p className="mb-4 text-sm" style={{ color: '#777' }}>Manage your account, modes, and settings.</p>
+        {/* Avatar */}
+        <div className="w-20 h-20 mx-auto rounded-full mb-3 flex items-center justify-center text-3xl select-none font-bold overflow-hidden"
+          style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}>
+          {mockUser?.avatar_url
+            ? <img src={mockUser.avatar_url} alt="" className="w-full h-full object-cover" />
+            : (mockUser?.display_name?.charAt(0).toUpperCase() ?? '👤')}
         </div>
+        {mockUser && (
+          <div className="mb-3">
+            <p className="text-lg font-bold" style={{ color: '#111' }}>{mockUser.display_name}</p>
+            <p className="text-sm" style={{ color: '#888' }}>@{mockUser.handle}</p>
+            <Link
+              href={`/chefs/${mockUser.handle}`}
+              className="inline-block mt-2 text-xs font-semibold px-4 py-1.5 rounded-full"
+              style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}
+            >
+              View Chef Profile →
+            </Link>
+          </div>
+        )}
         <div className="mb-4">
           <SignInButton />
         </div>

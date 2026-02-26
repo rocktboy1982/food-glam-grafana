@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Heart, MessageSquare, Share2, Bookmark, Clock } from 'lucide-react'
+import { Heart, MessageSquare, Share2, Bookmark } from 'lucide-react'
 
 interface RecipeCardProps {
   id: string
@@ -125,46 +125,11 @@ export default function RecipeCard({
     }
   }
 
-  const handleAddToPlan = async () => {
-    try {
-      const plansRes = await fetch('/api/meal-plans')
-      if (!plansRes.ok) return
-      const plans = await plansRes.json()
-      let mealPlanId = plans[0]?.id
-      if (!mealPlanId) {
-        const createRes = await fetch('/api/meal-plans', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title: 'My Meal Plan',
-            start_date: new Date().toISOString().split('T')[0]
-          })
-        })
-        const newPlan = await createRes.json()
-        mealPlanId = newPlan.id
-      }
-      await fetch('/api/meal-plan-entries', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          meal_plan_id: mealPlanId,
-          date: new Date().toISOString().split('T')[0],
-          meal_slot: 'dinner',
-          post_id: id,
-          servings: 1,
-          recipe_title: title,
-          recipe_image: hero_image_url
-        })
-      })
-    } catch (err) {
-      console.error('Failed to add to plan:', err)
-    }
-  }
 
   const calories = nutrition_per_serving?.calories
 
   return (
-    <div className="border rounded-xl overflow-hidden flex flex-col bg-card shadow-sm hover:shadow-md transition-shadow">
+    <div className="border rounded-xl overflow-hidden flex flex-col bg-card shadow-sm hover:shadow-md transition-shadow h-full">
       {/* Image */}
       <div className="relative">
         <img
@@ -195,7 +160,7 @@ export default function RecipeCard({
         {/* Cook time badge bottom-left */}
         {cook_time_minutes && (
           <span className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-0.5 rounded-full text-xs font-medium backdrop-blur-sm flex items-center gap-1">
-            <Clock size={10} />
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             {cook_time_minutes}m
           </span>
         )}
@@ -294,13 +259,6 @@ export default function RecipeCard({
           >
             <Share2 size={12} />
             Share
-          </button>
-          <button
-            onClick={handleAddToPlan}
-            className="bg-muted text-muted-foreground px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 hover:bg-muted/80 transition-colors"
-          >
-            <Clock size={12} />
-            Plan
           </button>
           <button
             onClick={() => router.push(`/recipes/${slug}#comments`)}

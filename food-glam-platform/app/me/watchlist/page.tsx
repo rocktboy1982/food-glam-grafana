@@ -1,5 +1,5 @@
-import MeWatchlistClient from "@/components/pages/me-watchlist-client"
+import { redirect } from 'next/navigation'
 
 export default function MeWatchlistPage() {
-  return <MeWatchlistClient />
+  redirect('/me/preferred')
 }

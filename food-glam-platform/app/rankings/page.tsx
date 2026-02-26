@@ -209,15 +209,15 @@ function TopChefsTab() {
               <Link href={`/chefs/${chef.handle}`} className="group/name">
                 <div className="flex items-center gap-1.5">
                   <span
-                    className="text-base font-bold group-hover/name:text-white transition-colors truncate"
-                    style={{ color: '#e0e0e0' }}
+                    className="text-base font-bold group-hover/name:text-black transition-colors truncate"
+                    style={{ color: '#ff9500' }}
                   >
                     {chef.display_name}
                   </span>
                   <TierStar tier={chef.tier} size={13} />
                 </div>
               </Link>
-              <p className="text-sm mt-1 line-clamp-2" style={{ color: '#666' }}>
+              <p className="text-sm mt-1 line-clamp-2" style={{ color: '#555' }}>
                 {chef.bio}
               </p>
               <div className="flex items-center gap-3 mt-1">
@@ -349,7 +349,7 @@ function ByCuisineTab() {
       {CUISINE_LEADERS.map(({ approach, top, total }) => (
         <Link
           key={approach.id}
-          href={`/recipes/${top.slug}`}
+          href={`/cookbooks/region/${approach.id}`}
           className="group relative rounded-2xl overflow-hidden"
           style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.1)' }}
         >

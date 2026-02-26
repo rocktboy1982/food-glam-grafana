@@ -3,7 +3,7 @@ import { MOCK_RECIPES, MOCK_TRENDING } from '@/lib/mock-data'
 
 export default function FeedPage() {
   return (
-    <main className="container mx-auto px-4 py-8 max-w-5xl">
+    <main className="min-h-screen" style={{ background: 'linear-gradient(to bottom, #fdf8f0, #ffffff)', color: '#111' }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
@@ -32,10 +32,10 @@ export default function FeedPage() {
             <span>🔥</span> Trending Today
           </h2>
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
-            {MOCK_TRENDING.map((item: { id: string; title: string; hero_image_url?: string; votes?: number }) => (
+            {MOCK_TRENDING.map((item) => (
               <Link
                 key={item.id}
-                href={`/recipes/${item.id}`}
+                href={`/recipes/${item.slug}`}
                 className="shrink-0 w-44 rounded-xl overflow-hidden border border-border bg-card hover:shadow-md transition-shadow group"
               >
                 <div className="h-28 bg-stone-100 overflow-hidden">
