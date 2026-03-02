@@ -4,10 +4,11 @@ import ScanRecipesClient from '@/components/pages/scan-recipes-client'
 
 export const metadata: Metadata = { title: 'Recipe Matches | Food Glam' }
 
-export default function ScanRecipesPage({ params }: { params: { session_id: string } }) {
+export default async function ScanRecipesPage({ params }: { params: Promise<{ session_id: string }> }) {
+  const { session_id } = await params
   return (
     <Suspense fallback={null}>
-      <ScanRecipesClient sessionId={params.session_id} />
+      <ScanRecipesClient sessionId={session_id} />
     </Suspense>
   )
 }

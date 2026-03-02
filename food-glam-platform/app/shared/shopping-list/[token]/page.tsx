@@ -3,8 +3,8 @@ import { notFound } from 'next/navigation'
 import SharedShoppingListClient from '@/components/pages/shared-shopping-list-client'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 
-export default async function SharedPage({ params }: { params: { token: string } }) {
-  const { token } = params
+export default async function SharedPage({ params }: { params: Promise<{ token: string }> }) {
+  const { token } = await params
   const supabase = createServerSupabaseClient()
 
   // Find share record

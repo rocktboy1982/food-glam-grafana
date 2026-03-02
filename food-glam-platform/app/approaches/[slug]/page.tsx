@@ -1,17 +1,19 @@
 import { notFound } from 'next/navigation'
 
 interface ApproachPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
-export default function ApproachPage({ params }: ApproachPageProps) {
+export default async function ApproachPage({ params }: ApproachPageProps) {
+  const { slug } = await params
+
   // In real implementation, fetch approach by slug
   const approach = {
-    id: params.slug,
-    name: params.slug.charAt(0).toUpperCase() + params.slug.slice(1),
-    description: `Recipes from ${params.slug} cuisine`
+    id: slug,
+    name: slug.charAt(0).toUpperCase() + slug.slice(1),
+    description: `Recipes from ${slug} cuisine`
   }
 
   if (!approach) {

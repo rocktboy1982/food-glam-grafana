@@ -1,5 +1,6 @@
 import SeriesDetailClient from "@/components/pages/series-detail-client"
 
-export default function SeriesDetailPage({ params }: { params: { handle: string; slug: string } }) {
-  return <SeriesDetailClient handle={params.handle} slug={params.slug} />
+export default async function SeriesDetailPage({ params }: { params: Promise<{ handle: string; slug: string }> }) {
+  const { handle, slug } = await params
+  return <SeriesDetailClient handle={handle} slug={slug} />
 }

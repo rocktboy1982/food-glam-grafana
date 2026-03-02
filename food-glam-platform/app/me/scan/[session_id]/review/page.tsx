@@ -3,6 +3,7 @@ import ScanReviewClient from '@/components/pages/scan-review-client'
 
 export const metadata: Metadata = { title: 'Review Ingredients | Food Glam' }
 
-export default function ScanReviewPage({ params }: { params: { session_id: string } }) {
-  return <ScanReviewClient sessionId={params.session_id} />
+export default async function ScanReviewPage({ params }: { params: Promise<{ session_id: string }> }) {
+  const { session_id } = await params
+  return <ScanReviewClient sessionId={session_id} />
 }

@@ -3,6 +3,7 @@ import ScanReconcileClient from '@/components/pages/scan-reconcile-client'
 
 export const metadata: Metadata = { title: 'Update Shopping List | Food Glam' }
 
-export default function ScanReconcilePage({ params }: { params: { session_id: string } }) {
-  return <ScanReconcileClient sessionId={params.session_id} />
+export default async function ScanReconcilePage({ params }: { params: Promise<{ session_id: string }> }) {
+  const { session_id } = await params
+  return <ScanReconcileClient sessionId={session_id} />
 }

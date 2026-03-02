@@ -1,5 +1,6 @@
 import ChannelSeriesClient from "@/components/pages/channel-series-client"
 
-export default function ChannelSeriesPage({ params }: { params: { handle: string } }) {
-  return <ChannelSeriesClient handle={params.handle} />
+export default async function ChannelSeriesPage({ params }: { params: Promise<{ handle: string }> }) {
+  const { handle } = await params
+  return <ChannelSeriesClient handle={handle} />
 }
