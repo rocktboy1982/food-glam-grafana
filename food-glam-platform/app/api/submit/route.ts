@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
+
 const ALLOWED_TYPES = ['recipe', 'short', 'image', 'video'] as const
 const ALLOWED_STATUSES = ['draft', 'active'] as const
+const MAX_POSTS_PER_DAY = 1
+
 function isLocalSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
   return url.includes('127.0.0.1') || url.includes('localhost') || !url
@@ -10,6 +13,14 @@ function isLocalSupabase() {
 // In-memory fallback store for local dev (resets on server restart)
 const DEV_POSTS: Record<string, unknown>[] = []
 const DEV_USER_ID = 'dev-user-001'
+
+/** Check if user has already posted today (local dev fallback) */
+function hasPostedTodayDev(userId: string): boolean {
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+  return DEV_POSTS.some(
+    (p) => p.created_by === userId && typeof p.created_at === 'string' && p.created_at > oneDayAgo
+  )
+}
 /* ── POST: Create a new post ──────────────────────────────── */
 export async function POST(req: Request) {
   try {
@@ -23,8 +34,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid content type' }, { status: 400 })
     }
     const postStatus = ALLOWED_STATUSES.includes(status) ? status : 'draft'
+
     // ── Local dev fallback (no real Supabase) ──────────────────────
     if (isLocalSupabase()) {
+      // Rate limit: 1 post per day per user
+      if (hasPostedTodayDev(DEV_USER_ID)) {
+        return NextResponse.json(
+          { error: 'You can only publish 1 post per day. Try again tomorrow.' },
+          { status: 429 }
+        )
+      }
+
       const baseSlug = (slug || title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')).slice(0, 80)
       const finalSlug = `${baseSlug}-${Date.now().toString(36)}`
       const id = `dev-post-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
@@ -49,6 +69,20 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+    }
+
+    // Rate limit: 1 post per day per user
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+    const { count: recentCount } = await supabase
+      .from('posts')
+      .select('id', { count: 'exact', head: true })
+      .eq('created_by', user.id)
+      .gte('created_at', oneDayAgo)
+    if (recentCount !== null && recentCount >= MAX_POSTS_PER_DAY) {
+      return NextResponse.json(
+        { error: 'You can only publish 1 post per day. Try again tomorrow.' },
+        { status: 429 }
+      )
     }
     // Build slug (ensure unique by appending random suffix)
     const baseSlug = (slug || title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')).slice(0, 80)

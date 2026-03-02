@@ -1,143 +1,114 @@
 -- Seed data for food-glam-platform
+-- Column names must match migration 20260101000000_create_all_tables.sql exactly.
 
 -- Sample profiles (using fixed UUIDs for FK references)
-INSERT INTO profiles (id, handle, display_name, bio) VALUES
-  ('a0000000-0000-0000-0000-000000000001', 'chef_anna', 'Chef Anna', 'Professional chef and food photographer'),
-  ('a0000000-0000-0000-0000-000000000002', 'home_cook_mike', 'Mike B.', 'Passionate home cook exploring world cuisines'),
-  ('a0000000-0000-0000-0000-000000000003', 'vegan_sarah', 'Sarah Green', 'Plant-based recipe developer')
+-- profiles columns: id, email, username, display_name, avatar_url, bio, is_moderator
+INSERT INTO profiles (id, email, username, display_name, bio) VALUES
+  ('a0000000-0000-0000-0000-000000000001', 'chef_anna@example.com', 'chef_anna', 'Chef Anna', 'Professional chef and food photographer'),
+  ('a0000000-0000-0000-0000-000000000002', 'mike@example.com', 'home_cook_mike', 'Mike B.', 'Passionate home cook exploring world cuisines'),
+  ('a0000000-0000-0000-0000-000000000003', 'sarah@example.com', 'vegan_sarah', 'Sarah Green', 'Plant-based recipe developer')
 ON CONFLICT (id) DO NOTHING;
 
 -- Sample approaches (cooking styles)
-INSERT INTO approaches (id, name, slug) VALUES
-  ('b0000000-0000-0000-0000-000000000001', 'Italian', 'italian'),
-  ('b0000000-0000-0000-0000-000000000002', 'Japanese', 'japanese'),
-  ('b0000000-0000-0000-0000-000000000003', 'Mexican', 'mexican'),
-  ('b0000000-0000-0000-0000-000000000004', 'French', 'french'),
-  ('b0000000-0000-0000-0000-000000000005', 'Indian', 'indian'),
-  ('b0000000-0000-0000-0000-000000000006', 'Plant-Based', 'plant-based')
+-- approaches columns: id, name, description, icon_url
+INSERT INTO approaches (id, name, description) VALUES
+  ('b0000000-0000-0000-0000-000000000001', 'Italian', 'Classic Italian cooking traditions'),
+  ('b0000000-0000-0000-0000-000000000002', 'Japanese', 'Japanese culinary arts'),
+  ('b0000000-0000-0000-0000-000000000003', 'Mexican', 'Traditional Mexican cuisine'),
+  ('b0000000-0000-0000-0000-000000000004', 'French', 'Classic French cooking'),
+  ('b0000000-0000-0000-0000-000000000005', 'Indian', 'Indian culinary traditions'),
+  ('b0000000-0000-0000-0000-000000000006', 'Plant-Based', 'Plant-based cooking')
 ON CONFLICT (id) DO NOTHING;
 
--- Sample posts (recipes)
-INSERT INTO posts (id, type, title, slug, approach_id, created_by, status, recipe_json, diet_tags, food_tags, is_tested, quality_score) VALUES
+-- Sample posts
+-- posts columns: id, created_by, approach_id, title, content, status
+INSERT INTO posts (id, created_by, approach_id, title, content, status) VALUES
   (
     'c0000000-0000-0000-0000-000000000001',
-    'recipe',
-    'Classic Margherita Pizza',
-    'classic-margherita-pizza',
-    'b0000000-0000-0000-0000-000000000001',
     'a0000000-0000-0000-0000-000000000001',
-    'active',
-    '{"name":"Classic Margherita Pizza","recipeIngredient":["500g pizza dough","200g San Marzano tomatoes","200g fresh mozzarella","Fresh basil leaves","Extra virgin olive oil","Salt"],"recipeInstructions":["Preheat oven to 250C","Stretch dough into a round","Spread crushed tomatoes","Add torn mozzarella","Bake for 8-10 minutes","Top with fresh basil and olive oil"]}',
-    ARRAY['vegetarian'],
-    ARRAY['pizza', 'cheese', 'tomato'],
-    true,
-    92
+    'b0000000-0000-0000-0000-000000000001',
+    'Classic Margherita Pizza',
+    'A traditional Neapolitan pizza with San Marzano tomatoes, fresh mozzarella, basil, and extra virgin olive oil.',
+    'active'
   ),
   (
     'c0000000-0000-0000-0000-000000000002',
-    'recipe',
-    'Tonkotsu Ramen',
-    'tonkotsu-ramen',
-    'b0000000-0000-0000-0000-000000000002',
     'a0000000-0000-0000-0000-000000000002',
-    'active',
-    '{"name":"Tonkotsu Ramen","recipeIngredient":["Pork bones","Ramen noodles","Chashu pork","Soft-boiled egg","Green onions","Nori","Sesame oil"],"recipeInstructions":["Boil pork bones for 12 hours","Prepare chashu pork","Cook ramen noodles","Assemble bowl with broth, noodles, and toppings"]}',
-    ARRAY[]::text[],
-    ARRAY['noodles', 'pork', 'soup'],
-    true,
-    88
+    'b0000000-0000-0000-0000-000000000002',
+    'Tonkotsu Ramen',
+    'Rich pork bone broth ramen with chashu pork, soft-boiled egg, green onions, nori, and sesame oil.',
+    'active'
   ),
   (
     'c0000000-0000-0000-0000-000000000003',
-    'recipe',
-    'Tacos Al Pastor',
-    'tacos-al-pastor',
-    'b0000000-0000-0000-0000-000000000003',
     'a0000000-0000-0000-0000-000000000002',
-    'active',
-    '{"name":"Tacos Al Pastor","recipeIngredient":["1kg pork shoulder","Achiote paste","Pineapple","Corn tortillas","White onion","Cilantro","Lime"],"recipeInstructions":["Marinate pork in achiote","Grill pork with pineapple","Slice thinly","Serve on warm tortillas with onion, cilantro, and lime"]}',
-    ARRAY[]::text[],
-    ARRAY['tacos', 'pork', 'pineapple'],
-    true,
-    95
+    'b0000000-0000-0000-0000-000000000003',
+    'Tacos Al Pastor',
+    'Achiote-marinated pork with pineapple on corn tortillas with onion, cilantro, and lime.',
+    'active'
   ),
   (
     'c0000000-0000-0000-0000-000000000004',
-    'recipe',
-    'Vegan Buddha Bowl',
-    'vegan-buddha-bowl',
-    'b0000000-0000-0000-0000-000000000006',
     'a0000000-0000-0000-0000-000000000003',
-    'active',
-    '{"name":"Vegan Buddha Bowl","recipeIngredient":["Quinoa","Roasted chickpeas","Avocado","Sweet potato","Kale","Tahini dressing","Lemon"],"recipeInstructions":["Cook quinoa","Roast chickpeas and sweet potato","Massage kale with lemon","Assemble bowl","Drizzle with tahini dressing"]}',
-    ARRAY['vegan', 'gluten-free'],
-    ARRAY['bowl', 'quinoa', 'chickpeas'],
-    true,
-    85
+    'b0000000-0000-0000-0000-000000000006',
+    'Vegan Buddha Bowl',
+    'A nourishing bowl with quinoa, roasted chickpeas, avocado, sweet potato, kale, and tahini dressing.',
+    'active'
   ),
   (
     'c0000000-0000-0000-0000-000000000005',
-    'recipe',
-    'Croissants from Scratch',
-    'croissants-from-scratch',
-    'b0000000-0000-0000-0000-000000000004',
     'a0000000-0000-0000-0000-000000000001',
-    'active',
-    '{"name":"Croissants from Scratch","recipeIngredient":["500g bread flour","10g salt","80g sugar","10g yeast","300ml milk","280g butter"],"recipeInstructions":["Make detrempe dough","Laminate with butter block","Fold three times with resting","Shape croissants","Proof and egg wash","Bake at 200C for 15 minutes"]}',
-    ARRAY['vegetarian'],
-    ARRAY['pastry', 'bread', 'butter'],
-    true,
-    90
+    'b0000000-0000-0000-0000-000000000004',
+    'Croissants from Scratch',
+    'Flaky, buttery croissants made with laminated dough — bread flour, butter, milk, yeast.',
+    'active'
   ),
   (
     'c0000000-0000-0000-0000-000000000006',
-    'recipe',
-    'Butter Chicken',
-    'butter-chicken',
-    'b0000000-0000-0000-0000-000000000005',
     'a0000000-0000-0000-0000-000000000002',
-    'active',
-    '{"name":"Butter Chicken","recipeIngredient":["800g chicken thighs","Yogurt marinade","Garam masala","Tomato sauce","Butter","Cream","Kasuri methi","Basmati rice"],"recipeInstructions":["Marinate chicken in yogurt and spices","Grill or pan-fry chicken","Make tomato-butter sauce","Add chicken to sauce","Finish with cream and kasuri methi","Serve with basmati rice"]}',
-    ARRAY[]::text[],
-    ARRAY['curry', 'chicken', 'rice'],
-    true,
-    93
+    'b0000000-0000-0000-0000-000000000005',
+    'Butter Chicken',
+    'Creamy tomato-butter sauce with tender spiced chicken, garam masala, kasuri methi, and basmati rice.',
+    'active'
   )
 ON CONFLICT (id) DO NOTHING;
 
 -- Sample votes
-INSERT INTO votes (post_id, user_id, value) VALUES
-  ('c0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000002', 1),
-  ('c0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000003', 1),
-  ('c0000000-0000-0000-0000-000000000002', 'a0000000-0000-0000-0000-000000000001', 1),
-  ('c0000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-000000000001', 1),
-  ('c0000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-000000000003', 1),
-  ('c0000000-0000-0000-0000-000000000004', 'a0000000-0000-0000-0000-000000000001', 1),
-  ('c0000000-0000-0000-0000-000000000005', 'a0000000-0000-0000-0000-000000000002', 1),
-  ('c0000000-0000-0000-0000-000000000006', 'a0000000-0000-0000-0000-000000000001', 1),
-  ('c0000000-0000-0000-0000-000000000006', 'a0000000-0000-0000-0000-000000000003', 1)
+-- votes columns: id, post_id, user_id, vote_type
+INSERT INTO votes (post_id, user_id, vote_type) VALUES
+  ('c0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000002', 'upvote'),
+  ('c0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000003', 'upvote'),
+  ('c0000000-0000-0000-0000-000000000002', 'a0000000-0000-0000-0000-000000000001', 'upvote'),
+  ('c0000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-000000000001', 'upvote'),
+  ('c0000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-000000000003', 'upvote'),
+  ('c0000000-0000-0000-0000-000000000004', 'a0000000-0000-0000-0000-000000000001', 'upvote'),
+  ('c0000000-0000-0000-0000-000000000005', 'a0000000-0000-0000-0000-000000000002', 'upvote'),
+  ('c0000000-0000-0000-0000-000000000006', 'a0000000-0000-0000-0000-000000000001', 'upvote'),
+  ('c0000000-0000-0000-0000-000000000006', 'a0000000-0000-0000-0000-000000000003', 'upvote')
 ON CONFLICT DO NOTHING;
 
 -- Sample follows
-INSERT INTO follows (follower_id, followed_id) VALUES
+-- follows columns: id, follower_id, following_id
+INSERT INTO follows (follower_id, following_id) VALUES
   ('a0000000-0000-0000-0000-000000000002', 'a0000000-0000-0000-0000-000000000001'),
   ('a0000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-000000000001'),
   ('a0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000003')
 ON CONFLICT DO NOTHING;
 
 -- Sample recipes (standalone search table)
-INSERT INTO recipes (id, title, summary, recipe_json, created_by) VALUES
-  ('d0000000-0000-0000-0000-000000000001', 'Classic Margherita Pizza', 'A traditional Neapolitan pizza with San Marzano tomatoes and fresh mozzarella', '{"name":"Classic Margherita Pizza","recipeIngredient":["pizza dough","tomatoes","mozzarella","basil"]}', 'a0000000-0000-0000-0000-000000000001'),
-  ('d0000000-0000-0000-0000-000000000002', 'Tonkotsu Ramen', 'Rich pork bone broth ramen with chashu and soft-boiled egg', '{"name":"Tonkotsu Ramen","recipeIngredient":["pork bones","ramen noodles","chashu","egg"]}', 'a0000000-0000-0000-0000-000000000002'),
-  ('d0000000-0000-0000-0000-000000000003', 'Tacos Al Pastor', 'Achiote-marinated pork with pineapple on corn tortillas', '{"name":"Tacos Al Pastor","recipeIngredient":["pork","achiote","pineapple","tortillas"]}', 'a0000000-0000-0000-0000-000000000002'),
-  ('d0000000-0000-0000-0000-000000000004', 'Vegan Buddha Bowl', 'A nourishing bowl with quinoa, roasted chickpeas, and tahini', '{"name":"Vegan Buddha Bowl","recipeIngredient":["quinoa","chickpeas","avocado","tahini"]}', 'a0000000-0000-0000-0000-000000000003'),
-  ('d0000000-0000-0000-0000-000000000005', 'Butter Chicken', 'Creamy tomato-butter sauce with tender spiced chicken', '{"name":"Butter Chicken","recipeIngredient":["chicken","yogurt","tomato sauce","butter","cream"]}', 'a0000000-0000-0000-0000-000000000002')
+-- recipes columns: id, title, summary, created_by (+ ingredients, instructions, etc.)
+INSERT INTO recipes (id, title, summary, ingredients, instructions, created_by) VALUES
+  ('d0000000-0000-0000-0000-000000000001', 'Classic Margherita Pizza', 'A traditional Neapolitan pizza with San Marzano tomatoes and fresh mozzarella', ARRAY['pizza dough','tomatoes','mozzarella','basil'], ARRAY['Preheat oven to 250C','Stretch dough','Spread tomatoes','Add mozzarella','Bake 8-10 min','Top with basil'], 'a0000000-0000-0000-0000-000000000001'),
+  ('d0000000-0000-0000-0000-000000000002', 'Tonkotsu Ramen', 'Rich pork bone broth ramen with chashu and soft-boiled egg', ARRAY['pork bones','ramen noodles','chashu','egg'], ARRAY['Boil pork bones 12h','Prepare chashu','Cook noodles','Assemble bowl'], 'a0000000-0000-0000-0000-000000000002'),
+  ('d0000000-0000-0000-0000-000000000003', 'Tacos Al Pastor', 'Achiote-marinated pork with pineapple on corn tortillas', ARRAY['pork','achiote','pineapple','tortillas'], ARRAY['Marinate pork','Grill with pineapple','Slice thin','Serve on tortillas'], 'a0000000-0000-0000-0000-000000000002'),
+  ('d0000000-0000-0000-0000-000000000004', 'Vegan Buddha Bowl', 'A nourishing bowl with quinoa, roasted chickpeas, and tahini', ARRAY['quinoa','chickpeas','avocado','tahini'], ARRAY['Cook quinoa','Roast chickpeas','Massage kale','Assemble and drizzle'], 'a0000000-0000-0000-0000-000000000003'),
+  ('d0000000-0000-0000-0000-000000000005', 'Butter Chicken', 'Creamy tomato-butter sauce with tender spiced chicken', ARRAY['chicken','yogurt','tomato sauce','butter','cream'], ARRAY['Marinate chicken','Grill chicken','Make sauce','Combine and finish with cream'], 'a0000000-0000-0000-0000-000000000002')
 ON CONFLICT (id) DO NOTHING;
 
 -- Assign moderator role to chef_anna
 INSERT INTO app_roles (user_id, role) VALUES
   ('a0000000-0000-0000-0000-000000000001', 'moderator')
-ON CONFLICT (user_id) DO UPDATE SET role = 'moderator';
+ON CONFLICT (user_id, role) DO NOTHING;
 
 -- ============================================================
 -- CUISINES SEED DATA

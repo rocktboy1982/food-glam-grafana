@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { createServiceSupabaseClient } from '@/lib/supabase-server'
+import { getRequestUser } from '@/lib/get-user'
 import { v4 as uuidv4 } from 'uuid'
 
 /** POST /api/shopping-lists/share - Generate share token */
@@ -13,8 +14,8 @@ export async function POST(req: Request) {
     }
     if (!id || typeof id !== 'string') return NextResponse.json({ error: 'Missing shopping list id' }, { status: 400 })
 
-    const supabase = createServerSupabaseClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const supabase = createServiceSupabaseClient()
+    const user = await getRequestUser(req, supabase)
     if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
     // Verify ownership
@@ -22,7 +23,7 @@ export async function POST(req: Request) {
       .from('shopping_lists')
       .select('id')
       .eq('id', id)
-      .eq('owner_id', user.id)
+      .eq('user_id', user.id)
       .maybeSingle()
 
     if (!list) return NextResponse.json({ error: 'List not found' }, { status: 404 })
@@ -59,7 +60,7 @@ export async function GET(req: Request) {
     const token = url.searchParams.get('token')
     if (!token) return NextResponse.json({ error: 'Missing token' }, { status: 400 })
 
-    const supabase = createServerSupabaseClient()
+    const supabase = createServiceSupabaseClient()
     const { data: share } = await supabase
       .from('shopping_list_shares')
       .select('shopping_list_id, token, can_edit, expires_at')
@@ -108,8 +109,8 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: 'Provide token or shopping_list_id' }, { status: 400 })
     }
 
-    const supabase = createServerSupabaseClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const supabase = createServiceSupabaseClient()
+    const user = await getRequestUser(req, supabase)
     if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
     if (token) {
@@ -126,7 +127,7 @@ export async function DELETE(req: Request) {
         .from('shopping_lists')
         .select('id')
         .eq('id', share.shopping_list_id)
-        .eq('owner_id', user.id)
+        .eq('user_id', user.id)
         .maybeSingle()
 
       if (!listCheck) return NextResponse.json({ error: 'Not authorized' }, { status: 403 })
@@ -143,7 +144,7 @@ export async function DELETE(req: Request) {
         .from('shopping_lists')
         .select('id')
         .eq('id', shopping_list_id)
-        .eq('owner_id', user.id)
+        .eq('user_id', user.id)
         .maybeSingle()
 
       if (!listCheck) return NextResponse.json({ error: 'Not authorized' }, { status: 403 })

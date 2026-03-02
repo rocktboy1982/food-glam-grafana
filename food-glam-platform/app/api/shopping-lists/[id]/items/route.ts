@@ -1,15 +1,16 @@
-import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { NextRequest, NextResponse } from 'next/server'
+import { createServiceSupabaseClient } from '@/lib/supabase-server'
+import { getRequestUser } from '@/lib/get-user'
 
 /** GET /api/shopping-lists/[id]/items - Fetch all items for a list */
 export async function GET(
-  _req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params
-    const supabase = await createServerSupabaseClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const supabase = createServiceSupabaseClient()
+    const user = await getRequestUser(req, supabase)
     if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
     // Verify ownership
@@ -17,7 +18,7 @@ export async function GET(
       .from('shopping_lists')
       .select('id')
       .eq('id', id)
-      .eq('owner_id', user.id)
+      .eq('user_id', user.id)
       .maybeSingle()
 
     if (!list) return NextResponse.json({ error: 'List not found' }, { status: 404 })
@@ -38,7 +39,7 @@ export async function GET(
 
 /** POST /api/shopping-lists/[id]/items - Add item to list */
 export async function POST(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -53,8 +54,8 @@ export async function POST(
 
     if (!name) return NextResponse.json({ error: 'Item name is required' }, { status: 400 })
 
-    const supabase = await createServerSupabaseClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const supabase = createServiceSupabaseClient()
+    const user = await getRequestUser(req, supabase)
     if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
     // Verify ownership
@@ -62,7 +63,7 @@ export async function POST(
       .from('shopping_lists')
       .select('id')
       .eq('id', id)
-      .eq('owner_id', user.id)
+      .eq('user_id', user.id)
       .maybeSingle()
 
     if (!list) return NextResponse.json({ error: 'List not found' }, { status: 404 })
@@ -92,7 +93,7 @@ export async function POST(
 
 /** PATCH /api/shopping-lists/[id]/items - Update an item */
 export async function PATCH(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -109,8 +110,8 @@ export async function PATCH(
 
     if (!item_id) return NextResponse.json({ error: 'item_id is required' }, { status: 400 })
 
-    const supabase = await createServerSupabaseClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const supabase = createServiceSupabaseClient()
+    const user = await getRequestUser(req, supabase)
     if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
     // Verify ownership
@@ -118,7 +119,7 @@ export async function PATCH(
       .from('shopping_lists')
       .select('id')
       .eq('id', id)
-      .eq('owner_id', user.id)
+      .eq('user_id', user.id)
       .maybeSingle()
 
     if (!list) return NextResponse.json({ error: 'List not found' }, { status: 404 })
@@ -148,7 +149,7 @@ export async function PATCH(
 
 /** DELETE /api/shopping-lists/[id]/items - Delete an item */
 export async function DELETE(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -157,8 +158,8 @@ export async function DELETE(
 
     if (!item_id) return NextResponse.json({ error: 'item_id is required' }, { status: 400 })
 
-    const supabase = await createServerSupabaseClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const supabase = createServiceSupabaseClient()
+    const user = await getRequestUser(req, supabase)
     if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
     // Verify ownership
@@ -166,7 +167,7 @@ export async function DELETE(
       .from('shopping_lists')
       .select('id')
       .eq('id', id)
-      .eq('owner_id', user.id)
+      .eq('user_id', user.id)
       .maybeSingle()
 
     if (!list) return NextResponse.json({ error: 'List not found' }, { status: 404 })

@@ -129,6 +129,7 @@ function SubmitRecipePageContent() {
   const [user, setUser] = useState<{ id: string } | null>(null)
   const [authChecked, setAuthChecked] = useState(false)
 
+  const [rateLimited, setRateLimited] = useState(false)
   /* auth check */
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => { setUser(data.user ? { id: data.user.id } : null); setAuthChecked(true) })
@@ -333,6 +334,10 @@ function SubmitRecipePageContent() {
         body: JSON.stringify(payload),
       })
       const d = await res.json().catch(() => ({}))
+      if (res.status === 429) {
+        setRateLimited(true)
+        throw new Error(d.error || 'You can only publish 1 post per day. Try again tomorrow.')
+      }
       if (!res.ok) throw new Error(d.error || d.message || 'Submission failed')
 
       const newPostId: string = d.id
@@ -479,6 +484,19 @@ function SubmitRecipePageContent() {
             <Link href="/auth/signin" className="inline-block mt-2 text-xs font-medium text-amber-900 underline underline-offset-2 hover:text-amber-700 transition-colors">
               Sign in with Google →
             </Link>
+          </div>
+        </div>
+      )}
+
+      {/* ── Rate limit notice ─────────────────────────────── */}
+      {rateLimited && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 flex items-start gap-3 mt-4">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-red-800">Daily limit reached</p>
+            <p className="text-xs text-red-700 mt-0.5">You can only publish 1 post per day. Come back tomorrow to submit another recipe.</p>
           </div>
         </div>
       )}
@@ -975,11 +993,11 @@ function SubmitRecipePageContent() {
 
         {/* ── Action buttons ────────────────────────────────── */}
         <div className="flex flex-wrap items-center gap-3 pt-4 border-t">
-          <Button onClick={() => handleSubmit('active')} disabled={saving}>
-            {saving ? 'Saving...' : editId ? 'Update & Publish' : 'Publish'}
+          <Button onClick={() => handleSubmit('active')} disabled={saving || rateLimited}>
+            {saving ? 'Saving...' : rateLimited ? 'Limit reached' : editId ? 'Update & Publish' : 'Publish'}
           </Button>
-          <Button variant="outline" onClick={() => handleSubmit('draft')} disabled={saving}>
-            {saving ? 'Saving...' : 'Save as Draft'}
+          <Button variant="outline" onClick={() => handleSubmit('draft')} disabled={saving || rateLimited}>
+            {saving ? 'Saving...' : rateLimited ? 'Limit reached' : 'Save as Draft'}
           </Button>
           <Button variant="ghost" onClick={() => setShowPreview(true)}>
             Preview

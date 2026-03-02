@@ -35,3 +35,11 @@ INSERT INTO auth.users (
     now()
   )
 ON CONFLICT (id) DO NOTHING;
+
+-- Create matching profiles for test users
+INSERT INTO profiles (id, email, username, display_name)
+VALUES
+  ('a0000000-0000-0000-0000-000000000001', 'chef_anna@example.com', 'chef_anna', 'Chef Anna'),
+  ('a0000000-0000-0000-0000-000000000002', 'mike@example.com', 'mike', 'Mike'),
+  ('a0000000-0000-0000-0000-000000000003', 'sarah@example.com', 'sarah', 'Sarah')
+ON CONFLICT (id) DO NOTHING;

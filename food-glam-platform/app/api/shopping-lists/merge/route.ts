@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { createServiceSupabaseClient } from '@/lib/supabase-server'
+import { getRequestUser } from '@/lib/get-user'
 
 export async function POST(req: Request) {
   try {
@@ -12,8 +13,8 @@ export async function POST(req: Request) {
       )
     }
 
-    const supabase = createServerSupabaseClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const supabase = createServiceSupabaseClient()
+    const user = await getRequestUser(req, supabase)
     if (!user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
@@ -23,7 +24,7 @@ export async function POST(req: Request) {
       .from('shopping_lists')
       .select('id')
       .eq('id', sourceId)
-      .eq('owner_id', user.id)
+      .eq('user_id', user.id)
       .single()
 
     if (sourceError || !sourceList) {
@@ -38,7 +39,7 @@ export async function POST(req: Request) {
       .from('shopping_lists')
       .select('id')
       .eq('id', targetId)
-      .eq('owner_id', user.id)
+      .eq('user_id', user.id)
       .single()
 
     if (targetError || !targetList) {

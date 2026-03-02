@@ -20,13 +20,11 @@ const NAV_ITEMS = [
 ]
 
 const MOBILE_TABS = [
-  { href: '/',                   icon: '🏠', label: 'Home'    },
-  { href: '/search',             icon: '🔍', label: 'Explore' },
-  { href: '/cocktailbooks', icon: '🍹', label: 'Cocktails' },
-  { href: '/submit/recipe',    icon: '🍽️', label: 'Recipe'  },
-  { href: '/submit/cocktail',   icon: '🍹', label: 'Drink'   },
-  { href: '/rankings',           icon: '🏆', label: 'Rank'    },
-  { href: '/me',                 icon: '👤', label: 'Profile' },
+  { href: '/',                 icon: '🏠', label: 'Home'     },
+  { href: '/search',           icon: '🔍', label: 'Explore'  },
+  { href: '/me/scan',          icon: '📷', label: 'Scan'     },
+  { href: '/me/grocery',       icon: '🛒', label: 'Shop'     },
+  { href: '/me',               icon: '👤', label: 'Profile'  },
 ]
 
 /* ─── mock-user helper (localStorage, no Supabase required) ─────────────── */
@@ -42,15 +40,29 @@ function useMockUser() {
       // Auto-seed a demo user so the site works without Google sign-in
       if (!raw) {
         const demo: MockUser = {
-          id: 'mock-user-demo',
-          display_name: 'Demo Chef',
-          handle: 'demochef',
+          id: 'a0000000-0000-0000-0000-000000000001',
+          display_name: 'Chef Anna',
+          handle: 'chef_anna',
           avatar_url: null,
         }
         localStorage.setItem('mock_user', JSON.stringify(demo))
         raw = JSON.stringify(demo)
       }
-      if (raw) setUser(JSON.parse(raw))
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        // Migrate stale non-UUID mock user ids to Chef Anna
+        if (parsed.id === 'mock-user-demo' || (parsed.id && !/^[0-9a-f]{8}-/.test(parsed.id))) {
+          parsed.id = 'a0000000-0000-0000-0000-000000000001'
+          parsed.display_name = 'Chef Anna'
+          parsed.handle = 'chef_anna'
+          localStorage.setItem('mock_user', JSON.stringify(parsed))
+        }
+        // normalize: some code sets 'name' instead of 'display_name'
+        if (!parsed.display_name && parsed.name) parsed.display_name = parsed.name
+        if (!parsed.display_name) parsed.display_name = 'User'
+        if (!parsed.handle) parsed.handle = 'user'
+        setUser(parsed)
+      }
     } catch { /* ignore */ }
     setHydrated(true)
   }, [])
@@ -180,10 +192,10 @@ export function Navigation() {
                       className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
                       style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}
                     >
-                      {user.display_name.charAt(0).toUpperCase()}
+                      {(user.display_name ?? 'U').charAt(0).toUpperCase()}
                     </div>
                   )}
-                  <span className="hidden lg:inline">{user.display_name}</span>
+                  <span className="hidden lg:inline">{user.display_name ?? 'User'}</span>
                 </Link>
                 <button
                   onClick={signOut}

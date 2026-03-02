@@ -11,6 +11,11 @@ type ShoppingList = {
   shopping_list_items?: { count: number }[] | null
 }
 
+function getUserId() {
+  if (typeof window === 'undefined') return 'anonymous'
+  try { return JSON.parse(localStorage.getItem('mock_user') ?? '{}')?.id ?? 'anonymous' } catch { return 'anonymous' }
+}
+
 export default function ShoppingListsClient() {
   const router = useRouter()
   const [lists, setLists] = useState<ShoppingList[]>([])
@@ -21,7 +26,9 @@ export default function ShoppingListsClient() {
 
   const fetchLists = useCallback(async () => {
     try {
-      const res = await fetch('/api/shopping-lists')
+      const res = await fetch('/api/shopping-lists', {
+        headers: { 'x-mock-user-id': getUserId() },
+      })
       if (!res.ok) return
       const data = await res.json()
       setLists(data)
@@ -43,7 +50,7 @@ export default function ShoppingListsClient() {
     try {
       const res = await fetch('/api/shopping-lists', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-mock-user-id': getUserId() },
         body: JSON.stringify({ name, source_type: 'manual' }),
       })
       if (!res.ok) return
@@ -59,11 +66,11 @@ export default function ShoppingListsClient() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this shopping list?')) return
+    if (!window.confirm('Delete this shopping list?')) return
     try {
       await fetch('/api/shopping-lists', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-mock-user-id': getUserId() },
         body: JSON.stringify({ id }),
       })
       setLists((prev) => prev.filter((l) => l.id !== id))
@@ -76,7 +83,7 @@ export default function ShoppingListsClient() {
     try {
       const res = await fetch('/api/shopping-lists/share', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-mock-user-id': getUserId() },
         body: JSON.stringify({ id }),
       })
       if (!res.ok) return
@@ -99,151 +106,200 @@ export default function ShoppingListsClient() {
 
   if (loading) {
     return (
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center min-h-[40vh]">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-2 border-foreground/20 border-t-foreground/70 rounded-full animate-spin" />
-            <p className="text-sm text-muted-foreground">Loading lists…</p>
-          </div>
+      <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#dde3ee' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ width: 32, height: 32, border: '3px solid #ccc', borderTopColor: '#111', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
+          <p style={{ fontSize: 13, color: '#888' }}>Loading lists…</p>
         </div>
-      </main>
+        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      </div>
     )
   }
 
   return (
-    <main className="container mx-auto px-4 py-8 max-w-2xl">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Shopping Lists</h1>
-          <p className="text-muted-foreground mt-1">
-            {lists.length === 0 ? 'Create your first list' : `${lists.length} list${lists.length !== 1 ? 's' : ''}`}
-          </p>
-        </div>
-        <button
-          onClick={() => setShowCreate(!showCreate)}
-          className="inline-flex items-center gap-2 bg-foreground text-background px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-foreground/90 transition-colors active:scale-[0.97]"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M8 3v10M3 8h10" />
-          </svg>
-          New List
-        </button>
-      </div>
+    <div style={{ background: '#dde3ee', minHeight: '100vh', padding: '24px 16px' }}>
+      <div style={{ maxWidth: 650, margin: '0 auto' }}>
 
-      {/* Create form */}
-      {showCreate && (
-        <div className="mb-6 p-4 border rounded-xl bg-card shadow-sm animate-in fade-in slide-in-from-top-2 duration-200">
-          <label className="block text-sm font-medium mb-2">List name</label>
-          <div className="flex gap-2">
-            <input
-              autoFocus
-              type="text"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
-              placeholder="e.g. Weekly Groceries"
-              className="flex-1 px-3 py-2 border rounded-lg bg-background text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30"
-            />
-            <button
-              onClick={handleCreate}
-              disabled={creating || !newName.trim()}
-              className="px-4 py-2 bg-foreground text-background rounded-lg text-sm font-medium hover:bg-foreground/90 transition-colors disabled:opacity-50"
-            >
-              {creating ? 'Creating…' : 'Create'}
-            </button>
-            <button
-              onClick={() => { setShowCreate(false); setNewName('') }}
-              className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Cancel
-            </button>
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+          <div>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#111', margin: 0 }}>Shopping Lists</h1>
+            <p style={{ fontSize: 13, color: '#888', marginTop: 4 }}>
+              {lists.length === 0 ? 'Create your first list' : `${lists.length} list${lists.length !== 1 ? 's' : ''}`}
+            </p>
           </div>
-        </div>
-      )}
-
-      {/* Empty state */}
-      {lists.length === 0 && !showCreate && (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-              <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
-              <rect x="9" y="3" width="6" height="4" rx="1" />
-              <path d="M9 12h6M9 16h6" />
-            </svg>
-          </div>
-          <h2 className="text-lg font-semibold mb-1">No shopping lists yet</h2>
-          <p className="text-sm text-muted-foreground mb-6 max-w-xs">
-            Create a shopping list to keep track of ingredients for your recipes.
-          </p>
           <button
-            onClick={() => setShowCreate(true)}
-            className="inline-flex items-center gap-2 bg-foreground text-background px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-foreground/90 transition-colors"
+            onClick={() => setShowCreate(!showCreate)}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '10px 16px', borderRadius: 10, border: 'none',
+              background: '#111', color: '#fff', fontSize: 13, fontWeight: 600,
+              cursor: 'pointer', transition: 'all 0.15s',
+            }}
+            onMouseOver={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#333' }}
+            onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#111' }}
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <path d="M8 3v10M3 8h10" />
-            </svg>
-            Create your first list
+            + New List
           </button>
         </div>
-      )}
 
-      {/* List cards */}
-      <div className="flex flex-col gap-3">
-        {lists.map((list) => {
-          const count = getItemCount(list)
-          return (
-            <div
-              key={list.id}
-              className="group border rounded-xl p-4 bg-card hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99]"
-              onClick={() => router.push(`/me/shopping-lists/${list.id}`)}
+        {/* Create form */}
+        {showCreate && (
+          <div style={{
+            background: '#fff', borderRadius: 16, padding: 20,
+            boxShadow: '0 1px 4px rgba(0,0,0,0.08)', marginBottom: 16,
+          }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#333', marginBottom: 8 }}>List name</label>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input
+                autoFocus
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
+                placeholder="e.g. Weekly Groceries"
+                style={{
+                  flex: 1, padding: '10px 12px', fontSize: 13, border: '1px solid #ddd',
+                  borderRadius: 8, outline: 'none', color: '#111',
+                }}
+              />
+              <button
+                onClick={handleCreate}
+                disabled={creating || !newName.trim()}
+                style={{
+                  padding: '10px 16px', fontSize: 13, fontWeight: 600, borderRadius: 8,
+                  border: 'none', background: '#111', color: '#fff', cursor: 'pointer',
+                  opacity: (creating || !newName.trim()) ? 0.5 : 1,
+                }}
+              >
+                {creating ? 'Creating…' : 'Create'}
+              </button>
+              <button
+                onClick={() => { setShowCreate(false); setNewName('') }}
+                style={{
+                  padding: '10px 12px', fontSize: 13, color: '#888', background: 'transparent',
+                  border: 'none', cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Empty state */}
+        {lists.length === 0 && !showCreate && (
+          <div style={{
+            background: '#fff', borderRadius: 16, padding: '48px 24px',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.08)', textAlign: 'center',
+          }}>
+            <p style={{ fontSize: 36, marginBottom: 8 }}>📋</p>
+            <h2 style={{ fontSize: 18, fontWeight: 600, color: '#111', margin: '0 0 6px 0' }}>No shopping lists yet</h2>
+            <p style={{ fontSize: 13, color: '#888', marginBottom: 20 }}>
+              Create a shopping list to keep track of ingredients for your recipes.
+            </p>
+            <button
+              onClick={() => setShowCreate(true)}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '12px 20px', borderRadius: 10, border: 'none',
+                background: '#111', color: '#fff', fontSize: 14, fontWeight: 600,
+                cursor: 'pointer',
+              }}
             >
-              <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-base truncate">{list.name}</h3>
-                  <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1">
-                      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-                        <path d="M4 8h8M4 5h8M4 11h5" />
-                      </svg>
-                      {count} item{count !== 1 ? 's' : ''}
-                    </span>
-                    {list.source_type && (
-                      <span className="px-1.5 py-0.5 rounded bg-muted text-[10px] uppercase tracking-wider font-medium">
-                        {list.source_type}
-                      </span>
-                    )}
-                    <span>{new Date(list.created_at).toLocaleDateString()}</span>
+              + Create your first list
+            </button>
+          </div>
+        )}
+
+        {/* List cards */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {lists.map((list) => {
+            const count = getItemCount(list)
+            return (
+              <div
+                key={list.id}
+                onClick={() => router.push(`/me/shopping-lists/${list.id}`)}
+                style={{
+                  background: '#fff', borderRadius: 14, padding: '16px 20px',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.06)', cursor: 'pointer',
+                  transition: 'all 0.15s', border: '1px solid transparent',
+                }}
+                onMouseOver={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = '0 2px 8px rgba(0,0,0,0.12)'
+                  ;(e.currentTarget as HTMLDivElement).style.borderColor = '#e0e0e0'
+                }}
+                onMouseOut={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 4px rgba(0,0,0,0.06)'
+                  ;(e.currentTarget as HTMLDivElement).style.borderColor = 'transparent'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h3 style={{ fontSize: 15, fontWeight: 600, color: '#111', margin: 0, lineHeight: 1.3 }}>{list.name}</h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 6, fontSize: 12, color: '#888' }}>
+                      <span>{count} item{count !== 1 ? 's' : ''}</span>
+                      {list.source_type && (
+                        <span style={{
+                          padding: '1px 6px', borderRadius: 4, background: '#f3f3f3',
+                          fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: 600, color: '#666',
+                        }}>
+                          {list.source_type}
+                        </span>
+                      )}
+                      <span>{new Date(list.created_at).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+
+                  {/* Action buttons */}
+                  <div
+                    style={{ display: 'flex', gap: 4, flexShrink: 0 }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      onClick={() => handleShare(list.id)}
+                      title="Share"
+                      style={{
+                        width: 32, height: 32, borderRadius: 6, border: '1px solid #eee',
+                        background: '#fff', cursor: 'pointer', fontSize: 14,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        transition: 'background 0.15s',
+                      }}
+                      onMouseOver={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#f5f5f5' }}
+                      onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#fff' }}
+                    >
+                      🔗
+                    </button>
+                    <button
+                      onClick={() => handleDelete(list.id)}
+                      title="Delete"
+                      style={{
+                        width: 32, height: 32, borderRadius: 6, border: '1px solid #eee',
+                        background: '#fff', cursor: 'pointer', fontSize: 14,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: '#ccc', transition: 'all 0.15s',
+                      }}
+                      onMouseOver={(e) => {
+                        (e.currentTarget as HTMLButtonElement).style.background = '#fff0f0'
+                        ;(e.currentTarget as HTMLButtonElement).style.color = '#e00'
+                        ;(e.currentTarget as HTMLButtonElement).style.borderColor = '#ffccc'
+                      }}
+                      onMouseOut={(e) => {
+                        (e.currentTarget as HTMLButtonElement).style.background = '#fff'
+                        ;(e.currentTarget as HTMLButtonElement).style.color = '#ccc'
+                        ;(e.currentTarget as HTMLButtonElement).style.borderColor = '#eee'
+                      }}
+                    >
+                      🗑️
+                    </button>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
-                  <button
-                    onClick={() => handleShare(list.id)}
-                    className="p-2 rounded-lg hover:bg-muted transition-colors"
-                    title="Share"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="18" cy="5" r="3" />
-                      <circle cx="6" cy="12" r="3" />
-                      <circle cx="18" cy="19" r="3" />
-                      <path d="m8.59 13.51 6.83 3.98M15.41 6.51l-6.82 3.98" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => handleDelete(list.id)}
-                    className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-                    title="Delete"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                    </svg>
-                  </button>
-                </div>
               </div>
-            </div>
-          )
-        })}
+            )
+          })}
+        </div>
+
       </div>
-    </main>
+    </div>
   )
 }

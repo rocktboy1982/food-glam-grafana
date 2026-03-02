@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { createServiceSupabaseClient } from '@/lib/supabase-server'
+import { getRequestUser } from '@/lib/get-user'
 
 // ── Types ──
 interface MealEntry {
@@ -43,8 +44,8 @@ export async function GET(
   const from = searchParams.get('from')
   const to = searchParams.get('to')
 
-  const supabase = createServerSupabaseClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const supabase = createServiceSupabaseClient()
+  const user = await getRequestUser(req, supabase)
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
   // Fetch the meal plan

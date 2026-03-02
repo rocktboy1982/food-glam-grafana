@@ -1,17 +1,18 @@
-import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { NextRequest, NextResponse } from 'next/server'
+import { createServiceSupabaseClient } from '@/lib/supabase-server'
+import { getRequestUser } from '@/lib/get-user'
 
 /** GET /api/shopping-lists - List user's shopping lists with item counts */
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const supabase = createServiceSupabaseClient()
+    const user = await getRequestUser(req, supabase)
     if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
     const { data, error } = await supabase
       .from('shopping_lists')
       .select('*, shopping_list_items(count)')
-      .eq('owner_id', user.id)
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false })
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
@@ -23,7 +24,7 @@ export async function GET() {
 }
 
 /** POST /api/shopping-lists - Create a shopping list */
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
     const { name, source_type, source_ref, period_from, period_to } = body as {
@@ -36,12 +37,12 @@ export async function POST(req: Request) {
 
     if (!name) return NextResponse.json({ error: 'Name is required' }, { status: 400 })
 
-    const supabase = createServerSupabaseClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const supabase = createServiceSupabaseClient()
+    const user = await getRequestUser(req, supabase)
     if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
     const insert: Record<string, unknown> = {
-      owner_id: user.id,
+      user_id: user.id,
       name,
     }
     if (source_type) insert.source_type = source_type
@@ -64,15 +65,15 @@ export async function POST(req: Request) {
 }
 
 /** PATCH /api/shopping-lists - Update list metadata */
-export async function PATCH(req: Request) {
+export async function PATCH(req: NextRequest) {
   try {
     const body = await req.json()
     const { id, name } = body as { id: string; name?: string }
 
     if (!id) return NextResponse.json({ error: 'List id is required' }, { status: 400 })
 
-    const supabase = createServerSupabaseClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const supabase = createServiceSupabaseClient()
+    const user = await getRequestUser(req, supabase)
     if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
     const update: Record<string, unknown> = {}
@@ -82,7 +83,7 @@ export async function PATCH(req: Request) {
       .from('shopping_lists')
       .update(update)
       .eq('id', id)
-      .eq('owner_id', user.id)
+      .eq('user_id', user.id)
       .select()
       .single()
 
@@ -95,13 +96,13 @@ export async function PATCH(req: Request) {
 }
 
 /** DELETE /api/shopping-lists - Delete a shopping list */
-export async function DELETE(req: Request) {
+export async function DELETE(req: NextRequest) {
   try {
     const { id } = await req.json()
     if (!id) return NextResponse.json({ error: 'List id is required' }, { status: 400 })
 
-    const supabase = createServerSupabaseClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const supabase = createServiceSupabaseClient()
+    const user = await getRequestUser(req, supabase)
     if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
     // Delete items first, then the list
@@ -114,7 +115,7 @@ export async function DELETE(req: Request) {
       .from('shopping_lists')
       .delete()
       .eq('id', id)
-      .eq('owner_id', user.id)
+      .eq('user_id', user.id)
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ ok: true })

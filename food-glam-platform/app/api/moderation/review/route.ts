@@ -1,60 +1,85 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 
+interface ReviewBody {
+  id: string
+  action: 'approve' | 'reject'
+  reason?: string
+}
+
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { id, action } = body; // action: 'approve'|'reject'
-    if (!id || !action) return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
+    const body: ReviewBody = await req.json()
+    const { id, action } = body
+    if (!id || !action) return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
 
-    const supabase = createServerSupabaseClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    const supabase = createServerSupabaseClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
     // simple moderator check
-    const { data: roles } = await supabase.from('app_roles').select('*').eq('user_id', user.id).limit(1);
-    const isModerator = (roles && roles.length > 0);
-    if (!isModerator) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const { data: roles } = await supabase.from('app_roles').select('*').eq('user_id', user.id).limit(1)
+    const isModerator = (roles && roles.length > 0)
+    if (!isModerator) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
     if (action === 'approve') {
       // fetch submission
-      const { data: subs } = await supabase.from('submissions').select('*').eq('id', id).limit(1).single();
-      const submission = subs as any;
-      if (!submission) return NextResponse.json({ error: 'Submission not found' }, { status: 404 });
+      const { data: submission } = await supabase.from('submissions').select('*').eq('id', id).limit(1).single()
+      if (!submission) return NextResponse.json({ error: 'Submission not found' }, { status: 404 })
+
+      const sub = submission as Record<string, unknown>
 
       // create a post from submission
-      const postInsert: any = {
-        title: submission.title,
-        type: submission.type,
+      const postInsert: Record<string, unknown> = {
+        title: sub.title,
+        type: sub.type,
         slug: null,
         approach_id: null,
-        created_by: submission.created_by || user.id,
+        created_by: (sub.created_by as string) || user.id,
         status: 'active',
-        recipe_json: submission.content || null,
-        video_url: submission.url || null,
+        recipe_json: sub.content || null,
+        video_url: sub.url || null,
         hero_image_url: null,
         diet_tags: [],
         food_tags: [],
-        is_tested: false,
-        quality_score: 0,
       }
 
-      const { data: postData, error: postErr } = await supabase.from('posts').insert(postInsert).select('id').single();
-      if (postErr) return NextResponse.json({ error: postErr.message }, { status: 500 });
+      const { data: postData, error: postErr } = await supabase.from('posts').insert(postInsert).select('id').single()
+      if (postErr) return NextResponse.json({ error: postErr.message }, { status: 500 })
 
-      const updates: any = { status: 'approved', reviewed_by: user.id, reviewed_at: new Date().toISOString() };
-      const { error: updErr } = await supabase.from('submissions').update(updates).eq('id', id);
-      if (updErr) return NextResponse.json({ error: updErr.message }, { status: 500 });
+      const updates: Record<string, unknown> = { status: 'approved', reviewed_by: user.id, reviewed_at: new Date().toISOString() }
+      const { error: updErr } = await supabase.from('submissions').update(updates).eq('id', id)
+      if (updErr) return NextResponse.json({ error: updErr.message }, { status: 500 })
 
-      return NextResponse.json({ ok: true, postId: postData?.id });
+      // Log moderation action
+      await supabase.from('moderation_actions').insert({
+        entity_type: 'post',
+        entity_id: postData?.id ?? id,
+        action: 'approve',
+        acted_by: user.id,
+      })
+
+      return NextResponse.json({ ok: true, postId: postData?.id })
     }
 
     // reject path
-    const updates: any = { status: 'rejected', reviewed_by: user.id, reviewed_at: new Date().toISOString() };
-    const { data, error } = await supabase.from('submissions').update(updates).eq('id', id);
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    return NextResponse.json({ ok: true });
-  } catch (err: any) {
-    return NextResponse.json({ error: String(err?.message || err) }, { status: 500 });
+    const updates: Record<string, unknown> = { status: 'rejected', reviewed_by: user.id, reviewed_at: new Date().toISOString() }
+    if (body.reason) updates.rejection_reason = body.reason
+    const { error } = await supabase.from('submissions').update(updates).eq('id', id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    // Log moderation action
+    await supabase.from('moderation_actions').insert({
+      entity_type: 'post',
+      entity_id: id,
+      action: 'reject',
+      reason: body.reason || null,
+      acted_by: user.id,
+    })
+
+    return NextResponse.json({ ok: true })
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err)
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
