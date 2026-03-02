@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { freshfulReferralUrl } from '@/lib/affiliate'
+import IngredientLink from '@/components/ui/ingredient-link'
 
 function getUserId() {
   if (typeof window === 'undefined') return 'anonymous'
@@ -432,6 +434,22 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
                 >
                   🛒 Match to Store
                 </button>
+                <a
+                  href={freshfulReferralUrl()}
+                  target="_blank"
+                  rel="noopener noreferrer sponsored"
+                  title="Order ingredients via Freshful (delivery)"
+                  style={{
+                    padding: '0 12px', height: 36, borderRadius: 8, border: 'none',
+                    background: '#00a651', color: '#fff', fontSize: 12, fontWeight: 600,
+                    cursor: 'pointer', textDecoration: 'none', display: 'inline-flex',
+                    alignItems: 'center', whiteSpace: 'nowrap', transition: 'background 0.15s',
+                  }}
+                  onMouseOver={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = '#008c44' }}
+                  onMouseOut={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = '#00a651' }}
+                >
+                  🚚 Freshful
+                </a>
               </div>
             </div>
 
@@ -545,7 +563,7 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
                           >
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                               <span style={{ fontSize: 13, fontWeight: 500, color: '#111' }}>
-                                {item.name}
+                                <IngredientLink ingredient={item.name} variant="light" style={{ fontSize: 13, fontWeight: 500 }} />
                               </span>
                               {(item.amount != null || item.unit) && (
                                 <span style={{ fontSize: 11, color: '#888' }}>

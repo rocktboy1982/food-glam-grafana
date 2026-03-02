@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { estimateCalories } from "@/lib/calorie-engine";
+import IngredientLink from "@/components/ui/ingredient-link";
 
 interface IngredientSection {
   title?: string;
@@ -121,7 +122,7 @@ export default function RecipeIngredientsClient({
                         isChecked && "line-through"
                       )}
                     >
-                      {ingredient}
+                      <IngredientLink ingredient={ingredient} variant="default" />
                     </span>
 
                     {/* Calorie badge */}

@@ -19,6 +19,10 @@ const BG = '#dde3ee'
 
 export default function ScanReconcileClient({ sessionId }: { sessionId: string }) {
   const router = useRouter()
+  const userId =
+    typeof window !== 'undefined'
+      ? (() => { try { return JSON.parse(localStorage.getItem('mock_user') ?? '{}')?.id ?? 'anonymous' } catch { return 'anonymous' } })()
+      : 'anonymous'
   const [lists, setLists] = useState<ShoppingList[]>([])
   const [selectedListId, setSelectedListId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -27,7 +31,7 @@ export default function ScanReconcileClient({ sessionId }: { sessionId: string }
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('/api/shopping-lists')
+    fetch('/api/shopping-lists', { headers: { 'x-mock-user-id': userId } })
       .then(r => r.ok ? r.json() : [])
       .then((data: ShoppingList[]) => {
         setLists(data)
@@ -44,7 +48,7 @@ export default function ScanReconcileClient({ sessionId }: { sessionId: string }
     try {
       const res = await fetch('/api/vision/reconcile-list', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-mock-user-id': userId },
         body: JSON.stringify({ session_id: sessionId, list_id: selectedListId }),
       })
       if (!res.ok) {
@@ -57,7 +61,7 @@ export default function ScanReconcileClient({ sessionId }: { sessionId: string }
     } finally {
       setReconciling(false)
     }
-  }, [sessionId, selectedListId])
+  }, [sessionId, selectedListId, userId])
 
   if (loading) {
     return (

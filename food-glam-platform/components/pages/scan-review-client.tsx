@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import type { RecognitionResult } from '@/lib/ai-provider'
+import IngredientLink from '@/components/ui/ingredient-link'
 
 const BG = '#dde3ee'
 
@@ -134,7 +135,7 @@ export default function ScanReviewClient({ sessionId }: { sessionId: string }) {
                       key={idx}
                       style={{ padding: '6px 13px', borderRadius: 20, background: '#e8f5e9', border: '1px solid #a5d6a7', fontSize: 13, fontWeight: 600, color: '#1b5e20' }}
                     >
-                      {ing.canonical_name || ing.name}
+                      <IngredientLink ingredient={ing.canonical_name || ing.name} variant="pill-green" />
                       {ing.quantity_estimate && <span style={{ fontWeight: 400, marginLeft: 4, color: '#388e3c' }}>({ing.quantity_estimate})</span>}
                     </span>
                   ))}
@@ -155,7 +156,7 @@ export default function ScanReviewClient({ sessionId }: { sessionId: string }) {
                       key={idx}
                       style={{ padding: '6px 13px', borderRadius: 20, background: '#fff8e1', border: '1px solid #ffe082', fontSize: 13, fontWeight: 500, color: '#5d4037' }}
                     >
-                      {ing.canonical_name || ing.name}
+                      <IngredientLink ingredient={ing.canonical_name || ing.name} variant="pill-yellow" />
                       {ing.quantity_estimate && <span style={{ fontWeight: 400, marginLeft: 4, color: '#8d6e63' }}>({ing.quantity_estimate})</span>}
                     </span>
                   ))}

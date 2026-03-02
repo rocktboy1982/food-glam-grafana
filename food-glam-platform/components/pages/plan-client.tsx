@@ -3,7 +3,10 @@ import React, { useState, useMemo, useCallback, useId, useEffect } from "react"
 import Link from "next/link"
 import { MOCK_RECIPES } from "@/lib/mock-data"
 import { usePreferredRecipes, type PreferredRecipe } from "@/lib/preferred-recipes"
+import IngredientLink from '@/components/ui/ingredient-link'
 import { useFeatureFlags } from "@/components/feature-flags-provider"
+import { useUserTier } from '@/lib/use-user-tier'
+import ProPaywallModal from '@/components/ui/pro-paywall-modal'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -411,6 +414,8 @@ function useHealthGoals() {
 
 export default function PlanClient() {
   const uid = useId()
+  const { isPro } = useUserTier()
+  const [showProModal, setShowProModal] = useState(false)
   const [planner, setPlanner] = useState<PlannerState>(emptyPlanner)
   const [currentWeek, setCurrentWeek] = useState<number>(0)
   const [selectedMonth, setSelectedMonth] = useState<number>(YEAR_WEEKS[0]?.month ?? 0)
@@ -681,6 +686,7 @@ export default function PlanClient() {
 
   // ─────────────────────────────────────────────────────────────────────────────
   return (
+    <>
     <main className="min-h-screen" style={{ background: '#dde3ee', color: '#111' }}><div className="container mx-auto px-4 py-8 max-w-7xl">
 
       {/* ── Top bar ── */}
@@ -1250,33 +1256,39 @@ export default function PlanClient() {
                       </div>
                     </div>
 
-                    {/* Generate button */}
-                    <button
-                      onClick={() => {
-                        generateShoppingList()
-                        setMatchStep('list')
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '14px 20px',
-                        borderRadius: 14,
-                        background: '#111',
-                        color: '#fff',
-                        fontSize: 15,
-                        fontWeight: 700,
-                        border: 'none',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                      }}
-                      onMouseOver={(e) => {
-                        (e.currentTarget as HTMLButtonElement).style.background = '#333'
-                      }}
-                      onMouseOut={(e) => {
-                        (e.currentTarget as HTMLButtonElement).style.background = '#111'
-                      }}
-                    >
-                      ✨ Generate Shopping List
-                    </button>
+                    {/* Generate button — Pro gated */}
+                    {isPro ? (
+                      <button
+                        onClick={() => {
+                          generateShoppingList()
+                          setMatchStep('list')
+                        }}
+                        style={{
+                          width: '100%', padding: '14px 20px', borderRadius: 14,
+                          background: '#111', color: '#fff', fontSize: 15, fontWeight: 700,
+                          border: 'none', cursor: 'pointer', transition: 'all 0.2s',
+                        }}
+                        onMouseOver={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#333' }}
+                        onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#111' }}
+                      >
+                        ✨ Generate Shopping List
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setShowProModal(true)}
+                        style={{
+                          width: '100%', padding: '14px 20px', borderRadius: 14,
+                          background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                          color: '#fff', fontSize: 15, fontWeight: 700,
+                          border: 'none', cursor: 'pointer', transition: 'all 0.2s',
+                          boxShadow: '0 4px 14px rgba(217,119,6,0.3)',
+                        }}
+                        onMouseOver={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.9' }}
+                        onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '1' }}
+                      >
+                        ⭐ Upgrade la Pro pentru a genera lista
+                      </button>
+                    )}
                     <button
                       onClick={() => {
                         // Build raw ingredient list from planner (no AI)
@@ -1296,32 +1308,42 @@ export default function PlanClient() {
                         })
                         // Build print HTML
                         const scopeLabel = shopScope.type === 'day' ? `Today (${shopScope.day})`
-                          : shopScope.type === 'range' ? `Weeks ${shopRangeFrom + 1}–${shopRangeTo + 1}`
+                          : shopScope.type === 'range' ? `Weeks ${shopRangeFrom + 1}\u2013${shopRangeTo + 1}`
                           : `Week ${currentWeek + 1}`
                         let html = `<!DOCTYPE html><html><head><title>Shopping List</title><style>
-                          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #111; }
-                          h1 { font-size: 18px; margin-bottom: 4px; }
-                          .scope { font-size: 13px; color: #666; margin-bottom: 20px; }
-                          h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #888; border-bottom: 1px solid #ddd; padding-bottom: 4px; margin: 16px 0 8px 0; }
+                          * { box-sizing: border-box; margin: 0; padding: 0; }
+                          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 780px; margin: 0 auto; padding: 32px 40px; color: #111; font-size: 16px; line-height: 1.5; }
+                          h1 { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+                          .scope { font-size: 15px; color: #555; margin-bottom: 28px; border-bottom: 2px solid #111; padding-bottom: 14px; }
+                          h2 { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: #888; border-bottom: 1px solid #e0e0e0; padding-bottom: 6px; margin: 24px 0 10px 0; }
                           ul { list-style: none; padding: 0; margin: 0; }
-                          li { display: flex; gap: 8px; padding: 3px 0; font-size: 13px; }
-                          .check { width: 14px; height: 14px; border: 1.5px solid #999; border-radius: 3px; flex-shrink: 0; margin-top: 1px; }
-                          .name { font-weight: 500; }
-                          .qty { color: #666; }
-                          .note { color: #996600; font-style: italic; font-size: 11px; }
-                          .recipes { font-size: 10px; color: #aaa; }
-                          @media print { body { padding: 10px; } }
+                          li.item { display: flex; align-items: flex-start; gap: 12px; padding: 7px 0; border-bottom: 1px solid #f2f2f2; }
+                          .check { width: 18px; height: 18px; border: 2px solid #bbb; border-radius: 4px; flex-shrink: 0; margin-top: 2px; }
+                          .name { font-weight: 600; font-size: 16px; }
+                          .qty { color: #555; font-size: 15px; }
+                          .note { color: #aa7700; font-style: italic; font-size: 13px; }
+                          .recipes { font-size: 12px; color: #aaa; padding: 2px 0 6px 30px; }
+                          @media print {
+                            body { padding: 0; font-size: 13pt; }
+                            @page { size: A4; margin: 1.8cm 2cm; }
+                            h1 { font-size: 22pt; }
+                            .scope { font-size: 12pt; }
+                            h2 { font-size: 9pt; }
+                            .name { font-size: 13pt; }
+                            .qty { font-size: 12pt; }
+                            .note { font-size: 11pt; }
+                            .recipes { font-size: 10pt; }
+                            li.item { break-inside: avoid; }
+                          }
                         </style></head><body>`
-                        html += `<h1>🛒 Shopping List</h1>`
-                        html += `<p class="scope">${scopeLabel} · ${items.length} items</p>`
+                        html += `<h1>\uD83D\uDED2 Shopping List</h1>`
+                        html += `<p class="scope">${scopeLabel} \u00B7 ${items.length} items</p>`
                         Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).forEach(([cat, catItems]) => {
                           html += `<h2>${cat}</h2><ul>`
                           catItems.forEach((item) => {
                             const qty = item.totalQty % 1 === 0 ? String(item.totalQty) : item.totalQty.toFixed(1)
-                            html += `<li><div class="check"></div><span class="name">${item.name}</span> <span class="qty">${qty} ${item.unit}</span>`
-                            if (item.subtypeNote) html += ` <span class="note">(${item.subtypeNote})</span>`
-                            html += `</li>`
-                            html += `<li style="padding:0 0 0 22px"><span class="recipes">${item.fromRecipes.join(' · ')}</span></li>`
+                            html += `<li class="item"><div class="check"></div><div><span class="name">${item.name}</span> <span class="qty">${qty} ${item.unit}</span>${item.subtypeNote ? ` <span class="note">(${item.subtypeNote})</span>` : ''}</div></li>`
+                            if (item.fromRecipes.length > 0) html += `<div class="recipes">${item.fromRecipes.join(' &middot; ')}</div>`
                           })
                           html += `</ul>`
                         })
@@ -1455,7 +1477,7 @@ export default function PlanClient() {
                                         color: '#111',
                                         textDecoration: item.checked ? 'line-through' : 'none',
                                       }}>
-                                        {item.name}
+                                        <IngredientLink ingredient={item.name} variant="light" style={{ fontSize: 13, fontWeight: 500, textDecoration: item.checked ? 'line-through' : undefined }} />
                                       </span>
                                       <span style={{ fontSize: 11, color: '#888' }}>
                                         {item.totalQty % 1 === 0 ? item.totalQty : item.totalQty.toFixed(1)} {item.unit}
@@ -1499,7 +1521,7 @@ export default function PlanClient() {
                           <button
                             onClick={() => {
                               const text = shopItems.map(
-                                (i) => `${i.checked ? '✓' : '☐'} ${i.name} — ${i.totalQty}${i.unit}${i.subtypeNote ? ` (${i.subtypeNote})` : ''}`
+                                (i) => `${i.checked ? '\u2713' : '\u2610'} ${i.name} \u2014 ${i.totalQty}${i.unit}${i.subtypeNote ? ` (${i.subtypeNote})` : ''}`
                               ).join('\n')
                               navigator.clipboard.writeText(text).catch(() => {})
                             }}
@@ -1785,5 +1807,7 @@ export default function PlanClient() {
         </div>
       )}
     </div></main>
+    {showProModal && <ProPaywallModal onClose={() => setShowProModal(false)} feature="Generarea listei de cumpărături" />}
+    </>
   )
 }
