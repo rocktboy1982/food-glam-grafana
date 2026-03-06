@@ -119,6 +119,7 @@ async function main() {
       path.join(__dirname, '..', 'data', 'recipes-patch-clean.csv'),
       path.join(__dirname, '..', 'data', 'recipes-patch-topup.csv'),
       path.join(__dirname, '..', 'data', 'recipes-patch-final.csv'),
+      path.join(__dirname, '..', 'data', 'recipes-missing-countries.csv'),
     ].filter(f => { try { fs.accessSync(f); return true; } catch { return false; } });
 
     const allRows: RecipeRow[] = [];
