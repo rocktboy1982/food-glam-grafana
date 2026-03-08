@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { MOCK_TRENDING, MOCK_COCKTAILS } from '@/lib/mock-data'
+import { MOCK_TRENDING } from '@/lib/mock-data'
 
 interface TrendingItem {
   id: string
@@ -36,6 +36,7 @@ export default function TrendingSection() {
   const [tab, setTab] = useState<'recipes' | 'cocktails'>('recipes')
 
   useEffect(() => {
+    // Fetch recipes from trending API
     fetch('/api/trending')
       .then(res => res.json())
       .then(data => {
@@ -49,28 +50,38 @@ export default function TrendingSection() {
           }
         })
         setRecipes(raw)
-        setLoading(false)
       })
       .catch(() => {
         setRecipes(
           MOCK_TRENDING.map(r => ({ ...r, _type: 'recipe' as const }))
         )
-        setLoading(false)
       })
+      .finally(() => setLoading(false))
   }, [])
 
-  const cocktails: TrendingItem[] = [...MOCK_COCKTAILS]
-    .sort((a, b) => b.votes - a.votes)
-    .slice(0, 10)
-    .map(c => ({
-      id: c.id,
-      title: c.title,
-      slug: c.slug,
-      votes: c.votes,
-      hero_image_url: c.hero_image_url,
-      created_by: c.created_by,
-      _type: 'cocktail' as const,
-    }))
+  const [cocktails, setCocktails] = useState<TrendingItem[]>([])
+
+  useEffect(() => {
+    // Fetch cocktails from search API, sorted by trending (quality_score desc)
+    fetch('/api/search/cocktails?sort=trending&per_page=10')
+      .then(res => res.json())
+      .then(data => {
+        const items: TrendingItem[] = (data.cocktails || []).map((c: any) => ({
+          id: c.id,
+          title: c.title,
+          slug: c.slug,
+          votes: c.quality_score || 0,
+          hero_image_url: c.hero_image_url,
+          created_by: c.created_by,
+          _type: 'cocktail' as const,
+        }))
+        setCocktails(items)
+      })
+      .catch(() => {
+        // Fallback: empty list if API fails
+        setCocktails([])
+      })
+  }, [])
 
   const items = tab === 'recipes' ? recipes : cocktails
 

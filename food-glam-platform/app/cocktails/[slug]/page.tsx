@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { MOCK_COCKTAILS } from '@/lib/mock-data'
+
 import type { MockCocktail } from '@/lib/mock-data'
 import ReportButton from '@/components/ReportButton'
 import DeleteContentButton from '@/components/DeleteContentButton'
@@ -86,13 +86,7 @@ export default function CocktailDetailPage() {
 
   useEffect(() => {
     if (!slug) return
-    // First check mock data (covers all pre-seeded cocktails)
-    const found = MOCK_COCKTAILS.find(c => c.slug === slug) as CocktailDetail | undefined
-    if (found) {
-      setCocktail(found)
-      return
-    }
-    // Fallback: fetch from search API (covers newly submitted cocktails)
+    // Fetch from search API (covers all cocktails from Supabase)
     fetch(`/api/search/cocktails?q=${encodeURIComponent(slug)}&per_page=50`)
       .then(r => r.json())
       .then(data => {

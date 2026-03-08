@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createServiceSupabaseClient } from '@/lib/supabase-server'
 
 /**
  * GET /api/search/cocktails
  *
- * Dedicated beverage search — only returns cocktail/drink entries.
+ * Dedicated beverage search — only returns cocktail/drink entries from Supabase.
  * No food recipes are ever returned here.
  *
  * Query params:
@@ -11,7 +12,7 @@ import { NextRequest, NextResponse } from 'next/server'
  *   category   - 'alcoholic' | 'non-alcoholic' | '' (all)
  *   spirit     - spirit slug filter: whisky | gin | rum | tequila | vodka | brandy | liqueur | wine | none
  *   difficulty - easy | medium | hard
- *   sort       - trending (votes desc) | newest | relevance (quality desc)
+ *   sort       - trending (quality_score desc) | newest (created_at desc) | relevance (quality_score desc)
  *   page       - page number (default 1)
  *   per_page   - results per page (default 12, max 48)
  */
@@ -26,50 +27,90 @@ export async function GET(req: NextRequest) {
     const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10) || 1)
     const perPage = Math.min(48, Math.max(1, parseInt(url.searchParams.get('per_page') || '12', 10) || 12))
 
-    const { MOCK_COCKTAILS } = await import('@/lib/mock-data')
+    const supabase = createServiceSupabaseClient()
 
-    let results = [...MOCK_COCKTAILS]
+    // Build query: start with base filter for cocktails
+    let query = supabase
+      .from('posts')
+      .select('*')
+      .eq('type', 'cocktail')
+      .eq('status', 'active')
 
     // --- Category filter: alcoholic | non-alcoholic ---
     if (category === 'alcoholic' || category === 'non-alcoholic') {
-      results = results.filter(c => c.category === category)
+      query = query.eq('recipe_json->>category', category)
     }
 
     // --- Spirit filter ---
     if (spirit) {
-      results = results.filter(c => c.spirit === spirit)
+      query = query.eq('recipe_json->>spirit', spirit)
     }
 
     // --- Difficulty filter ---
     if (difficulty) {
-      results = results.filter(c => c.difficulty === difficulty)
+      query = query.eq('recipe_json->>difficulty', difficulty)
     }
 
-    // --- Text search: title + summary + tags ---
+    // --- Text search: title + summary ---
     if (q) {
-      results = results.filter(c =>
-        c.title.toLowerCase().includes(q) ||
-        c.summary.toLowerCase().includes(q) ||
-        c.tags.some(t => t.toLowerCase().includes(q))
-      )
+      query = query.or(`title.ilike.%${q}%,summary.ilike.%${q}%`)
     }
 
     // --- Sort ---
-    if (sort === 'trending') {
-      results.sort((a, b) => b.votes - a.votes)
-    } else if (sort === 'newest') {
-      // mock data has no date, keep insertion order (newest appended last = reverse)
-      results.reverse()
+    if (sort === 'newest') {
+      query = query.order('created_at', { ascending: false })
     } else {
-      // relevance = quality score desc
-      results.sort((a, b) => b.quality_score - a.quality_score)
+      // trending and relevance both use quality_score desc
+      query = query.order('quality_score', { ascending: false })
     }
 
+    // Execute query without pagination first to get total
+    const { data: allResults, error } = await query
+
+    if (error) {
+      console.error('Supabase query error:', error)
+      return NextResponse.json(
+        { error: 'Failed to fetch cocktails' },
+        { status: 500 }
+      )
+    }
+
+    const results = allResults || []
     const total = results.length
+
+    // Apply pagination
     const paginated = results.slice((page - 1) * perPage, page * perPage)
 
+    // Map results to match expected response shape
+    const cocktails = paginated.map((post: any) => {
+      const recipeJson = post.recipe_json || {}
+      return {
+        id: post.id,
+        slug: post.slug,
+        title: post.title,
+        summary: post.summary,
+        hero_image_url: post.hero_image_url,
+        category: recipeJson.category || 'non-alcoholic',
+        spirit: recipeJson.spirit || 'none',
+        spiritLabel: recipeJson.spiritLabel || 'Mocktail',
+        abv: recipeJson.abv ?? null,
+        difficulty: recipeJson.difficulty || 'easy',
+        serves: recipeJson.serves || 1,
+        tags: post.food_tags || [],
+        votes: 0, // votes column doesn't exist, use 0
+        quality_score: post.quality_score || 0,
+        is_tested: post.is_tested || false,
+        created_by: {
+          id: post.created_by || 'unknown',
+          display_name: post.created_by || 'Unknown',
+          handle: '@unknown',
+          avatar_url: null,
+        },
+      }
+    })
+
     return NextResponse.json({
-      cocktails: paginated,
+      cocktails,
       total,
       page,
       per_page: perPage,
@@ -77,6 +118,7 @@ export async function GET(req: NextRequest) {
       filters: { q, category, spirit, difficulty, sort },
     })
   } catch (err: unknown) {
+    console.error('Cocktail search error:', err)
     return NextResponse.json(
       { error: String(err instanceof Error ? err.message : err) },
       { status: 500 }

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { MOCK_COCKTAILS } from '@/lib/mock-data'
+import { createServiceSupabaseClient } from '@/lib/supabase-server'
+import { getRequestUser } from '@/lib/get-user'
 import { rateLimit } from '@/lib/rate-limit'
 import { slugify } from '@/lib/slug'
-import type { MockCocktail } from '@/lib/mock-data'
 
 export async function POST(req: NextRequest) {
   try {
@@ -31,7 +31,8 @@ export async function POST(req: NextRequest) {
       tags,
       ingredients,
       steps,
-      created_by,
+      glassware,
+      garnish,
     } = body
 
     // Basic validation
@@ -42,42 +43,82 @@ export async function POST(req: NextRequest) {
 
     const slug = slugify(title)
 
-    const cocktail: MockCocktail = {
-      id: `cocktail-user-${Date.now()}`,
-      slug,
-      title: title.trim(),
-      summary: summary.trim(),
-      hero_image_url: hero_image_url.trim(),
+    // Get authenticated user
+    const supabase = createServiceSupabaseClient()
+    const user = await getRequestUser(req, supabase)
+    const createdBy = user?.id || 'anonymous'
+
+    // Build recipe_json with cocktail-specific fields
+    const recipeJson = {
       category: category as 'alcoholic' | 'non-alcoholic',
       spirit: spirit || 'none',
       spiritLabel: spiritLabel || 'Mocktail',
       abv: category === 'non-alcoholic' ? 0 : (Number(abv) || null),
       difficulty: (difficulty as 'easy' | 'medium' | 'hard') || 'easy',
       serves: Number(serves) || 1,
-      tags: Array.isArray(tags) ? tags : [],
-      votes: 0,
-      quality_score: 0,
-      is_tested: false,
-      created_by: created_by ?? {
-        id: 'anonymous',
-        display_name: 'Anonymous',
-        handle: '@anonymous',
-        avatar_url: null,
-      },
+      ingredients: Array.isArray(ingredients) ? ingredients : [],
+      steps: Array.isArray(steps) ? steps : [],
+      glassware: glassware || null,
+      garnish: garnish || null,
     }
 
-    // In-memory push (persists for this server process session)
-    MOCK_COCKTAILS.push(cocktail)
+    // Insert into posts table
+    const { data, error } = await supabase
+      .from('posts')
+      .insert({
+        type: 'cocktail',
+        status: 'active',
+        slug,
+        title: title.trim(),
+        summary: summary.trim(),
+        hero_image_url: hero_image_url.trim(),
+        recipe_json: recipeJson,
+        food_tags: Array.isArray(tags) ? tags : [],
+        quality_score: 0,
+        is_tested: false,
+        created_by: createdBy,
+      })
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Supabase insert error:', error)
+      return NextResponse.json(
+        { error: 'Failed to submit cocktail' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
-      id: cocktail.id,
-      slug: cocktail.slug,
+      id: data.id,
+      slug: data.slug,
       message: 'Cocktail submitted successfully',
-      // Pass back the full cocktail so the client can render a detail view
       cocktail: {
-        ...cocktail,
-        ingredients: ingredients ?? [],
-        steps: steps ?? [],
+        id: data.id,
+        slug: data.slug,
+        title: data.title,
+        summary: data.summary,
+        hero_image_url: data.hero_image_url,
+        category: recipeJson.category,
+        spirit: recipeJson.spirit,
+        spiritLabel: recipeJson.spiritLabel,
+        abv: recipeJson.abv,
+        difficulty: recipeJson.difficulty,
+        serves: recipeJson.serves,
+        tags: data.food_tags || [],
+        votes: 0,
+        quality_score: data.quality_score,
+        is_tested: data.is_tested,
+        created_by: {
+          id: createdBy,
+          display_name: createdBy === 'anonymous' ? 'Anonymous' : createdBy,
+          handle: '@user',
+          avatar_url: null,
+        },
+        ingredients: recipeJson.ingredients,
+        steps: recipeJson.steps,
+        glassware: recipeJson.glassware,
+        garnish: recipeJson.garnish,
       },
     })
   } catch (err) {
