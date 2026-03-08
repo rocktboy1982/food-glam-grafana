@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { MOCK_CHEF_PROFILES } from '@/lib/mock-chef-data'
@@ -124,7 +125,7 @@ export default function EditProfilePage() {
       {/* Banner preview */}
       <div className="relative w-full" style={{ height: 160 }}>
         {bannerUrl ? (
-          <img src={bannerUrl} alt="" className="w-full h-full object-cover" />
+          <Image src={bannerUrl} alt="" className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full" style={{ background: 'linear-gradient(135deg,#ff4d6d22,#ff950022)' }} />
         )}
@@ -142,7 +143,7 @@ export default function EditProfilePage() {
       <div className="px-5 max-w-xl mx-auto" style={{ marginTop: -40 }}>
         <div className="mb-5">
           {avatarUrl ? (
-            <img src={avatarUrl} alt="" className="w-20 h-20 rounded-full object-cover border-4"
+            <Image src={avatarUrl} alt="" className="w-20 h-20 rounded-full object-cover border-4"
               style={{ borderColor: '#dde3ee' }} />
           ) : (
             <div className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold border-4"

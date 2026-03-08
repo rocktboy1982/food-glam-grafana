@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
 import { sanitizeText } from '@/lib/sanitize'
 
@@ -252,7 +253,7 @@ export default function RecipeCommentsClient({ recipeId, slug }: RecipeCommentsC
       <div className="space-y-4 mb-6">
         {comments.map(comment => (
           <div key={comment.id} className="flex gap-3">
-            <img
+            <Image
               src={comment.author.avatar}
               alt={comment.author.name}
               className="w-10 h-10 rounded-full object-cover flex-shrink-0"
@@ -274,7 +275,7 @@ export default function RecipeCommentsClient({ recipeId, slug }: RecipeCommentsC
       <div className="rounded-2xl p-4" style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.1)' }}>
         {/* Author row */}
         <div className="flex gap-3 mb-3">
-          <img
+          <Image
             src={mockUser.avatar_url || `https://i.pravatar.cc/150?img=5`}
             alt={mockUser.display_name}
             className="w-10 h-10 rounded-full object-cover flex-shrink-0"

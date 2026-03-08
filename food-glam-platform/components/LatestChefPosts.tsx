@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import TierStar from '@/components/TierStar'
 import type { ChefBlogPost, ChefProfile } from '@/lib/mock-chef-data'
@@ -58,12 +59,14 @@ export default function LatestChefPosts() {
                 className="flex-shrink-0 rounded-2xl overflow-hidden relative group"
                 style={{ width: 200, height: 260, background: '#1a1a1a', scrollSnapAlign: 'start', display: 'block' }}
               >
-                {/* cover */}
-                <img
-                  src={post.hero_image_url}
-                  alt={post.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
+               {/* cover */}
+                 <Image
+                   src={post.hero_image_url}
+                   alt={post.title}
+                   fill
+                   className="object-cover group-hover:scale-105 transition-transform duration-300"
+                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                 />
 
                 {/* gradient overlay */}
                 <div
@@ -80,11 +83,13 @@ export default function LatestChefPosts() {
                       className="flex items-center gap-1.5 mb-2"
                       onClick={e => e.stopPropagation()}
                     >
-                      <img
-                        src={post.chef.avatar_url}
-                        alt={post.chef.display_name}
-                        className="w-5 h-5 rounded-full object-cover border border-white/30 flex-shrink-0"
-                      />
+                       <Image
+                         src={post.chef.avatar_url}
+                         alt={post.chef.display_name}
+                         width={20}
+                         height={20}
+                         className="w-5 h-5 rounded-full object-cover border border-white/30 flex-shrink-0"
+                       />
                       <span className="text-[11px] font-semibold truncate" style={{ color: '#ccc' }}>
                         {post.chef.display_name}
                       </span>

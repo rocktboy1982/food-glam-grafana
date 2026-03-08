@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useCallback, useEffect } from 'react'
+import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 const BG = '#dde3ee'
@@ -181,7 +182,7 @@ export default function ScanClient() {
         >
           {preview ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={preview} alt="Preview" style={{ width: '100%', borderRadius: 18, objectFit: 'cover', maxHeight: 360 }} />
+            <Image src={preview} alt="Preview" style={{ width: '100%', borderRadius: 18, objectFit: 'cover', maxHeight: 360 }} />
           ) : (
             <div style={{ textAlign: 'center', padding: 24, color: '#667' }}>
               <div style={{ fontSize: 52, marginBottom: 8 }}>🖼️</div>

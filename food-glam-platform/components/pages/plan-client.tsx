@@ -1,4 +1,5 @@
 "use client"
+import Image from 'next/image'
 import React, { useState, useMemo, useCallback, useId, useEffect } from "react"
 import Link from "next/link"
 import { usePreferredRecipes, type PreferredRecipe } from "@/lib/preferred-recipes"
@@ -792,12 +793,13 @@ export default function PlanClient() {
                               <div className="p-2 space-y-1">
                                 {slot.dishes.map((dish) => (
                                   <div key={dish.id} className="flex items-center gap-1.5">
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
-                                      src={dish.recipe.hero_image_url}
-                                      alt={dish.recipe.title}
-                                      className="w-8 h-8 rounded object-cover shrink-0"
-                                    />
+                                     <Image
+                                       src={dish.recipe.hero_image_url}
+                                       alt={dish.recipe.title}
+                                       width={32}
+                                       height={32}
+                                       className="w-8 h-8 rounded object-cover shrink-0"
+                                     />
                                     <div className="flex-1 min-w-0">
                                       <p className="text-[10px] font-medium line-clamp-1 leading-tight">{dish.recipe.title}</p>
                                       <p className="text-[9px] text-muted-foreground">{dish.servings}× porție</p>
@@ -820,12 +822,13 @@ export default function PlanClient() {
                             <div className="mt-1.5 rounded-lg border border-amber-200 bg-amber-50/50 p-2 space-y-1.5">
                               {slot.dishes.map((dish) => (
                                 <div key={dish.id} className="flex items-center gap-2 bg-white rounded-lg p-1.5 border border-stone-100">
-                                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                                  <img
-                                    src={dish.recipe.hero_image_url}
-                                    alt={dish.recipe.title}
-                                    className="w-10 h-10 rounded object-cover shrink-0"
-                                  />
+                                   <Image
+                                     src={dish.recipe.hero_image_url}
+                                     alt={dish.recipe.title}
+                                     width={40}
+                                     height={40}
+                                     className="w-10 h-10 rounded object-cover shrink-0"
+                                   />
                                   <div className="flex-1 min-w-0">
                                     <p className="text-xs font-medium line-clamp-1">{dish.recipe.title}</p>
                                     <div className="flex items-center gap-1 mt-0.5">
@@ -930,12 +933,14 @@ export default function PlanClient() {
                        onClick={() => { addDish(pickingFor!.day, pickingFor!.meal, recipe); setPickerSearch("") }}
                        className="text-left rounded-xl overflow-hidden border border-border bg-card hover:shadow-md hover:border-amber-400 transition-all group"
                      >
-                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                       <img
-                         src={recipe.hero_image_url}
-                         alt={recipe.title}
-                         className="w-full h-20 object-cover group-hover:scale-105 transition-transform duration-200"
-                       />
+                        <Image
+                          src={recipe.hero_image_url}
+                          alt={recipe.title}
+                          width={400}
+                          height={80}
+                          className="w-full h-20 object-cover group-hover:scale-105 transition-transform duration-200"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        />
                        <div className="p-2">
                          <p className="text-xs font-medium line-clamp-2 leading-snug">{recipe.title}</p>
                          {recipe.foodTags.length > 0 && (

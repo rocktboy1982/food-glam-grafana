@@ -1,5 +1,6 @@
 "use client"
 
+import Image from 'next/image'
 import React, { useState, useMemo, useRef } from "react"
 import Link from "next/link"
 import { usePreferredRecipes, type PreferredRecipe, type RecipeInput } from "@/lib/preferred-recipes"
@@ -79,12 +80,14 @@ function AddFromSearch({
                   isIn ? "border-amber-400 opacity-60" : "border-border hover:border-amber-400 hover:shadow-md"
                 }`}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={recipe.hero_image_url}
-                  alt={recipe.title}
-                  className="w-full h-24 object-cover"
-                />
+                 <Image
+                   src={recipe.hero_image_url}
+                   alt={recipe.title}
+                   width={400}
+                   height={96}
+                   className="w-full h-24 object-cover"
+                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                 />
                 <div className="p-2">
                   <p className="text-xs font-medium line-clamp-2 leading-snug">{recipe.title}</p>
                   <p className="text-[10px] text-muted-foreground mt-0.5">{recipe.region}</p>
@@ -253,8 +256,7 @@ export default function PreferredRecipesClient() {
                 const someIn = chefRecipes.some((r) => preferredIds.has(r.id))
                 return (
                   <div key={chef.id} className="flex items-center gap-3 p-3 rounded-xl border border-border bg-background">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={chef.avatar_url} alt={chef.display_name} className="w-10 h-10 rounded-full object-cover shrink-0" />
+                     <Image src={chef.avatar_url} alt={chef.display_name} width={40} height={40} className="w-10 h-10 rounded-full object-cover shrink-0" />
                      <div className="flex-1 min-w-0">
                        <p className="text-xs font-semibold line-clamp-1">{chef.display_name}</p>
                        <p className="text-[10px] text-muted-foreground">{chef.handle} · {chefRecipes.length} rețet{chefRecipes.length !== 1 ? "e" : "ă"}</p>
@@ -380,13 +382,14 @@ export default function PreferredRecipesClient() {
                   key={recipe.id}
                   className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-amber-200 hover:bg-amber-50/20 transition-colors group"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  {recipe.hero_image_url && (
-                    <img
-                      src={recipe.hero_image_url}
-                      alt={recipe.title}
-                      className="w-14 h-14 rounded-lg object-cover shrink-0"
-                    />
+                   {recipe.hero_image_url && (
+                     <Image
+                       src={recipe.hero_image_url}
+                       alt={recipe.title}
+                       width={56}
+                       height={56}
+                       className="w-14 h-14 rounded-lg object-cover shrink-0"
+                     />
                   )}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold line-clamp-1">{recipe.title}</p>
@@ -467,9 +470,8 @@ export default function PreferredRecipesClient() {
                   <div className="p-3 space-y-1.5">
                     {chef.recipes.map((recipe) => (
                       <div key={recipe.id} className="flex items-center gap-3 rounded-lg hover:bg-muted/30 px-2 py-1.5 group transition-colors">
-                        {recipe.hero_image_url && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={recipe.hero_image_url} alt={recipe.title} className="w-10 h-10 rounded-lg object-cover shrink-0" />
+                         {recipe.hero_image_url && (
+                           <Image src={recipe.hero_image_url} alt={recipe.title} width={40} height={40} className="w-10 h-10 rounded-lg object-cover shrink-0" />
                         )}
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-medium line-clamp-1">{recipe.title}</p>

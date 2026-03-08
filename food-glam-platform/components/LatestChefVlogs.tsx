@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import TierStar from '@/components/TierStar'
 import { sanitizeText } from '@/lib/sanitize'
@@ -89,12 +90,14 @@ export default function LatestChefVlogs() {
               className="flex-shrink-0 rounded-xl overflow-hidden"
               style={{ width: 112, height: 112 }}
             >
-              {chef?.avatar_url ? (
-                <img
-                  src={chef.avatar_url}
-                  alt=""
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
+               {chef?.avatar_url ? (
+                 <Image
+                   src={chef.avatar_url}
+                   alt=""
+                   width={112}
+                   height={112}
+                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                 />
               ) : (
                 <div
                   className="w-full h-full flex items-center justify-center text-xl"

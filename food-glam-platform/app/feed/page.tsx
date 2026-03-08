@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { AdBanner } from '@/components/ads/ad-placements'
 import { MOCK_RECIPES, MOCK_TRENDING } from '@/lib/mock-data'
 
@@ -39,14 +40,15 @@ export default function FeedPage() {
                 href={`/recipes/${item.slug}`}
                 className="shrink-0 w-44 rounded-xl overflow-hidden border border-border bg-card hover:shadow-md transition-shadow group"
               >
-                <div className="h-28 bg-stone-100 overflow-hidden">
-                  {item.hero_image_url && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={item.hero_image_url}
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
+                 <div className="h-28 bg-stone-100 overflow-hidden relative">
+                   {item.hero_image_url && (
+                     <Image
+                       src={item.hero_image_url}
+                       alt={item.title}
+                       fill
+                       className="object-cover group-hover:scale-105 transition-transform duration-300"
+                       sizes="200px"
+                     />
                   )}
                 </div>
                 <div className="p-3">
@@ -76,15 +78,16 @@ export default function FeedPage() {
               href={`/recipes/${recipe.slug}`}
               className="group rounded-xl overflow-hidden border border-border bg-card hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
             >
-              {/* Hero image */}
-              <div className="aspect-[4/3] bg-stone-100 overflow-hidden relative">
-                {recipe.hero_image_url && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={recipe.hero_image_url}
-                    alt={recipe.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
+               {/* Hero image */}
+               <div className="aspect-[4/3] bg-stone-100 overflow-hidden relative">
+                 {recipe.hero_image_url && (
+                   <Image
+                     src={recipe.hero_image_url}
+                     alt={recipe.title}
+                     fill
+                     className="object-cover group-hover:scale-105 transition-transform duration-300"
+                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                   />
                 )}
                 {recipe.tag && (
                   <span className="absolute top-2 left-2 px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-500 text-white">
@@ -101,13 +104,14 @@ export default function FeedPage() {
                 {/* Author row */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    {recipe.created_by?.avatar_url && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={recipe.created_by.avatar_url}
-                        alt={recipe.created_by.display_name}
-                        className="w-6 h-6 rounded-full object-cover"
-                      />
+                     {recipe.created_by?.avatar_url && (
+                       <Image
+                         src={recipe.created_by.avatar_url}
+                         alt={recipe.created_by.display_name}
+                         width={24}
+                         height={24}
+                         className="w-6 h-6 rounded-full object-cover"
+                       />
                     )}
                     <span className="text-xs text-muted-foreground truncate max-w-[100px]">
                       {recipe.created_by?.display_name}

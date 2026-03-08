@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 
@@ -40,7 +41,7 @@ export default async function CocktailBookDetailPage({ params }: { params: Promi
         </nav>
 
         {cookbook.cover_image_url && (
-          <img
+          <Image
             src={cookbook.cover_image_url}
             alt={cookbook.title}
             className="w-full h-48 object-cover rounded-xl mb-6"
@@ -56,7 +57,7 @@ export default async function CocktailBookDetailPage({ params }: { params: Promi
           <div className="flex items-center gap-2 mb-8">
             <div className="w-8 h-8 rounded-full overflow-hidden" style={{ background: '#c8cfe0' }}>
               {owner.avatar_url ? (
-                <img src={owner.avatar_url} alt={owner.display_name} className="w-full h-full object-cover" />
+                <Image src={owner.avatar_url} alt={owner.display_name} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-xs font-bold" style={{ color: '#7c3aed' }}>
                   {owner.display_name[0]}

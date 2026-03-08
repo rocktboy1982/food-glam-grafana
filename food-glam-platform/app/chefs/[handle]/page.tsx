@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import TierStar from '@/components/TierStar'
@@ -174,7 +175,7 @@ export default function ChefPage() {
 
       {/* ── Banner ── */}
       <div className="relative" style={{ height: 220 }}>
-        <img
+        <Image
           src={profile.banner_url}
           alt=""
           className="w-full h-full object-cover"
@@ -195,7 +196,7 @@ export default function ChefPage() {
       <div className="px-4 relative max-w-5xl mx-auto" style={{ marginTop: -56 }}>
         {/* avatar + tier star */}
         <div className="relative inline-block mb-3">
-          <img
+          <Image
             src={profile.avatar_url}
             alt={profile.display_name}
             className="rounded-full object-cover border-4"
@@ -328,7 +329,7 @@ export default function ChefPage() {
                               >
                                 {/* Image — left */}
                                 <Link href={`/recipes/${item.data.slug}`} className="relative overflow-hidden flex-shrink-0" style={{ flex: '1.3', minWidth: 0 }}>
-                                  <img
+                                  <Image
                                     src={item.data.hero_image_url}
                                     alt={item.data.title}
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -377,7 +378,7 @@ export default function ChefPage() {
                               >
                                 {item.data.attachedRecipe && (
                                   <div className="mb-3 rounded-lg overflow-hidden" style={{ height: 80 }}>
-                                    <img src={item.data.attachedRecipe.hero_image_url} alt="" className="w-full h-full object-cover" />
+                                    <Image src={item.data.attachedRecipe.hero_image_url} alt="" className="w-full h-full object-cover" />
                                   </div>
                                 )}
 
@@ -403,7 +404,7 @@ export default function ChefPage() {
                                       </span>
                                       <div className="flex gap-3 items-start pr-16">
                                         {item.data.sponsoredProduct.imageUrl && (
-                                          <img src={sanitizeUrl(item.data.sponsoredProduct.imageUrl)} alt="" className="w-16 h-16 rounded flex-shrink-0 object-cover" onError={() => {}} />
+                                          <Image src={sanitizeUrl(item.data.sponsoredProduct.imageUrl)} alt="" className="w-16 h-16 rounded flex-shrink-0 object-cover" onError={() => {}} />
                                         )}
                                         <div className="flex-1 min-w-0">
                                           <p className="font-semibold text-sm" style={{ color: '#111' }}>{item.data.sponsoredProduct.name}</p>

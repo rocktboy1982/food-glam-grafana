@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { RecognitionResult, BudgetTier } from '@/lib/ai-provider'
 
@@ -169,7 +170,7 @@ export default function ScanRecipesClient({ sessionId }: { sessionId: string }) 
               <div key={recipe.recipe_id} style={{ background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}>
                 {recipe.image_url && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={recipe.image_url}
                     alt={recipe.title}
                     style={{ width: '100%', height: 160, objectFit: 'cover' }}

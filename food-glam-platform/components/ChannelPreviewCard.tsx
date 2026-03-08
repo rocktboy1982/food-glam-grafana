@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { FeaturedChannel } from '@/types/channel';
 import Link from 'next/link';
 
@@ -11,11 +12,13 @@ const ChannelPreviewCard: React.FC<ChannelPreviewCardProps> = ({ channel }) => {
     <Link href={`/channel/${channel.handle}`} className="flex-shrink-0 w-64">
       <div className="bg-card rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
         <div className="flex items-center gap-3 mb-3">
-          <img 
-            src={channel.avatarUrl || '/default-avatar.png'} 
-            alt={channel.displayName}
-            className="w-12 h-12 rounded-full object-cover"
-          />
+           <Image 
+             src={channel.avatarUrl || '/default-avatar.png'} 
+             alt={channel.displayName}
+             width={48}
+             height={48}
+             className="w-12 h-12 rounded-full object-cover"
+           />
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold truncate">{channel.displayName}</h3>
             <p className="text-sm text-muted-foreground">@{channel.handle}</p>

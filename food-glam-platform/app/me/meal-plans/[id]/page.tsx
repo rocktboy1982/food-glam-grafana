@@ -1,9 +1,9 @@
 "use client"
 
 import React, { useState, useEffect, useCallback } from "react"
+import Image from 'next/image'
 import { useParams } from "next/navigation"
 import Link from "next/link"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { useToast } from "@/components/ui/toast"

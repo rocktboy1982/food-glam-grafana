@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import Image from 'next/image'
 import { Button } from "@/components/ui/button";
 import { REGION_META, COURSES, ALL_COUNTRIES } from "@/lib/recipe-taxonomy";
 
@@ -399,7 +400,7 @@ export default function SearchClient() {
             >
               {img ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <Image
                   src={img}
                   alt={r.title || "thumb"}
                   className="w-24 h-16 object-cover rounded flex-shrink-0"

@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import { REGION_META } from '@/lib/recipe-taxonomy'
@@ -151,12 +152,14 @@ export default async function CookbooksPage() {
 
       {/* ── HERO BAND ── */}
       <div className="relative w-full overflow-hidden" style={{ height: '280px' }}>
-        {/* Background image with dark overlay */}
-        <img
-          src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600&q=80"
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+         {/* Background image with dark overlay */}
+         <Image
+           src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600&q=80"
+           alt=""
+           fill
+           className="absolute object-cover"
+           sizes="100vw"
+         />
         <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.45)' }} />
 
         {/* Hero content */}
@@ -220,13 +223,15 @@ export default async function CookbooksPage() {
                         }}
                       >
                         {/* Image: 95px */}
-                        <div className="h-[95px] overflow-hidden flex-shrink-0 w-full">
-                          {img ? (
-                            <img
-                              src={img}
-                              alt={r.label}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                            />
+                         <div className="h-[95px] overflow-hidden flex-shrink-0 w-full relative">
+                           {img ? (
+                             <Image
+                               src={img}
+                               alt={r.label}
+                               fill
+                               className="object-cover group-hover:scale-105 transition-transform duration-500"
+                               sizes="200px"
+                             />
                           ) : (
                             <div
                               className="w-full h-full flex items-center justify-center text-4xl"
@@ -291,13 +296,15 @@ export default async function CookbooksPage() {
                   borderWidth: '1px',
                 }}
               >
-                {/* Image top (60%) */}
-                <div className="h-[108px] overflow-hidden flex-shrink-0 w-full">
-                  <img
-                    src={col.img}
-                    alt={col.title}
-                    className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500"
-                  />
+                 {/* Image top (60%) */}
+                 <div className="h-[108px] overflow-hidden flex-shrink-0 w-full relative">
+                   <Image
+                     src={col.img}
+                     alt={col.title}
+                     fill
+                     className="object-cover group-hover:scale-104 transition-transform duration-500"
+                     sizes="200px"
+                   />
                 </div>
 
                 {/* Text bottom (40%) */}
@@ -347,12 +354,14 @@ export default async function CookbooksPage() {
                     borderWidth: '1px',
                   }}
                 >
-                  {cuisine.featured_image_url ? (
-                    <img
-                      src={cuisine.featured_image_url}
-                      alt={cuisine.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
+                   {cuisine.featured_image_url ? (
+                     <Image
+                       src={cuisine.featured_image_url}
+                       alt={cuisine.name}
+                       fill
+                       className="object-cover group-hover:scale-105 transition-transform duration-500"
+                       sizes="200px"
+                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-4xl" style={{ background: '#e8e8e8' }}>
                       🍽️

@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useMemo, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { AdBanner } from '@/components/ads/ad-placements'
 import { REGION_META, COURSES, COURSE_TAGS } from '@/lib/recipe-taxonomy'
@@ -381,7 +382,7 @@ export default function RegionCookbookClient({ region }: { region: string }) {
                 >
                   <div className="aspect-[4/3] bg-stone-100 overflow-hidden relative">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src={recipe.hero_image_url}
                       alt={recipe.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -437,7 +438,7 @@ export default function RegionCookbookClient({ region }: { region: string }) {
                         <div className="flex items-center gap-2">
                           {recipe.created_by.avatar_url ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img
+                            <Image
                               src={recipe.created_by.avatar_url}
                               alt={recipe.created_by.display_name}
                               className="w-6 h-6 rounded-full object-cover"

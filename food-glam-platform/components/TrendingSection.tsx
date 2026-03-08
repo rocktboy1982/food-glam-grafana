@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { MOCK_TRENDING } from '@/lib/mock-data'
 
@@ -182,13 +183,15 @@ export default function TrendingSection() {
                 className="group relative block rounded-2xl overflow-hidden"
                 style={{ height: 130 }}
               >
-                {/* Hero image */}
-                {item.hero_image_url ? (
-                  <img
-                    src={item.hero_image_url}
-                    alt=""
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
+                 {/* Hero image */}
+                 {item.hero_image_url ? (
+                   <Image
+                     src={item.hero_image_url}
+                     alt=""
+                     fill
+                     className="object-cover group-hover:scale-105 transition-transform duration-500"
+                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-3xl" style={{ background: '#1a1a1a' }}>
                     {item._type === 'cocktail' ? '🍹' : '🍽️'}

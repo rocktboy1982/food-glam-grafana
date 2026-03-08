@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect, useState, useCallback } from "react"
+import Image from 'next/image'
 import { supabase } from "@/lib/supabase-client"
 import { useToast } from "@/components/ui/toast"
 import SaveButton from "@/components/collections/save-button"
@@ -309,7 +310,7 @@ export default function SeriesDetailClient({ handle, slug }: SeriesDetailClientP
                 {/* Cover */}
                 <div className="relative aspect-[4/3] bg-gradient-to-br from-emerald-50 to-teal-50 overflow-hidden">
                   {post?.hero_image_url ? (
-                    <img
+                    <Image
                       src={post.hero_image_url}
                       alt={post.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

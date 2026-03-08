@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter, usePathname } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
 
@@ -134,7 +135,7 @@ export function Navigation() {
         <div className="flex items-center gap-4 px-6 py-3">
           {/* Logo */}
           <Link href="/" className="flex-shrink-0 flex items-center gap-2">
-            <img src="/logo.svg" alt="MareChef.ro" className="h-9 w-auto" />
+            <Image src="/logo.svg" alt="MareChef.ro" className="h-9 w-auto" />
           </Link>
 
           {/* Search bar — expands to fill available space */}
@@ -177,7 +178,7 @@ export function Navigation() {
                   style={{ color: '#ccc' }}
                 >
                   {user.avatar_url ? (
-                    <img src={user.avatar_url} alt="" className="w-7 h-7 rounded-full object-cover" />
+                    <Image src={user.avatar_url} alt="" className="w-7 h-7 rounded-full object-cover" />
                   ) : (
                     <div
                       className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
@@ -253,7 +254,7 @@ export function Navigation() {
         }}
       >
         <Link href="/" className="flex items-center gap-2">
-          <img src="/logo.svg" alt="MareChef.ro" className="h-7 w-auto" />
+          <Image src="/logo.svg" alt="MareChef.ro" className="h-7 w-auto" />
         </Link>
 
         {/* inline search on mobile */}

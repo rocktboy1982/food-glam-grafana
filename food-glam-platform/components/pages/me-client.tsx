@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from 'next/image'
 import { useFeatureFlags } from "@/components/feature-flags-provider";
 import { supabase } from "@/lib/supabase-client";
 import SignInButton from "@/components/auth/signin-button";
@@ -61,7 +62,7 @@ export default function MeClientPage() {
         <div className="w-20 h-20 mx-auto rounded-full mb-3 flex items-center justify-center text-3xl select-none font-bold overflow-hidden"
           style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}>
           {mockUser?.avatar_url
-            ? <img src={mockUser.avatar_url} alt="" className="w-full h-full object-cover" />
+            ? <Image src={mockUser.avatar_url} alt="" className="w-full h-full object-cover" />
             : (mockUser?.display_name?.charAt(0).toUpperCase() ?? '👤')}
         </div>
         {mockUser && (

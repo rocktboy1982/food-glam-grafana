@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Heart, MessageSquare, Share2, Bookmark } from 'lucide-react'
@@ -130,15 +131,18 @@ export default function RecipeCard({
 
   return (
     <div className="border rounded-xl overflow-hidden flex flex-col bg-card shadow-sm hover:shadow-md transition-shadow h-full">
-      {/* Image */}
-      <div className="relative">
-        <img
-          src={hero_image_url}
-          alt={title}
-          className="w-full h-44 object-cover"
-          onClick={() => router.push(`/recipes/${slug}`)}
-          style={{ cursor: 'pointer' }}
-        />
+       {/* Image */}
+       <div className="relative">
+         <Image
+           src={hero_image_url}
+           alt={title}
+           width={400}
+           height={176}
+           className="w-full h-44 object-cover"
+           onClick={() => router.push(`/recipes/${slug}`)}
+           style={{ cursor: 'pointer' }}
+           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+         />
         {/* Tag badge top-left */}
         {tag && (
           <span className="absolute top-2 left-2 bg-amber-500 text-white px-2 py-0.5 rounded-full text-xs font-bold shadow">
@@ -271,9 +275,9 @@ export default function RecipeCard({
 
         {/* Creator */}
         <div className="border-t pt-2 mt-auto flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full bg-stone-200 overflow-hidden flex-shrink-0">
-            {created_by.avatar_url ? (
-              <img src={created_by.avatar_url} alt={created_by.display_name} className="w-full h-full object-cover" />
+           <div className="w-7 h-7 rounded-full bg-stone-200 overflow-hidden flex-shrink-0">
+             {created_by.avatar_url ? (
+               <Image src={created_by.avatar_url} alt={created_by.display_name} width={28} height={28} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-xs font-bold">
                 {created_by.display_name[0]}

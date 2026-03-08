@@ -1,4 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import Image from 'next/image'
 import Link from "next/link"
 
 interface Recipe {
@@ -58,7 +59,7 @@ export function RecipeList({ title, recipes, loading }: RecipeListProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {recipes.map((recipe) => (
           <Card key={recipe.id} className="hover:shadow-md transition-shadow relative flex flex-col items-center">
-            <img src={`https://source.unsplash.com/400x200/?food,${recipe.title}`} alt={recipe.title} className="w-full h-40 object-cover rounded-t-md mb-2" />
+            <Image src={`https://source.unsplash.com/400x200/?food,${recipe.title}`} alt={recipe.title} className="w-full h-40 object-cover rounded-t-md mb-2" />
             <span className="absolute top-2 left-2 bg-primary text-primary-foreground px-2 py-1 rounded text-xs font-bold shadow">Trending</span>
             <div className="absolute top-2 right-2 flex gap-1">
               {recipe.badges?.map(badge => (

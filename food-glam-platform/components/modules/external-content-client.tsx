@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from 'next/image'
 import { useFeatureFlags } from "@/components/feature-flags-provider";
 import { normalizeToEmbed, isAllowedEmbed } from "@/lib/embed";
 import VimeoThumb from "@/components/ui/vimeo-thumb";
@@ -45,7 +46,7 @@ export default function ExternalContentClient() {
           links.map((l, i) => (
               <li key={i} className="flex items-center gap-3">
                 {l.includes('youtube') || l.includes('youtu.be') ? (
-                  <img src={`https://i.ytimg.com/vi/${l.split('/').pop()?.split('?')[0]}/hqdefault.jpg`} className="w-24 rounded" alt="thumb" />
+                  <Image src={`https://i.ytimg.com/vi/${l.split('/').pop()?.split('?')[0]}/hqdefault.jpg`} className="w-24 rounded" alt="thumb" />
                 ) : null}
                 {l.includes("vimeo") ? (
                   <VimeoThumb url={l} alt="Vimeo thumbnail" />

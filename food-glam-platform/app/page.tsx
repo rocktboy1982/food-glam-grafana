@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import LatestChefVlogs from '@/components/LatestChefVlogs'
 import TrendingSection from '@/components/TrendingSection'
@@ -245,14 +246,16 @@ export default function Home() {
                 onClick={() => setActiveStory(activeStory === i ? null : i)}
               >
                 <div className="relative">
-                  <img
-                    src={chef.avatar}
-                    alt={chef.name}
-                    className="w-[68px] h-[68px] rounded-full object-cover"
-                    style={chef.hasStory && activeStory !== i
-                      ? { padding: '2px', background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', borderRadius: '50%' }
-                      : { border: '2px solid rgba(255,255,255,0.12)' }}
-                  />
+                   <Image
+                     src={chef.avatar}
+                     alt={chef.name}
+                     width={68}
+                     height={68}
+                     className="w-[68px] h-[68px] rounded-full object-cover"
+                     style={chef.hasStory && activeStory !== i
+                       ? { padding: '2px', background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', borderRadius: '50%' }
+                       : { border: '2px solid rgba(255,255,255,0.12)' }}
+                   />
                   {chef.hasStory && activeStory !== i && (
                     <div className="absolute inset-0 rounded-full story-ring" style={{ border: '2px solid transparent' }} />
                   )}
@@ -283,8 +286,8 @@ export default function Home() {
             return (
               <div className="slide-up mt-4 rounded-2xl overflow-hidden" style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)' }}>
                 {/* Hero image */}
-                <div className="relative" style={{ height: 200 }}>
-                  <img src={img} alt={postTitle} className="w-full h-full object-cover" />
+                 <div className="relative" style={{ height: 200 }}>
+                   <Image src={img} alt={postTitle} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1024px) 90vw, 80vw" />
                   <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 55%)' }} />
                   {/* Close */}
                   <button
@@ -305,8 +308,8 @@ export default function Home() {
                 {/* Body */}
                 <div className="p-4">
                   {/* Chef info row */}
-                  <div className="flex items-center gap-2.5 mb-3">
-                    <img src={chef.avatar} alt={chef.name} className="w-9 h-9 rounded-full object-cover flex-shrink-0" />
+                   <div className="flex items-center gap-2.5 mb-3">
+                     <Image src={chef.avatar} alt={chef.name} width={36} height={36} className="w-9 h-9 rounded-full object-cover flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-white leading-tight truncate">{chef.name}</p>
                       <p className="text-[11px] text-gray-400 truncate">{chef.handle} · {(chef.followers / 1000).toFixed(1)}k urmăritori</p>
@@ -431,13 +434,13 @@ export default function Home() {
                       style={{ background: '#1a1a1a', animationDelay: `${i * 40}ms` }}
                     >
                       {/* image — fixed 280px, always equal */}
-                      <div
-                        className="relative cursor-pointer flex-shrink-0"
-                        style={{ height: 280 }}
-                        onDoubleClick={() => toggleLike(recipe.id)}
-                        onClick={() => router.push(`/recipes/${recipe.slug}`)}
-                      >
-                        <img src={recipe.hero_image_url} alt={recipe.title} className="w-full h-full object-cover" />
+                    <div
+                       className="relative cursor-pointer flex-shrink-0"
+                       style={{ height: 280 }}
+                       onDoubleClick={() => toggleLike(recipe.id)}
+                       onClick={() => router.push(`/recipes/${recipe.slug}`)}
+                     >
+                         <Image src={recipe.hero_image_url} alt={recipe.title} fill className="object-cover" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
                         <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.1) 55%, transparent 100%)' }} />
                         {/* tag badge */}
                         <div className="absolute top-2 left-2">
@@ -462,10 +465,10 @@ export default function Home() {
                         <div className="absolute bottom-0 left-0 right-0 p-3.5">
                           <h3 className="ff-display font-bold text-sm leading-snug mb-1.5 line-clamp-2">{recipe.title}</h3>
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                              {recipe.created_by.avatar_url && (
-                                <img src={recipe.created_by.avatar_url} alt="" className="w-6 h-6 rounded-full object-cover border border-white/30" />
-                              )}
+                             <div className="flex items-center gap-1.5">
+                               {recipe.created_by.avatar_url && (
+                                 <Image src={recipe.created_by.avatar_url} alt="" width={24} height={24} className="w-6 h-6 rounded-full object-cover border border-white/30" />
+                               )}
                               <span className="text-xs text-gray-300 truncate max-w-[72px]">{recipe.created_by.display_name}</span>
                             </div>
                             <button

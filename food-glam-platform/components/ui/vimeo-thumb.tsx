@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from 'next/image'
 import { fetchVimeoThumbnail } from "@/lib/embed";
 
 export default function VimeoThumb({ url, alt }: { url: string; alt?: string }) {
@@ -17,5 +18,5 @@ export default function VimeoThumb({ url, alt }: { url: string; alt?: string }) 
   }, [url]);
 
   if (!thumb) return null;
-  return <img src={thumb} alt={alt || "vimeo thumbnail"} className="w-24 rounded" />;
+  return <Image src={thumb} alt={alt || "vimeo thumbnail"} width={96} height={96} className="w-24 rounded" />;
 }

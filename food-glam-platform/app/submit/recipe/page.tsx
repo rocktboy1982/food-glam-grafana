@@ -1,6 +1,7 @@
 'use client'
 
 import { Suspense, useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase-client'
@@ -388,7 +389,7 @@ function SubmitRecipePageContent() {
         </div>
         <article className="space-y-6">
           {form.heroImageUrl && (
-            <img src={form.heroImageUrl} alt={form.title} className="w-full h-64 object-cover rounded-xl" />
+            <Image src={form.heroImageUrl} alt={form.title} className="w-full h-64 object-cover rounded-xl" />
           )}
           <h2 className="text-3xl font-bold tracking-tight">{form.title || 'Untitled Recipe'}</h2>
           {form.summary && <p className="text-muted-foreground leading-relaxed">{form.summary}</p>}
@@ -421,7 +422,7 @@ function SubmitRecipePageContent() {
               <h3 className="text-lg font-semibold mb-3">Photo Gallery</h3>
               <div className="grid grid-cols-2 gap-3">
                 {form.photoGallery.filter(p => p.trim()).map((photo, i) => (
-                  <img key={i} src={photo} alt={`Gallery ${i + 1}`} className="h-32 w-full object-cover rounded-lg" />
+                  <Image key={i} src={photo} alt={`Gallery ${i + 1}`} className="h-32 w-full object-cover rounded-lg" />
                 ))}
               </div>
             </div>
@@ -555,7 +556,7 @@ function SubmitRecipePageContent() {
           </p>
           {errors.heroImageUrl && <p className={errorCls}>{errors.heroImageUrl}</p>}
           {form.heroImageUrl && !errors.heroImageUrl && (
-            <img src={form.heroImageUrl} alt="Preview" className="mt-2 h-32 w-auto object-cover rounded-lg border" />
+            <Image src={form.heroImageUrl} alt="Preview" className="mt-2 h-32 w-auto object-cover rounded-lg border" />
           )}
           {form.heroImageUrl.includes('drive.google.com') && (
             <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 space-y-1">
@@ -623,7 +624,7 @@ function SubmitRecipePageContent() {
                       </code>
                     </div>
                   )}
-                  {url && <img src={url} alt={`Gallery ${idx + 1}`} className="h-20 w-auto object-cover rounded border" />}
+                  {url && <Image src={url} alt={`Gallery ${idx + 1}`} className="h-20 w-auto object-cover rounded border" />}
                 </div>
                 {form.photoGallery.length > 1 && (
                   <button

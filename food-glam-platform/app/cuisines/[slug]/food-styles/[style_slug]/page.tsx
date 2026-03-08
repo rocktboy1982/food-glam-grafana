@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -71,7 +72,7 @@ export default function FoodStylePage({ params }: { params: { slug: string; styl
         {filteredCookbooks.map((cookbook) => (
           <Card key={cookbook.title} className="hover:shadow-lg transition-shadow">
             <div className="aspect-w-16 aspect-h-9">
-              <img src={cookbook.imageUrl} alt={cookbook.title} className="w-full h-full object-cover" />
+              <Image src={cookbook.imageUrl} alt={cookbook.title} className="w-full h-full object-cover" />
             </div>
             <CardHeader>
               <CardTitle>{cookbook.title}</CardTitle>

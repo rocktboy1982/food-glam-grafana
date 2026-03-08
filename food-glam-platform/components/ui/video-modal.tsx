@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import Image from 'next/image'
 
 type Props = {
   open: boolean;
@@ -37,7 +38,7 @@ export default function VideoModal({ open, onClose, videoUrl, autoplay, poster }
           <div className="relative pb-[56.25%] bg-black">
             {!playing && poster ? (
               <button className="absolute inset-0 w-full h-full flex items-center justify-center" onClick={() => setPlaying(true)}>
-                <img src={poster} alt="poster" className="object-cover w-full h-full" />
+                <Image src={poster} alt="poster" className="object-cover w-full h-full" />
                 <div className="absolute"> 
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-white opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-5.197-3.023A1 1 0 008 9.023v5.954a1 1 0 001.555.832l5.197-3.023a1 1 0 000-1.664z" />

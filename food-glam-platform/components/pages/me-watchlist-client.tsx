@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect, useState, useMemo, useCallback } from "react"
+import Image from 'next/image'
 import { supabase } from "@/lib/supabase-client"
 import { useToast } from "@/components/ui/toast"
 import SaveButton from "@/components/collections/save-button"
@@ -192,7 +193,7 @@ export default function MeWatchlistClient() {
                 {/* Thumbnail */}
                 <div className="relative aspect-video bg-gradient-to-br from-violet-50 to-indigo-50 overflow-hidden">
                   {post.hero_image_url ? (
-                    <img
+                    <Image
                       src={post.hero_image_url}
                       alt={post.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

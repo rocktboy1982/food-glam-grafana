@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 
@@ -59,7 +60,7 @@ export default async function FoodStylePage({ params }: { params: Promise<{ slug
                 className="border rounded-lg overflow-hidden hover:border-primary hover:shadow-md transition-all bg-card"
               >
                 {cb.cover_image_url && (
-                  <img src={cb.cover_image_url} alt={cb.title} className="w-full h-32 object-cover" />
+                  <Image src={cb.cover_image_url} alt={cb.title} className="w-full h-32 object-cover" />
                 )}
                 <div className="p-4">
                   <h3 className="font-semibold mb-1">{cb.title}</h3>

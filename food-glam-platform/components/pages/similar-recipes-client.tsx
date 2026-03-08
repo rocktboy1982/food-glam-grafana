@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from 'next/image'
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -52,7 +53,7 @@ export default function SimilarRecipesClient({ id }: { id: string }) {
         return (
           <Card key={it.id}>
             <CardContent className="p-3 flex gap-3 items-start">
-              {img ? <img src={img} alt={it.title || 'thumb'} className="w-20 h-14 object-cover rounded" /> : <div className="w-20 h-14 bg-muted rounded" />}
+              {img ? <Image src={img} alt={it.title || 'thumb'} className="w-20 h-14 object-cover rounded" /> : <div className="w-20 h-14 bg-muted rounded" />}
               <div className="flex-1">
                 <Link href={href} className="font-medium block">{it.title || 'Untitled'}</Link>
                 {excerpt && <div className="text-sm text-muted-foreground line-clamp-2">{excerpt}</div>}

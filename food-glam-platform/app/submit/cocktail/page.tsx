@@ -1,6 +1,7 @@
 'use client'
 
 import { Suspense, useState, useCallback } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useToast } from '@/components/ui/toast'
@@ -217,7 +218,7 @@ function SubmitCocktailPageContent() {
           </div>
           <article className="space-y-6">
             {form.heroImageUrl && (
-              <img src={form.heroImageUrl} alt={form.title} className="w-full h-64 object-cover rounded-xl" />
+              <Image src={form.heroImageUrl} alt={form.title} className="w-full h-64 object-cover rounded-xl" />
             )}
             <h2 className="text-3xl font-bold tracking-tight text-white">{form.title || 'Untitled Cocktail'}</h2>
             {form.summary && <p className="text-slate-400 leading-relaxed">{form.summary}</p>}
@@ -340,7 +341,7 @@ function SubmitCocktailPageContent() {
             />
             {errors.heroImageUrl && <p className={errorCls}>{errors.heroImageUrl}</p>}
             {form.heroImageUrl && !errors.heroImageUrl && (
-              <img src={form.heroImageUrl} alt="Preview" className="mt-2 h-32 w-auto object-cover rounded-lg border border-white/10" />
+              <Image src={form.heroImageUrl} alt="Preview" className="mt-2 h-32 w-auto object-cover rounded-lg border border-white/10" />
             )}
           </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from 'next/image'
 import { useFeatureFlags } from "@/components/feature-flags-provider";
 import VideoModal from "@/components/ui/video-modal";
 import { normalizeToEmbed, isAllowedEmbed } from "@/lib/embed";
@@ -90,7 +91,7 @@ export default function VideoPopupEmbedsClient() {
           </div>
           <div>
             {previewThumb && (
-              <img src={previewThumb} alt="video preview" className="w-full rounded" />
+              <Image src={previewThumb} alt="video preview" className="w-full rounded" />
             )}
             <VideoModal open={open} onClose={() => setOpen(false)} videoUrl={currentEmbed} autoplay={autoplay} poster={poster || undefined} />
           </div>

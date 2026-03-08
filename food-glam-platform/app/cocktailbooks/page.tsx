@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -144,12 +145,14 @@ export default function CocktailBooksPage() {
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap');.ff{font-family:'Syne',sans-serif;}`}</style>
 
       {/* ── HERO BAND ── */}
-      <div className="relative w-full overflow-hidden" style={{ height: '280px' }}>
-        <img
-          src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=1600&q=80"
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+       <div className="relative w-full overflow-hidden" style={{ height: '280px' }}>
+         <Image
+           src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=1600&q=80"
+           alt=""
+           fill
+           className="absolute object-cover"
+           sizes="100vw"
+         />
         <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.60)' }} />
 
         <div className="relative h-full flex flex-col justify-between px-8 py-8 max-w-7xl mx-auto w-full">
@@ -203,13 +206,15 @@ export default function CocktailBooksPage() {
                   background: '#fff',
                 }}
               >
-                {/* Image */}
-                <div className="h-[95px] overflow-hidden flex-shrink-0 w-full">
-                  <img
-                    src={spirit.img}
-                    alt={spirit.family}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
+                 {/* Image */}
+                 <div className="h-[95px] overflow-hidden flex-shrink-0 w-full relative">
+                   <Image
+                     src={spirit.img}
+                     alt={spirit.family}
+                     fill
+                     className="object-cover group-hover:scale-105 transition-transform duration-500"
+                     sizes="200px"
+                   />
                 </div>
 
                 {/* Text */}
@@ -249,13 +254,15 @@ export default function CocktailBooksPage() {
                   borderWidth: '1px',
                 }}
               >
-                {/* Image top - larger */}
-                <div className="h-[160px] overflow-hidden flex-shrink-0 w-full">
-                  <img
-                    src={col.img}
-                    alt={col.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
+                 {/* Image top - larger */}
+                 <div className="h-[160px] overflow-hidden flex-shrink-0 w-full relative">
+                   <Image
+                     src={col.img}
+                     alt={col.title}
+                     fill
+                     className="object-cover group-hover:scale-105 transition-transform duration-500"
+                     sizes="300px"
+                   />
                 </div>
 
                 {/* Text bottom */}
