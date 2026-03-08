@@ -323,8 +323,8 @@ async function main() {
 }
 
 main().catch(err => {
-  console.error('Fatal error:', err.message);
-  if ((err as NodeJS.ErrnoException).detail) console.error('Detail:', (err as NodeJS.ErrnoException).detail);
-  if ((err as NodeJS.ErrnoException).hint) console.error('Hint:', (err as NodeJS.ErrnoException).hint);
+  console.error('Fatal error:', (err as any).message || err);
+  if ((err as any).detail) console.error('Detail:', (err as any).detail);
+  if ((err as any).hint) console.error('Hint:', (err as any).hint);
   process.exit(1);
 });
