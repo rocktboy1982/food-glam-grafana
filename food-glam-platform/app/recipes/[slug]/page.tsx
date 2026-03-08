@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import Script from 'next/script'
 import type { Metadata } from 'next'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,7 +11,7 @@ import SimilarRecipesClient from "@/components/pages/similar-recipes-client"
 import RecipeIngredientsClient from "@/components/pages/recipe-ingredients-client"
 import RecipeActionsClient from "@/components/pages/recipe-actions-client"
 import RecipeCommentsClient from "@/components/pages/recipe-comments-client"
-import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { createServerSupabaseClient, createServiceSupabaseClient } from '@/lib/supabase-server'
 import { MOCK_RECIPES } from '@/lib/mock-data'
 import { normalizeToEmbed } from '@/lib/embed'
 import FollowChefButton from '@/components/pages/follow-chef-button'
@@ -257,6 +258,27 @@ interface RecipePageProps {
   params: Promise<{ slug: string }>;
 }
 
+/**
+ * Generate static params for all active recipes at build time
+ * Enables static generation instead of dynamic rendering on every request
+ */
+export async function generateStaticParams() {
+  const supabase = createServiceSupabaseClient()
+  const { data } = await supabase
+    .from('posts')
+    .select('slug')
+    .eq('type', 'recipe')
+    .eq('status', 'active')
+    .not('slug', 'is', null)
+  
+  return (data || []).map(post => ({
+    slug: post.slug,
+  }))
+}
+
+// Revalidate every hour for ISR (Incremental Static Regeneration)
+export const revalidate = 3600
+
 function VideoEmbed({ url }: { url: string }) {
   const embedUrl = normalizeToEmbed(url)
   if (!embedUrl) return null
@@ -279,15 +301,17 @@ function PhotoGallery({ photos }: { photos: string[] }) {
   return (
     <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory">
       {valid.map((src, i) => (
-        <div
-          key={i}
-          className="flex-shrink-0 w-48 h-36 rounded-xl overflow-hidden border border-stone-200 shadow-sm snap-start"
-        >
-          <img
-            src={src}
-            alt={`Photo ${i + 1}`}
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-          />
+         <div
+           key={i}
+           className="flex-shrink-0 w-48 h-36 rounded-xl overflow-hidden border border-stone-200 shadow-sm snap-start relative"
+         >
+           <Image
+             src={src}
+             alt={`Photo ${i + 1}`}
+             fill
+             className="object-cover hover:scale-105 transition-transform duration-300"
+             sizes="200px"
+           />
         </div>
       ))}
     </div>
@@ -503,8 +527,8 @@ export default async function RecipePage({ params }: RecipePageProps) {
         />
         <main className="min-h-screen pb-24 md:pb-8" style={{ background: '#dde3ee', color: '#111' }}>
           {/* Hero Section */}
-        <div className="relative w-full h-[50vh] min-h-[320px] max-h-[480px] overflow-hidden">
-          <img src={heroImage} alt={mockRecipe.title} className="w-full h-full object-cover" />
+         <div className="relative w-full h-[50vh] min-h-[320px] max-h-[480px] overflow-hidden">
+           <Image src={heroImage} alt={mockRecipe.title} fill className="object-cover" sizes="100vw" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
             <div className="container mx-auto max-w-4xl">
@@ -698,8 +722,8 @@ export default async function RecipePage({ params }: RecipePageProps) {
                  <CardContent className="p-4">
                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Creat de</p>
                    <div className="flex items-center gap-3">
-                     {creator.avatar_url ? (
-                       <img src={creator.avatar_url} alt={creator.display_name} className="w-10 h-10 rounded-full object-cover" />
+                      {creator.avatar_url ? (
+                        <Image src={creator.avatar_url} alt={creator.display_name} width={40} height={40} className="w-10 h-10 rounded-full object-cover" />
                      ) : (
                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                          <span className="text-sm font-bold text-primary">{creator.display_name.charAt(0).toUpperCase()}</span>
@@ -832,12 +856,14 @@ export default async function RecipePage({ params }: RecipePageProps) {
       />
       <main className="min-h-screen pb-24 md:pb-8">
       {/* Hero Section */}
-      <div className="relative w-full h-[50vh] min-h-[320px] max-h-[480px] overflow-hidden">
-        <img
-          src={heroImage}
-          alt={post.title}
-          className="w-full h-full object-cover"
-        />
+       <div className="relative w-full h-[50vh] min-h-[320px] max-h-[480px] overflow-hidden">
+         <Image
+           src={heroImage}
+           alt={post.title}
+           fill
+           className="object-cover"
+           sizes="100vw"
+         />
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
@@ -1096,12 +1122,14 @@ export default async function RecipePage({ params }: RecipePageProps) {
                  <CardContent className="p-4">
                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Creat de</p>
                    <div className="flex items-center gap-3">
-                     {creator.avatar_url ? (
-                       <img
-                         src={creator.avatar_url}
-                         alt={creator.display_name}
-                         className="w-10 h-10 rounded-full object-cover"
-                       />
+                      {creator.avatar_url ? (
+                        <Image
+                          src={creator.avatar_url}
+                          alt={creator.display_name}
+                          width={40}
+                          height={40}
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
                      ) : (
                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                          <span className="text-sm font-bold text-primary">

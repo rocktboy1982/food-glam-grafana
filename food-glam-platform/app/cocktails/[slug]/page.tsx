@@ -1,5 +1,3 @@
-'use client'
-
 import { useEffect, useState } from 'react'
 import { useParams, notFound } from 'next/navigation'
 import Link from 'next/link'
@@ -9,6 +7,30 @@ import ReportButton from '@/components/ReportButton'
 import DeleteContentButton from '@/components/DeleteContentButton'
 import RecipeRating from '@/components/RecipeRating'
 import { AdInArticle, AdSidebar } from '@/components/ads/ad-placements'
+import { createServiceSupabaseClient } from '@/lib/supabase-server'
+
+/**
+ * Generate static params for all active cocktails at build time
+ * Enables static generation instead of dynamic rendering on every request
+ */
+export async function generateStaticParams() {
+  const supabase = createServiceSupabaseClient()
+  const { data } = await supabase
+    .from('posts')
+    .select('slug')
+    .eq('type', 'cocktail')
+    .eq('status', 'active')
+    .not('slug', 'is', null)
+  
+  return (data || []).map(post => ({
+    slug: post.slug,
+  }))
+}
+
+// Revalidate every hour for ISR (Incremental Static Regeneration)
+export const revalidate = 3600
+
+'use client'
 
 /* ── Extended cocktail with full recipe fields ─────────────────────────── */
 interface CocktailDetail extends MockCocktail {
