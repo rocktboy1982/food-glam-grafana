@@ -53,7 +53,7 @@ export default function SimilarRecipesClient({ id }: { id: string }) {
         return (
           <Card key={it.id}>
             <CardContent className="p-3 flex gap-3 items-start">
-              {img ? <Image src={img} alt={it.title || 'thumb'} className="w-20 h-14 object-cover rounded" /> : <div className="w-20 h-14 bg-muted rounded" />}
+              {img ? <Image src={img} alt={it.title || 'thumb'} width={80} height={56} className="w-20 h-14 object-cover rounded" /> : <div className="w-20 h-14 bg-muted rounded" />}
               <div className="flex-1">
                 <Link href={href} className="font-medium block">{it.title || 'Untitled'}</Link>
                 {excerpt && <div className="text-sm text-muted-foreground line-clamp-2">{excerpt}</div>}

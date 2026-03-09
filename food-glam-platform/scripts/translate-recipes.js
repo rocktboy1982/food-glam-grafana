@@ -166,14 +166,16 @@ async function main() {
   const progress = loadProgress()
   const translatedSet = new Set(progress.translatedIds)
 
-  // Count total recipes
-  const { count } = await supabase
-    .from('posts')
-    .select('*', { count: 'exact', head: true })
-    .eq('type', 'recipe')
-    .eq('status', 'active')
+  // Type filter: 'recipe' (default), 'cocktail', or 'all'
+  const typeFilter = process.argv[2] || 'recipe'
+  const typeLabel = typeFilter === 'all' ? 'recipes + cocktails' : typeFilter + 's'
+  
+  // Count total posts
+  let countQuery = supabase.from('posts').select('*', { count: 'exact', head: true }).eq('status', 'active')
+  if (typeFilter !== 'all') countQuery = countQuery.eq('type', typeFilter)
+  const { count } = await countQuery
 
-  console.log(`Total active recipes: ${count}`)
+  console.log(`Total active ${typeLabel}: ${count}`)
   console.log(`Already translated: ${translatedSet.size}`)
   console.log(`Remaining: ${count - translatedSet.size}`)
   console.log()
@@ -185,13 +187,14 @@ async function main() {
   let skipped = progress.stats.skipped
 
   while (true) {
-    const { data: recipes, error } = await supabase
+    let fetchQuery = supabase
       .from('posts')
       .select('id, title, summary, slug, recipe_json')
-      .eq('type', 'recipe')
       .eq('status', 'active')
       .order('created_at', { ascending: true })
       .range(offset, offset + BATCH_SIZE - 1)
+    if (typeFilter !== 'all') fetchQuery = fetchQuery.eq('type', typeFilter)
+    const { data: recipes, error } = await fetchQuery
 
     if (error) {
       console.error(`Error fetching batch at offset ${offset}:`, error.message)

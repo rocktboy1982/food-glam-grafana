@@ -96,7 +96,7 @@ function extractDishName(slug) {
 
 // ── Worker ──────────────────────────────────────────────
 
-async function worker(workerId, recipes, client, pool, progress) {
+async function worker(workerId, recipes, client, pool, progress, typeFilter) {
   const tag = `[W${workerId}]`
   let upgraded = 0, skipped = 0, errors = 0
 
@@ -115,7 +115,8 @@ async function worker(workerId, recipes, client, pool, progress) {
     process.stdout.write(`${num} "${dishName}" ... `)
 
     try {
-      const result = await client.search(dishName + ' food recipe', { strategy: 'fallback' })
+      const searchSuffix = typeFilter === 'cocktail' ? ' cocktail drink' : ' food recipe'
+      const result = await client.search(dishName + searchSuffix, { strategy: 'fallback' })
 
       if (!result && !client.hasCapacity()) {
         console.log(`\n${tag} All APIs limited. Pausing 10 min...`)
@@ -172,13 +173,16 @@ async function main() {
   const pool = new Pool(DB)
   const progress = loadProgress()
 
-  // Mode: 'missing' = only recipes without any image, 'mismatch' = re-upgrade existing bad images
+  // Mode: 'missing' = only posts without any image, 'mismatch' = re-upgrade existing bad images
+  // Type filter: defaults to 'recipe', pass 'cocktail' or 'all' via argv[4]
   const mode = process.argv[3] || 'missing'
+  const typeFilter = process.argv[4] || 'recipe'
+  const typeClause = typeFilter === 'all' ? "type IN ('recipe','cocktail')" : `type = '${typeFilter}'`
   let query
   if (mode === 'mismatch') {
     query = `
       SELECT id, slug, title FROM posts
-      WHERE type = 'recipe' AND status = 'active'
+      WHERE ${typeClause} AND status = 'active'
         AND image_attribution IS NULL
         AND hero_image_url IS NOT NULL AND hero_image_url != ''
       ORDER BY slug
@@ -186,7 +190,7 @@ async function main() {
   } else {
     query = `
       SELECT id, slug, title FROM posts
-      WHERE type = 'recipe' AND status = 'active'
+      WHERE ${typeClause} AND status = 'active'
         AND (hero_image_url IS NULL OR hero_image_url = '')
       ORDER BY slug
     `
@@ -232,7 +236,7 @@ async function main() {
   // Launch workers with staggered starts
   const promises = workers.map(async ({ batch, client, workerId }, idx) => {
     await sleep(idx * STAGGER_MS) // Stagger starts
-    return worker(workerId, batch, client, pool, progress)
+    return worker(workerId, batch, client, pool, progress, typeFilter)
   })
 
   const results = await Promise.all(promises)
