@@ -159,6 +159,7 @@ export default function PartyPlanClient() {
   })
 
   const [view, setView] = useState<View>('planner')
+  const [shopGrouping, setShopGrouping] = useState<'ingredients' | 'cocktail'>('ingredients')
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<CocktailData[]>([])
   const [searchLoading, setSearchLoading] = useState(false)
@@ -353,27 +354,36 @@ export default function PartyPlanClient() {
     </style></head><body>`
 
     html += `<h1>🎉 ${state.partyName}</h1>`
-    html += `<p class="meta">👥 ${state.guestCount} oaspeți · 🍹 ${state.cocktails.length} cocktail-uri</p>`
+    html += `<p class="meta">👥 ${state.guestCount} oaspeți · 🍹 ${state.cocktails.length} cocktail-uri · ${shopGrouping === 'ingredients' ? 'După ingrediente' : 'După cocktail'}</p>`
 
-    // Shopping list by category
-    Object.entries(ingredientsByCategory).forEach(([category, items]) => {
-      html += `<h2>${getCategoryEmoji(category)} ${getCategoryLabel(category)}</h2><ul>`
-      items.forEach((ing) => {
-        const amount = (ing.amount * state.guestCount)
-        const formatted = amount % 1 === 0 ? String(amount) : amount.toFixed(1)
-        html += `<li class="item"><div class="check"></div><div class="name">${ing.name}</div><div class="qty">${formatted} ${ing.unit}</div></li>`
+    if (shopGrouping === 'ingredients') {
+      // Aggregated by ingredient category
+      Object.entries(ingredientsByCategory).forEach(([category, items]) => {
+        html += `<h2>${getCategoryEmoji(category)} ${getCategoryLabel(category)}</h2><ul>`
+        items.forEach((ing) => {
+          const amount = (ing.amount * state.guestCount)
+          const formatted = amount % 1 === 0 ? String(amount) : amount.toFixed(1)
+          html += `<li class="item"><div class="check"></div><div class="name">${ing.name}</div><div class="qty">${formatted} ${ing.unit}</div></li>`
+        })
+        html += `</ul>`
       })
-      html += `</ul>`
-    })
-
-    // Cocktails list
-    html += `<p class="cocktails-header">COCKTAIL-URI SELECTATE</p><ul>`
-    state.cocktails.forEach((item) => {
-      const serves = item.cocktail.recipe_json?.serves || 1
-      const totalServings = item.rounds * state.guestCount / serves
-      html += `<li class="cocktail-item"><span>${item.cocktail.title}</span><span class="cocktail-rounds">${item.rounds} runde · ~${Math.ceil(totalServings)} porții</span></li>`
-    })
-    html += `</ul>`
+    } else {
+      // Grouped by cocktail — each cocktail with its scaled ingredients
+      state.cocktails.forEach((item) => {
+        const serves = item.cocktail.recipe_json?.serves || 1
+        const multiplier = (item.rounds * state.guestCount) / serves
+        const totalServings = Math.ceil(item.rounds * state.guestCount / serves)
+        html += `<h2>🍹 ${item.cocktail.title} <span style="font-weight:400;font-size:10px;text-transform:none;letter-spacing:0">${item.rounds} runde · ~${totalServings} porții</span></h2><ul>`
+        const ingredients = item.cocktail.recipe_json?.ingredients || []
+        ingredients.forEach((ingStr) => {
+          const parsed = parseIngredient(ingStr)
+          const scaledAmount = parsed.amount * multiplier
+          const formatted = scaledAmount % 1 === 0 ? String(Math.round(scaledAmount)) : scaledAmount.toFixed(1)
+          html += `<li class="item"><div class="check"></div><div class="name">${parsed.name}</div><div class="qty">${formatted} ${parsed.unit}</div></li>`
+        })
+        html += `</ul>`
+      })
+    }
 
     html += `</body></html>`
 
@@ -384,7 +394,7 @@ export default function PartyPlanClient() {
       printWin.focus()
       printWin.print()
     }
-  }, [state, ingredientsByCategory])
+  }, [state, ingredientsByCategory, shopGrouping])
 
   return (
     <main
@@ -682,14 +692,41 @@ export default function PartyPlanClient() {
               </div>
             </div>
 
-            {/* Shopping list by category */}
+            {/* Grouping toggle */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShopGrouping('ingredients')}
+                className="flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all"
+                style={{
+                  background: shopGrouping === 'ingredients' ? '#111' : '#fff',
+                  color: shopGrouping === 'ingredients' ? '#fff' : '#555',
+                  border: `1px solid ${shopGrouping === 'ingredients' ? '#111' : 'rgba(0,0,0,0.08)'}`,
+                }}
+              >
+                📦 După ingrediente
+              </button>
+              <button
+                onClick={() => setShopGrouping('cocktail')}
+                className="flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all"
+                style={{
+                  background: shopGrouping === 'cocktail' ? '#111' : '#fff',
+                  color: shopGrouping === 'cocktail' ? '#fff' : '#555',
+                  border: `1px solid ${shopGrouping === 'cocktail' ? '#111' : 'rgba(0,0,0,0.08)'}`,
+                }}
+              >
+                🍹 După cocktail
+              </button>
+            </div>
+
+            {/* Shopping list */}
             {state.cocktails.length === 0 ? (
               <div className="text-center py-12">
                 <p style={{ color: '#888' }} className="text-base">
                   Adaugă cocktail-uri pentru a genera lista de cumpărături
                 </p>
               </div>
-            ) : (
+            ) : shopGrouping === 'ingredients' ? (
+              /* ── Grouped by ingredient category ── */
               <div className="space-y-6">
                 {Object.entries(ingredientsByCategory).map(([category, items]) => (
                   <div key={category} className="p-6 rounded-xl" style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.08)' }}>
@@ -714,6 +751,47 @@ export default function PartyPlanClient() {
                     </ul>
                   </div>
                 ))}
+              </div>
+            ) : (
+              /* ── Grouped by cocktail ── */
+              <div className="space-y-6">
+                {state.cocktails.map((item) => {
+                  const serves = item.cocktail.recipe_json?.serves || 1
+                  const multiplier = (item.rounds * state.guestCount) / serves
+                  const totalServings = Math.ceil(item.rounds * state.guestCount / serves)
+                  const ingredients = item.cocktail.recipe_json?.ingredients || []
+                  return (
+                    <div key={item.id} className="p-6 rounded-xl" style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.08)' }}>
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-semibold text-base flex items-center gap-2" style={{ color: '#111' }}>
+                          🍹 {item.cocktail.title}
+                        </h3>
+                        <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: 'rgba(124,58,237,0.1)', color: '#7c3aed' }}>
+                          {item.rounds} runde · ~{totalServings} porții
+                        </span>
+                      </div>
+                      {ingredients.length > 0 ? (
+                        <ul className="space-y-2">
+                          {ingredients.map((ingStr, idx) => {
+                            const parsed = parseIngredient(ingStr)
+                            const scaledAmount = parsed.amount * multiplier
+                            const formatted = scaledAmount % 1 === 0 ? String(Math.round(scaledAmount)) : scaledAmount.toFixed(1)
+                            return (
+                              <li key={idx} className="flex items-center justify-between text-sm">
+                                <span style={{ color: '#333' }}>{parsed.name}</span>
+                                <span className="font-semibold" style={{ color: '#7c3aed' }}>
+                                  {formatted} {parsed.unit}
+                                </span>
+                              </li>
+                            )
+                          })}
+                        </ul>
+                      ) : (
+                        <p className="text-sm italic" style={{ color: '#888' }}>Nu sunt ingrediente listate.</p>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
             )}
           </div>
