@@ -638,10 +638,38 @@ function SearchDiscoveryPageClientContent() {
             })}
           </div>
         </div>
-      </section>
+       </section>
 
-      {/* ---- Content area ---- */}
-      <div className="container mx-auto px-4 py-8">
+       {mode === 'cocktails' && (
+         <div className="max-w-7xl mx-auto px-4 mb-6">
+           <div
+             className="relative overflow-hidden rounded-2xl p-6 flex items-center gap-6"
+             style={{
+               background: 'linear-gradient(135deg, rgba(124,58,237,0.12) 0%, rgba(139,92,246,0.08) 100%)',
+               border: '1px solid rgba(124,58,237,0.15)',
+             }}
+           >
+             <div className="flex-1">
+               <h3 className="font-bold text-base mb-1" style={{ color: '#111' }}>
+                 🍸 Descoperă Colecțiile Noastre
+               </h3>
+               <p className="text-sm" style={{ color: '#666' }}>
+                 Cocktailuri clasice, răcoritoare de vară, tiki tropicale și multe altele — organizate după temă.
+               </p>
+             </div>
+             <a
+               href="/cocktailbooks"
+               className="flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all"
+               style={{ background: '#7c3aed', color: '#fff' }}
+             >
+               Vezi Colecțiile →
+             </a>
+           </div>
+         </div>
+       )}
+
+       {/* ---- Content area ---- */}
+       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
 
           {/* ---- Filters toggle (mobile) ---- */}

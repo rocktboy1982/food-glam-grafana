@@ -199,11 +199,10 @@ function SubmitCocktailPageContent() {
   }
 
   /* style constants */
-  const inputCls = 'w-full rounded-lg border px-3 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 placeholder:text-muted-foreground/60'
-    + ' border-white/10 bg-white/5 text-slate-100 focus:ring-violet-500/40 focus:border-violet-500/50'
-  const inputErrCls = inputCls.replace('border-white/10', 'border-red-500/60')
-  const errorCls = 'text-xs text-red-400 mt-1'
-  const labelCls = 'block text-sm font-medium mb-1.5 text-slate-300'
+  const inputCls = 'w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring/40 focus:border-ring placeholder:text-muted-foreground/60'
+  const inputErrCls = 'w-full rounded-lg border border-destructive bg-background px-3 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-destructive/30 focus:border-destructive placeholder:text-muted-foreground/60'
+  const errorCls = 'text-xs text-destructive mt-1'
+  const labelCls = 'block text-sm font-medium mb-1.5'
   const sectionCls = 'space-y-1.5'
 
   /* ── Preview ── */
@@ -212,44 +211,44 @@ function SubmitCocktailPageContent() {
     return (
       <div className="min-h-screen" style={{ background: '#dde3ee', color: '#111' }}>
         <div className="max-w-3xl mx-auto px-4 py-10">
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-2xl font-bold text-white">Preview</h1>
-            <Button variant="outline" onClick={() => setShowPreview(false)}>Back to editor</Button>
-          </div>
+           <div className="flex items-center justify-between mb-8">
+             <h1 className="text-2xl font-bold">Preview</h1>
+             <Button variant="outline" onClick={() => setShowPreview(false)}>Back to editor</Button>
+           </div>
           <article className="space-y-6">
             {form.heroImageUrl && (
               <Image src={form.heroImageUrl} alt={form.title} className="w-full h-64 object-cover rounded-xl" />
             )}
-            <h2 className="text-3xl font-bold tracking-tight text-white">{form.title || 'Untitled Cocktail'}</h2>
-            {form.summary && <p className="text-slate-400 leading-relaxed">{form.summary}</p>}
-            <div className="flex flex-wrap gap-2">
-              <span className="px-3 py-1 rounded-full text-xs font-medium" style={{ background: 'rgba(124,58,237,0.3)', color: '#a78bfa' }}>
-                {form.category === 'alcoholic' ? '🥃 Alcoholic' : '🍃 Non-Alcoholic'}
-              </span>
-              {spirit && (
-                <span className="px-3 py-1 rounded-full text-xs font-medium" style={{ background: 'rgba(255,255,255,0.07)', color: '#ccc' }}>
-                  {spirit.emoji} {spirit.label}
-                </span>
-              )}
-              {form.category === 'alcoholic' && form.abv && (
-                <span className="px-3 py-1 rounded-full text-xs font-medium" style={{ background: 'rgba(0,0,0,0.4)', color: '#aaa' }}>
-                  {form.abv}% ABV
-                </span>
-              )}
-              <span className="px-3 py-1 rounded-full text-xs font-medium capitalize" style={{ background: 'rgba(255,255,255,0.05)', color: '#888' }}>
-                {form.difficulty}
-              </span>
-            </div>
-            <div className="grid grid-cols-2 gap-4 text-sm text-slate-300">
-              {form.serves && <div><span className="font-medium text-white">Serves:</span> {form.serves}</div>}
-              {form.glassware && <div><span className="font-medium text-white">Glass:</span> {form.glassware}</div>}
-              {form.garnish && <div><span className="font-medium text-white">Garnish:</span> {form.garnish}</div>}
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-3 text-white">Ingredients</h3>
-              <ul className="space-y-1.5">
-                {form.ingredients.filter(i => i.name.trim()).map((ing, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+             <h2 className="text-3xl font-bold tracking-tight">{form.title || 'Untitled Cocktail'}</h2>
+             {form.summary && <p className="text-muted-foreground leading-relaxed">{form.summary}</p>}
+             <div className="flex flex-wrap gap-2">
+               <span className="px-3 py-1 rounded-full text-xs font-medium" style={{ background: 'rgba(124,58,237,0.15)', color: '#6d28d9', border: '1px solid rgba(124,58,237,0.3)' }}>
+                 {form.category === 'alcoholic' ? '🥃 Alcoholic' : '🍃 Non-Alcoholic'}
+               </span>
+               {spirit && (
+                 <span className="px-3 py-1 rounded-full text-xs font-medium" style={{ background: 'rgba(0,0,0,0.05)', color: '#444', border: '1px solid rgba(0,0,0,0.1)' }}>
+                   {spirit.emoji} {spirit.label}
+                 </span>
+               )}
+               {form.category === 'alcoholic' && form.abv && (
+                 <span className="px-3 py-1 rounded-full text-xs font-medium" style={{ background: 'rgba(0,0,0,0.08)', color: '#555', border: '1px solid rgba(0,0,0,0.12)' }}>
+                   {form.abv}% ABV
+                 </span>
+               )}
+               <span className="px-3 py-1 rounded-full text-xs font-medium capitalize" style={{ background: 'rgba(0,0,0,0.05)', color: '#666', border: '1px solid rgba(0,0,0,0.1)' }}>
+                 {form.difficulty}
+               </span>
+             </div>
+            <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
+               {form.serves && <div><span className="font-medium">Serves:</span> {form.serves}</div>}
+               {form.glassware && <div><span className="font-medium">Glass:</span> {form.glassware}</div>}
+               {form.garnish && <div><span className="font-medium">Garnish:</span> {form.garnish}</div>}
+             </div>
+             <div>
+               <h3 className="text-lg font-semibold mb-3">Ingredients</h3>
+               <ul className="space-y-1.5">
+                 {form.ingredients.filter(i => i.name.trim()).map((ing, i) => (
+                   <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                     <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-violet-500 flex-shrink-0" />
                     {[ing.qty, ing.unit, ing.name].filter(Boolean).join(' ')}
                   </li>
@@ -257,11 +256,11 @@ function SubmitCocktailPageContent() {
               </ul>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-3 text-white">Method</h3>
+              <h3 className="text-lg font-semibold mb-3">Method</h3>
               <ol className="space-y-4">
                 {form.steps.filter(s => s.trim()).map((step, i) => (
-                  <li key={i} className="flex gap-3 text-sm text-slate-300">
-                    <span className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ background: '#7c3aed' }}>{i + 1}</span>
+                  <li key={i} className="flex gap-3 text-sm text-foreground">
+                     <span className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: '#7c3aed', color: 'white' }}>{i + 1}</span>
                     <p className="pt-0.5 leading-relaxed">{step}</p>
                   </li>
                 ))}
@@ -278,26 +277,26 @@ function SubmitCocktailPageContent() {
     <div className="min-h-screen" style={{ background: '#dde3ee', color: '#111' }}>
       <div className="max-w-3xl mx-auto px-4 py-10">
 
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-8">
-          <Link href="/cocktailbooks" className="text-slate-400 hover:text-slate-200 transition-colors">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-            </svg>
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-white">🍹 New Cocktail</h1>
-            <p className="text-sm text-slate-400">
-              Fields marked <span className="text-red-400 font-medium">*</span> are required.
-            </p>
-          </div>
-        </div>
+         {/* Header */}
+         <div className="flex items-center gap-3 mb-8">
+           <Link href="/cocktailbooks" className="text-muted-foreground hover:text-foreground transition-colors">
+             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+             </svg>
+           </Link>
+           <div>
+             <h1 className="text-2xl font-bold tracking-tight">🍹 New Cocktail</h1>
+             <p className="text-sm text-muted-foreground">
+               Fields marked <span className="text-destructive font-medium">*</span> are required.
+             </p>
+           </div>
+         </div>
 
         <div className="space-y-8">
 
           {/* ── Title ── */}
           <div className={sectionCls}>
-            <label className={labelCls}>Title <span className="text-red-400">*</span></label>
+            <label className={labelCls}>Title <span className="text-destructive">*</span></label>
             <input
               type="text"
               value={form.title}
@@ -312,8 +311,8 @@ function SubmitCocktailPageContent() {
           {/* ── Summary ── */}
           <div className={sectionCls}>
             <label className={labelCls}>
-              Summary <span className="text-red-400">*</span>
-              <span className="text-slate-500 text-xs font-normal ml-1">— shown on search cards</span>
+              Summary <span className="text-destructive">*</span>
+              <span className="text-muted-foreground text-xs font-normal ml-1">— shown on search cards</span>
             </label>
             <textarea
               value={form.summary}
@@ -329,7 +328,7 @@ function SubmitCocktailPageContent() {
           {/* ── Hero image ── */}
           <div className={sectionCls}>
             <label className={labelCls}>
-              Hero Photo URL <span className="text-red-400">*</span>
+              Hero Photo URL <span className="text-destructive">*</span>
             </label>
             <input
               type="url"
@@ -340,14 +339,14 @@ function SubmitCocktailPageContent() {
               data-error={!!errors.heroImageUrl}
             />
             {errors.heroImageUrl && <p className={errorCls}>{errors.heroImageUrl}</p>}
-            {form.heroImageUrl && !errors.heroImageUrl && (
-              <Image src={form.heroImageUrl} alt="Preview" className="mt-2 h-32 w-auto object-cover rounded-lg border border-white/10" />
-            )}
+             {form.heroImageUrl && !errors.heroImageUrl && (
+               <Image src={form.heroImageUrl} alt="Preview" className="mt-2 h-32 w-auto object-cover rounded-lg border border-border" />
+             )}
           </div>
 
           {/* ── Category + Spirit ── */}
-          <div className="rounded-xl border p-5 space-y-5" style={{ borderColor: 'rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)' }}>
-            <p className="text-sm font-semibold text-slate-200">Drink Type <span className="text-red-400">*</span></p>
+          <div className="rounded-xl border p-5 space-y-5" style={{ borderColor: 'rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.02)' }}>
+            <p className="text-sm font-semibold text-foreground">Drink Type <span className="text-destructive">*</span></p>
 
             {/* Category */}
             <div>
@@ -365,7 +364,7 @@ function SubmitCocktailPageContent() {
                     className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all border"
                     style={form.category === cat
                       ? { background: cat === 'alcoholic' ? 'rgba(124,58,237,0.3)' : 'rgba(5,150,105,0.3)', borderColor: cat === 'alcoholic' ? '#7c3aed' : '#059669', color: cat === 'alcoholic' ? '#a78bfa' : '#6ee7b7' }
-                      : { background: 'transparent', borderColor: 'rgba(255,255,255,0.1)', color: '#888' }
+                      : { background: 'transparent', borderColor: 'rgba(0,0,0,0.1)', color: '#888' }
                     }
                   >
                     {cat === 'alcoholic' ? '🥃 Alcoholic' : '🍃 Non-Alcoholic'}
@@ -376,7 +375,7 @@ function SubmitCocktailPageContent() {
 
             {/* Spirit */}
             <div>
-              <label className={labelCls}>Base Spirit <span className="text-red-400">*</span></label>
+              <label className={labelCls}>Base Spirit <span className="text-destructive">*</span></label>
               <div className="flex flex-wrap gap-2" data-error={!!errors.spirit}>
                 {SPIRITS.filter(s => form.category === 'non-alcoholic' ? s.value === 'none' : s.value !== 'none').map(sp => (
                   <button
@@ -386,7 +385,7 @@ function SubmitCocktailPageContent() {
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition-all"
                     style={form.spirit === sp.value
                       ? { background: 'rgba(124,58,237,0.3)', borderColor: '#7c3aed', color: '#a78bfa' }
-                      : { background: 'transparent', borderColor: 'rgba(255,255,255,0.1)', color: '#888' }
+                      : { background: 'transparent', borderColor: 'rgba(0,0,0,0.1)', color: '#888' }
                     }
                   >
                     <span>{sp.emoji}</span> {sp.label}
@@ -400,7 +399,7 @@ function SubmitCocktailPageContent() {
             {form.category === 'alcoholic' && (
               <div className="grid grid-cols-2 gap-4">
                 <div className={sectionCls}>
-                  <label className={labelCls}>ABV % <span className="text-red-400">*</span></label>
+                  <label className={labelCls}>ABV % <span className="text-destructive">*</span></label>
                   <input
                     type="number"
                     min={0}
@@ -415,7 +414,7 @@ function SubmitCocktailPageContent() {
                   {errors.abv && <p className={errorCls}>{errors.abv}</p>}
                 </div>
                 <div className={sectionCls}>
-                  <label className={labelCls}>Serves <span className="text-red-400">*</span></label>
+                  <label className={labelCls}>Serves <span className="text-destructive">*</span></label>
                   <input
                     type="number"
                     min={1}
@@ -431,7 +430,7 @@ function SubmitCocktailPageContent() {
             )}
             {form.category === 'non-alcoholic' && (
               <div className={sectionCls}>
-                <label className={labelCls}>Serves <span className="text-red-400">*</span></label>
+                <label className={labelCls}>Serves <span className="text-destructive">*</span></label>
                 <input
                   type="number"
                   min={1}
@@ -458,7 +457,7 @@ function SubmitCocktailPageContent() {
                   className="flex-1 py-2.5 px-3 rounded-xl text-sm border transition-all text-left"
                   style={form.difficulty === opt.value
                     ? { background: 'rgba(124,58,237,0.25)', borderColor: '#7c3aed', color: '#a78bfa' }
-                    : { background: 'transparent', borderColor: 'rgba(255,255,255,0.1)', color: '#888' }
+                    : { background: 'transparent', borderColor: 'rgba(0,0,0,0.1)', color: '#888' }
                   }
                 >
                   <p className="font-semibold">{opt.label}</p>
@@ -471,7 +470,7 @@ function SubmitCocktailPageContent() {
           {/* ── Glassware + Garnish ── */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className={sectionCls}>
-              <label className={labelCls}>Glassware <span className="text-slate-500 text-xs font-normal">(optional)</span></label>
+              <label className={labelCls}>Glassware <span className="text-muted-foreground text-xs font-normal">(optional)</span></label>
               <input
                 type="text"
                 value={form.glassware}
@@ -481,7 +480,7 @@ function SubmitCocktailPageContent() {
               />
             </div>
             <div className={sectionCls}>
-              <label className={labelCls}>Garnish <span className="text-slate-500 text-xs font-normal">(optional)</span></label>
+              <label className={labelCls}>Garnish <span className="text-muted-foreground text-xs font-normal">(optional)</span></label>
               <input
                 type="text"
                 value={form.garnish}
@@ -494,7 +493,7 @@ function SubmitCocktailPageContent() {
 
           {/* ── Tags ── */}
           <div className={sectionCls}>
-            <label className={labelCls}>Tags <span className="text-slate-500 text-xs font-normal">(optional — pick up to 5)</span></label>
+            <label className={labelCls}>Tags <span className="text-muted-foreground text-xs font-normal">(optional — pick up to 5)</span></label>
             <div className="flex flex-wrap gap-1.5">
               {COCKTAIL_TAGS.map(tag => {
                 const active = form.tags.includes(tag)
@@ -508,7 +507,7 @@ function SubmitCocktailPageContent() {
                     className="px-2.5 py-1 rounded-full text-xs font-medium border capitalize transition-all disabled:opacity-30"
                     style={active
                       ? { background: 'rgba(124,58,237,0.3)', borderColor: '#7c3aed', color: '#a78bfa' }
-                      : { background: 'transparent', borderColor: 'rgba(255,255,255,0.1)', color: '#888' }
+                      : { background: 'transparent', borderColor: 'rgba(0,0,0,0.1)', color: '#888' }
                     }
                   >
                     {active && '✓ '}{tag}
@@ -520,29 +519,29 @@ function SubmitCocktailPageContent() {
 
           {/* ── Ingredients ── */}
           <div className={sectionCls}>
-            <label className={labelCls}>Ingredients <span className="text-red-400">*</span></label>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="w-5 flex-shrink-0" />
-              <span className="w-16 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-slate-500 text-center">Qty</span>
-              <span className="w-24 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-slate-500 text-center">Unit</span>
-              <span className="flex-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">Ingredient</span>
-            </div>
+            <label className={labelCls}>Ingredients <span className="text-destructive">*</span></label>
+             <div className="flex items-center gap-2 mb-1">
+               <span className="w-5 flex-shrink-0" />
+               <span className="w-16 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground text-center">Qty</span>
+               <span className="w-24 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground text-center">Unit</span>
+               <span className="flex-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Ingredient</span>
+             </div>
             <div className="space-y-2">
               {form.ingredients.map((ing, idx) => (
-                <div key={idx} className="flex items-center gap-2">
-                  <span className="text-xs text-slate-500 w-5 text-right flex-shrink-0">{idx + 1}.</span>
+                 <div key={idx} className="flex items-center gap-2">
+                   <span className="text-xs text-muted-foreground w-5 text-right flex-shrink-0">{idx + 1}.</span>
                   <input
                     type="text"
                     value={ing.qty}
                     onChange={e => updateIngredient(idx, 'qty', e.target.value)}
-                    className="w-16 flex-shrink-0 rounded-lg border border-white/10 bg-white/5 px-2 py-2.5 text-sm text-center text-slate-100 focus:outline-none focus:ring-2 focus:ring-violet-500/40"
+                    className="w-16 flex-shrink-0 rounded-lg border border-border bg-background px-2 py-2.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-ring/40 focus:border-ring"
                     placeholder="60"
                   />
-                  <select
-                    value={ing.unit}
-                    onChange={e => updateIngredient(idx, 'unit', e.target.value)}
-                    className="w-24 flex-shrink-0 rounded-lg border border-white/10 bg-slate-800 px-2 py-2.5 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-violet-500/40"
-                  >
+                   <select
+                     value={ing.unit}
+                     onChange={e => updateIngredient(idx, 'unit', e.target.value)}
+                     className="w-24 flex-shrink-0 rounded-lg border border-border bg-background px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40 focus:border-ring"
+                   >
                     {UNITS.map(u => (
                       <option key={u} value={u}>{u === '' ? '— unit —' : u}</option>
                     ))}
@@ -558,7 +557,7 @@ function SubmitCocktailPageContent() {
                     <button
                       type="button"
                       onClick={() => removeIngredient(idx)}
-                      className="p-1.5 text-slate-500 hover:text-red-400 rounded transition-colors flex-shrink-0"
+                      className="p-1.5 text-muted-foreground hover:text-destructive rounded transition-colors flex-shrink-0"
                     >
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -570,7 +569,7 @@ function SubmitCocktailPageContent() {
               <button
                 type="button"
                 onClick={addIngredient}
-                className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-200 transition-colors mt-1"
+                className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mt-1"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -583,11 +582,11 @@ function SubmitCocktailPageContent() {
 
           {/* ── Steps / Method ── */}
           <div className={sectionCls}>
-            <label className={labelCls}>Method <span className="text-red-400">*</span></label>
+            <label className={labelCls}>Method <span className="text-destructive">*</span></label>
             <div className="space-y-3">
               {form.steps.map((step, idx) => (
                 <div key={idx} className="flex items-start gap-2">
-                  <span className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold mt-2 text-white" style={{ background: '#7c3aed' }}>
+                  <span className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold mt-2" style={{ background: '#7c3aed' }}>
                     {idx + 1}
                   </span>
                   <textarea
@@ -601,7 +600,7 @@ function SubmitCocktailPageContent() {
                     <button
                       type="button"
                       onClick={() => removeStep(idx)}
-                      className="p-1.5 text-slate-500 hover:text-red-400 rounded transition-colors mt-2"
+                      className="p-1.5 text-muted-foreground hover:text-destructive rounded transition-colors mt-2"
                     >
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -613,7 +612,7 @@ function SubmitCocktailPageContent() {
               <button
                 type="button"
                 onClick={addStep}
-                className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-200 transition-colors mt-1"
+                className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mt-1"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -625,7 +624,7 @@ function SubmitCocktailPageContent() {
           </div>
 
           {/* ── Actions ── */}
-          <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-white/10">
+          <div className="flex flex-wrap items-center gap-3 pt-4 border-t">
             <Button onClick={handleSubmit} disabled={saving}>
               {saving ? 'Publishing...' : '🍹 Publish Cocktail'}
             </Button>
@@ -633,7 +632,7 @@ function SubmitCocktailPageContent() {
               Preview
             </Button>
             <div className="flex-1" />
-            <Link href="/cocktailbooks" className="text-sm text-slate-500 hover:text-slate-300 transition-colors">
+            <Link href="/cocktailbooks" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Cancel
             </Link>
           </div>
@@ -648,10 +647,12 @@ export default function SubmitCocktailPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center" style={{ background: '#dde3ee' }}>
-        <div className="text-slate-400">Loading...</div>
+        <div className="text-muted-foreground">Loading...</div>
       </div>
     }>
       <SubmitCocktailPageContent />
     </Suspense>
   )
 }
+
+

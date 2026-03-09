@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { createServiceSupabaseClient } from '@/lib/supabase-server'
+import { AdBanner } from '@/components/ads/ad-placements'
 
 export const metadata: Metadata = {
   title: 'Rețete | MareChef.ro',
@@ -127,6 +128,8 @@ export default async function RecipesPage() {
           </div>
         </div>
       </div>
+
+      <AdBanner placement="recipes-hero-banner" />
 
       {/* ── MAIN CONTENT ── */}
       <div className="px-6 md:px-8 py-12 max-w-7xl mx-auto space-y-12">

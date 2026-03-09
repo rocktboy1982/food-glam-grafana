@@ -51,9 +51,9 @@ export async function GET(req: NextRequest) {
       query = query.eq('recipe_json->>difficulty', difficulty)
     }
 
-    // --- Text search: title + summary ---
+    // --- Text search: title + summary + slug ---
     if (q) {
-      query = query.or(`title.ilike.%${q}%,summary.ilike.%${q}%`)
+      query = query.or(`title.ilike.%${q}%,summary.ilike.%${q}%,slug.ilike.%${q}%`)
     }
 
     // --- Sort ---
@@ -96,6 +96,10 @@ export async function GET(req: NextRequest) {
         abv: recipeJson.abv ?? null,
         difficulty: recipeJson.difficulty || 'easy',
         serves: recipeJson.serves || 1,
+        ingredients: recipeJson.ingredients || [],
+        steps: recipeJson.steps || [],
+        glassware: recipeJson.glassware || '',
+        garnish: recipeJson.garnish || '',
         tags: post.food_tags || [],
         votes: 0, // votes column doesn't exist, use 0
         quality_score: post.quality_score || 0,

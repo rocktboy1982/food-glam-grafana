@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { createServiceSupabaseClient } from '@/lib/supabase-server'
 import { COCKTAIL_COLLECTIONS } from '@/lib/cocktail-collections'
+import { AdBanner } from '@/components/ads/ad-placements'
 
 export const metadata: Metadata = {
   title: 'Cărți de Cocktailuri | MareChef.ro',
@@ -232,10 +233,12 @@ export default async function CocktailBooksPage() {
               </Link>
             ))}
           </div>
-        </section>
+         </section>
 
-        {/* ── FEATURED COLLECTIONS ── */}
-         <section>
+         <AdBanner placement="cocktailbooks-between-sections" />
+
+         {/* ── FEATURED COLLECTIONS ── */}
+          <section>
            <h2 className="ff text-xl font-bold mb-6" style={{ color: '#111' }}>Colecții Populare</h2>
            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
              {collectionsWithPreviews.map((col) => (

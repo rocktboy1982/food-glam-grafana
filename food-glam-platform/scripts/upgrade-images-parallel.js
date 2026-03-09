@@ -96,7 +96,7 @@ function extractDishName(slug) {
 
 // ── Worker ──────────────────────────────────────────────
 
-async function worker(workerId, recipes, client, pool, progress, typeFilter) {
+async function worker(workerId, recipes, client, pool, progress, typeFilter, mode) {
   const tag = `[W${workerId}]`
   let upgraded = 0, skipped = 0, errors = 0
 
@@ -116,7 +116,11 @@ async function worker(workerId, recipes, client, pool, progress, typeFilter) {
 
     try {
       const searchSuffix = typeFilter === 'cocktail' ? ' cocktail drink' : ' food recipe'
-      const result = await client.search(dishName + searchSuffix, { strategy: 'fallback' })
+      const searchOpts = { strategy: 'fallback' }
+      if (mode === 'broken-pixabay') {
+        searchOpts.providerOrder = ['pexels', 'unsplash']
+      }
+      const result = await client.search(dishName + searchSuffix, searchOpts)
 
       if (!result && !client.hasCapacity()) {
         console.log(`\n${tag} All APIs limited. Pausing 10 min...`)
@@ -187,6 +191,13 @@ async function main() {
         AND hero_image_url IS NOT NULL AND hero_image_url != ''
       ORDER BY slug
     `
+  } else if (mode === 'broken-pixabay') {
+    query = `
+      SELECT id, slug, title FROM posts
+      WHERE ${typeClause} AND status = 'active'
+        AND hero_image_url LIKE '%pixabay.com/get/%'
+      ORDER BY slug
+    `
   } else {
     query = `
       SELECT id, slug, title FROM posts
@@ -236,7 +247,7 @@ async function main() {
   // Launch workers with staggered starts
   const promises = workers.map(async ({ batch, client, workerId }, idx) => {
     await sleep(idx * STAGGER_MS) // Stagger starts
-    return worker(workerId, batch, client, pool, progress, typeFilter)
+    return worker(workerId, batch, client, pool, progress, typeFilter, mode)
   })
 
   const results = await Promise.all(promises)

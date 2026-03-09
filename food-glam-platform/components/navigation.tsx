@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { href: '/cookbooks',     label: 'Cărți de bucate',  icon: '📖' },
   { href: '/cocktailbooks', label: 'Cocktailuri',  icon: '🍹' },
   { href: '/plan',          label: 'Plan de masă',  icon: '📅' },
+  { href: '/party',         label: 'Plan de petrecere', icon: '🎉' },
   { href: '/me/preferred',  label: '⭐ Preferate', icon: '⭐' },
   { href: '/me/cookbook',   label: 'Cartea mea', icon: '🍴' },
 

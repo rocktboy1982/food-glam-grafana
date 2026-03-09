@@ -106,6 +106,23 @@ export const AD_PLACEMENTS = {
     format: 'auto' as const,
     layout: undefined,
   },
+
+  // Index pages
+  'recipes-hero-banner': {
+    slot: 'banner' as AdSlotKey,
+    format: 'auto' as const,
+    layout: undefined,
+  },
+  'cocktails-hero-banner': {
+    slot: 'banner' as AdSlotKey,
+    format: 'auto' as const,
+    layout: undefined,
+  },
+  'cocktailbooks-between-sections': {
+    slot: 'banner' as AdSlotKey,
+    format: 'auto' as const,
+    layout: undefined,
+  },
 } as const
 
 export type AdPlacementKey = keyof typeof AD_PLACEMENTS

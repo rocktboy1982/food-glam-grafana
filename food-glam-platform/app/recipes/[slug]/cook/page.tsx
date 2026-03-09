@@ -12,7 +12,9 @@ interface RecipeJson {
   servings?: number;
   ingredient_sections?: IngredientSection[];
   recipeIngredient?: string[];
+  ingredients?: string[];
   steps?: string[];
+  instructions?: string[];
   recipeInstructions?: string[];
 }
 
@@ -77,15 +79,20 @@ export default async function CookModePage({ params }: CookPageProps) {
 
   const recipeData = (post.recipe_json || {}) as RecipeJson
 
-  // Normalize ingredients
+  // Normalize ingredients — recipe_json may use different key names
   const ingredientSections: IngredientSection[] = recipeData.ingredient_sections
     ? recipeData.ingredient_sections
     : recipeData.recipeIngredient
       ? [{ ingredients: recipeData.recipeIngredient }]
-      : []
+      : recipeData.ingredients
+        ? [{ ingredients: recipeData.ingredients }]
+        : []
 
-  // Normalize steps
-  const steps: string[] = recipeData.steps || recipeData.recipeInstructions || []
+  // Normalize steps — recipe_json may use 'steps', 'instructions', or 'recipeInstructions'
+  const steps: string[] = recipeData.steps
+    || recipeData.instructions
+    || recipeData.recipeInstructions
+    || []
 
   const servings = recipeData.servings || 4
 
