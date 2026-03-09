@@ -1,14 +1,20 @@
-import DOMPurify from 'dompurify'
-
 /**
- * Sanitizes text by stripping all HTML tags using DOMPurify.
+ * Sanitizes text by stripping all HTML tags.
+ * Works in both server and client environments (no DOM dependency).
  * Returns plain text safe for rendering.
  */
 export function sanitizeText(input: string): string {
   if (!input) return ''
-  // Strip all HTML tags, leaving only text content
-  const cleaned = DOMPurify.sanitize(input, { ALLOWED_TAGS: [] })
-  return cleaned
+  // Strip all HTML tags, decode common entities, return plain text
+  return input
+    .replace(/<[^>]*>/g, '')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    .trim()
 }
 
 /**

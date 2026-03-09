@@ -38,3 +38,6 @@ supabase/.temp/
 scripts/.translate-progress.json
 scripts/translate-output.log
 scripts/translate-error.log
+
+# database backups
+backups/

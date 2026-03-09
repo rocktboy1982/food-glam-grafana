@@ -135,7 +135,7 @@ export function Navigation() {
         <div className="flex items-center gap-4 px-6 py-3">
           {/* Logo */}
           <Link href="/" className="flex-shrink-0 flex items-center gap-2">
-            <Image src="/logo.svg" alt="MareChef.ro" className="h-9 w-auto" />
+            <Image src="/logo.svg" alt="MareChef.ro" width={36} height={36} className="h-9 w-auto" />
           </Link>
 
           {/* Search bar — expands to fill available space */}
@@ -254,7 +254,7 @@ export function Navigation() {
         }}
       >
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.svg" alt="MareChef.ro" className="h-7 w-auto" />
+          <Image src="/logo.svg" alt="MareChef.ro" width={28} height={28} className="h-7 w-auto" />
         </Link>
 
         {/* inline search on mobile */}
