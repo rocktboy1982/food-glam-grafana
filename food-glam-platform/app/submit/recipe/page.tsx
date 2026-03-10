@@ -89,17 +89,17 @@ type Errors = Partial<Record<keyof RecipeFormState, string>>
 
 function validate(f: RecipeFormState): Errors {
   const e: Errors = {}
-  if (!f.title.trim())        e.title        = 'Title is required'
-  if (!f.summary.trim())      e.summary      = 'Write a short description — it shows on recipe cards'
-  if (!f.heroImageUrl.trim()) e.heroImageUrl = 'A hero photo is required — recipes without images get 80% fewer clicks'
-  if (!f.regionId)            e.regionId     = 'Select a region'
-  if (!f.countryId)           e.countryId    = 'Select the country / cuisine origin'
-  if (!f.servings || Number(f.servings) < 1)   e.servings  = 'Enter number of servings'
-  if (!f.cookTime || Number(f.cookTime) < 1)   e.cookTime  = 'Enter cook time in minutes'
+  if (!f.title.trim())        e.title        = 'Titlul este obligatoriu'
+  if (!f.summary.trim())      e.summary      = 'Scrie o descriere scurtă — apare pe cardurile rețetei'
+  if (!f.heroImageUrl.trim()) e.heroImageUrl = 'O fotografie principală este obligatorie — rețetele fără imagini primesc cu 80% mai puțini vizitatori'
+  if (!f.regionId)            e.regionId     = 'Selectează o regiune'
+  if (!f.countryId)           e.countryId    = 'Selectează țara / originea bucătăriei'
+  if (!f.servings || Number(f.servings) < 1)   e.servings  = 'Introdu numărul de porții'
+  if (!f.cookTime || Number(f.cookTime) < 1)   e.cookTime  = 'Introdu timpul de gătire în minute'
   const realIngredients = f.ingredients.filter(i => i.name.trim())
-  if (realIngredients.length === 0) e.ingredients = 'Add at least one ingredient'
+  if (realIngredients.length === 0) e.ingredients = 'Adaugă cel puțin un ingredient'
   const realSteps = f.steps.filter(s => s.trim())
-  if (realSteps.length === 0) e.steps = 'Add at least one step'
+  if (realSteps.length === 0) e.steps = 'Adaugă cel puțin un pas'
   return e
 }
 
@@ -337,9 +337,9 @@ function SubmitRecipePageContent() {
       const d = await res.json().catch(() => ({}))
       if (res.status === 429) {
         setRateLimited(true)
-        throw new Error(d.error || 'You can only publish 1 post per day. Try again tomorrow.')
+        throw new Error(d.error || 'Poți publica doar 1 postare pe zi. Încearcă mâine.')
       }
-      if (!res.ok) throw new Error(d.error || d.message || 'Submission failed')
+      if (!res.ok) throw new Error(d.error || d.message || 'Trimiterea a eșuat')
 
       const newPostId: string = d.id
 
@@ -353,7 +353,7 @@ function SubmitRecipePageContent() {
       }
 
       toast.push({
-        message: status === 'draft' ? 'Draft saved!' : '🎉 Recipe published and added to your Cookbook!',
+        message: status === 'draft' ? 'Schiță salvată!' : '🎉 Rețetă publicată și adăugată în Cartea ta de bucate!',
         type: 'success',
       })
 
@@ -363,7 +363,7 @@ function SubmitRecipePageContent() {
         router.push('/me/cookbook')
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Something went wrong'
+      const msg = err instanceof Error ? err.message : 'Ceva a mers greșit'
       toast.push({ message: msg, type: 'error' })
     } finally {
       setSaving(false)
@@ -384,14 +384,14 @@ function SubmitRecipePageContent() {
     return (
       <div className="min-h-screen" style={{ background: '#dde3ee', color: '#111' }}><div className="max-w-3xl mx-auto px-4 py-10">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold">Preview</h1>
-          <Button variant="outline" onClick={() => setShowPreview(false)}>Back to editor</Button>
+          <h1 className="text-2xl font-bold">Previzualizare</h1>
+          <Button variant="outline" onClick={() => setShowPreview(false)}>Înapoi la editor</Button>
         </div>
         <article className="space-y-6">
           {form.heroImageUrl && (
             <Image src={form.heroImageUrl} alt={form.title} className="w-full h-64 object-cover rounded-xl" />
           )}
-          <h2 className="text-3xl font-bold tracking-tight">{form.title || 'Untitled Recipe'}</h2>
+          <h2 className="text-3xl font-bold tracking-tight">{form.title || 'Rețetă fără titlu'}</h2>
           {form.summary && <p className="text-muted-foreground leading-relaxed">{form.summary}</p>}
           <div className="flex flex-wrap gap-2">
             {country && (
@@ -408,8 +408,8 @@ function SubmitRecipePageContent() {
             ))}
           </div>
           <div className="grid grid-cols-2 gap-4 text-sm">
-            {form.servings && <div><span className="font-medium">Servings:</span> {form.servings}</div>}
-            {form.cookTime && <div><span className="font-medium">Cook time:</span> {form.cookTime} min</div>}
+            {form.servings && <div><span className="font-medium">Porții:</span> {form.servings}</div>}
+            {form.cookTime && <div><span className="font-medium">Timp de gătire:</span> {form.cookTime} min</div>}
           </div>
           {form.videoUrl && isValidVideoUrl(form.videoUrl) && (
             <div>
@@ -419,10 +419,10 @@ function SubmitRecipePageContent() {
           )}
           {form.photoGallery.filter(p => p.trim()).length > 0 && (
             <div>
-              <h3 className="text-lg font-semibold mb-3">Photo Gallery</h3>
+              <h3 className="text-lg font-semibold mb-3">Galerie foto</h3>
               <div className="grid grid-cols-2 gap-3">
                 {form.photoGallery.filter(p => p.trim()).map((photo, i) => (
-                  <Image key={i} src={photo} alt={`Gallery ${i + 1}`} className="h-32 w-full object-cover rounded-lg" />
+                  <Image key={i} src={photo} alt={`Fotografie ${i + 1}`} className="h-32 w-full object-cover rounded-lg" />
                 ))}
               </div>
             </div>
@@ -466,9 +466,9 @@ function SubmitRecipePageContent() {
           </svg>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">{editId ? 'Edit Recipe' : 'New Recipe'}</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{editId ? 'Editează rețeta' : 'Rețetă nouă'}</h1>
           <p className="text-sm text-muted-foreground">
-            Fields marked <span className="text-destructive font-medium">*</span> are required to publish.
+            Câmpurile marcate cu <span className="text-destructive font-medium">*</span> sunt obligatorii pentru publicare.
           </p>
         </div>
       </div>
@@ -480,10 +480,10 @@ function SubmitRecipePageContent() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
           </svg>
           <div className="flex-1">
-            <p className="text-sm font-semibold text-amber-800">Sign in to publish</p>
-            <p className="text-xs text-amber-700 mt-0.5">You can fill out the form, but you&apos;ll need to sign in before publishing or saving a draft.</p>
+            <p className="text-sm font-semibold text-amber-800">Autentifică-te pentru a publica</p>
+            <p className="text-xs text-amber-700 mt-0.5">Poți completa formularul, dar trebuie să te autentifici înainte de a publica sau salva o schiță.</p>
             <Link href="/auth/signin" className="inline-block mt-2 text-xs font-medium text-amber-900 underline underline-offset-2 hover:text-amber-700 transition-colors">
-              Sign in with Google →
+              Autentifică-te cu Google →
             </Link>
           </div>
         </div>
@@ -496,8 +496,8 @@ function SubmitRecipePageContent() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
           </svg>
           <div className="flex-1">
-            <p className="text-sm font-semibold text-red-800">Daily limit reached</p>
-            <p className="text-xs text-red-700 mt-0.5">You can only publish 1 post per day. Come back tomorrow to submit another recipe.</p>
+            <p className="text-sm font-semibold text-red-800">Limita zilnică atinsă</p>
+            <p className="text-xs text-red-700 mt-0.5">Poți publica doar 1 postare pe zi. Revino mâine pentru a trimite o altă rețetă.</p>
           </div>
         </div>
       )}
@@ -507,14 +507,14 @@ function SubmitRecipePageContent() {
         {/* ── Title ─────────────────────────────────────────── */}
         <div className={sectionCls}>
           <label className={labelCls}>
-            Title <span className="text-destructive">*</span>
+            Titlu <span className="text-destructive">*</span>
           </label>
           <input
             type="text"
             value={form.title}
             onChange={e => set('title', e.target.value)}
             className={errors.title ? inputErrCls : inputCls}
-            placeholder="e.g. Grandmother's Sunday Ragu"
+            placeholder="ex. Ragù de duminică al bunicii"
             data-error={!!errors.title}
           />
           {errors.title && <p className={errorCls}>{errors.title}</p>}
@@ -523,15 +523,15 @@ function SubmitRecipePageContent() {
         {/* ── Summary ───────────────────────────────────────── */}
         <div className={sectionCls}>
           <label className={labelCls}>
-            Summary <span className="text-destructive">*</span>
-            <span className="text-muted-foreground text-xs font-normal ml-1">— shown on recipe cards and search results</span>
+            Rezumat <span className="text-destructive">*</span>
+            <span className="text-muted-foreground text-xs font-normal ml-1">— afișat pe carduri și rezultatele căutării</span>
           </label>
           <textarea
             value={form.summary}
             onChange={e => set('summary', e.target.value)}
             rows={3}
             className={errors.summary ? inputErrCls : inputCls}
-            placeholder="A rich, slow-cooked Sunday ragu with San Marzano tomatoes and a hint of red wine..."
+            placeholder="Un ragù bogat, gătit lent duminica, cu roșii San Marzano și un strop de vin roșu..."
             data-error={!!errors.summary}
           />
           {errors.summary && <p className={errorCls}>{errors.summary}</p>}
@@ -540,8 +540,8 @@ function SubmitRecipePageContent() {
         {/* ── Hero image ────────────────────────────────────── */}
         <div className={sectionCls}>
           <label className={labelCls}>
-            Hero Photo URL <span className="text-destructive">*</span>
-            <span className="text-muted-foreground text-xs font-normal ml-1">— the main recipe image</span>
+            URL fotografie principală <span className="text-destructive">*</span>
+            <span className="text-muted-foreground text-xs font-normal ml-1">— fotografia principală a rețetei</span>
           </label>
           <input
             type="url"
@@ -552,20 +552,20 @@ function SubmitRecipePageContent() {
             data-error={!!errors.heroImageUrl}
           />
           <p className="text-xs text-muted-foreground mt-1">
-            Recommended: <strong>1200 × 800 px</strong> minimum, JPG or PNG, 3:2 ratio. Max ~5 MB.
+            Recomandat: minim <strong>1200 × 800 px</strong>, JPG sau PNG, raport 3:2. Max ~5 MB.
           </p>
           {errors.heroImageUrl && <p className={errorCls}>{errors.heroImageUrl}</p>}
           {form.heroImageUrl && !errors.heroImageUrl && (
-            <Image src={form.heroImageUrl} alt="Preview" className="mt-2 h-32 w-auto object-cover rounded-lg border" />
+            <Image src={form.heroImageUrl} alt="Previzualizare" className="mt-2 h-32 w-auto object-cover rounded-lg border" />
           )}
           {form.heroImageUrl.includes('drive.google.com') && (
             <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 space-y-1">
-              <p className="font-semibold">⚠️ Google Drive image — action required</p>
-              <p>Set the file to <strong>public</strong> (Share → Anyone with the link → Viewer) and use this URL format:</p>
+              <p className="font-semibold">⚠️ Imagine Google Drive — acțiune necesară</p>
+              <p>Setează fișierul ca <strong>public</strong> (Partajare → Oricine cu link-ul → Vizualizator) și folosește formatul:</p>
               <code className="block bg-white/60 rounded px-2 py-1 font-mono text-[10px] break-all mt-1">
                 https://drive.google.com/uc?export=view&id=YOUR_FILE_ID
               </code>
-              <p className="text-amber-600">Find the file ID in your share link between /d/ and /view</p>
+              <p className="text-amber-600">ID-ul fișierului se găsește în link-ul de partajare, între /d/ și /view</p>
             </div>
           )}
         </div>
@@ -573,30 +573,30 @@ function SubmitRecipePageContent() {
         {/* ── Video URL ─────────────────────────────────────── */}
         <div className={sectionCls}>
           <label className={labelCls}>
-            Video URL <span className="text-muted-foreground text-xs font-normal">(optional)</span>
+            URL video <span className="text-muted-foreground text-xs font-normal">(opțional)</span>
           </label>
           <input
             type="url"
             value={form.videoUrl}
             onChange={e => set('videoUrl', e.target.value)}
             className={inputCls}
-            placeholder="https://www.youtube.com/watch?v=... or TikTok / Vimeo link"
+            placeholder="https://www.youtube.com/watch?v=... sau link TikTok / Vimeo"
           />
           <p className="text-xs text-muted-foreground mt-1">
-            Supported: YouTube, Vimeo. Embedded directly on your recipe page.
+            Suportate: YouTube, Vimeo. Afișat direct pe pagina rețetei.
           </p>
           {form.videoUrl && !isValidVideoUrl(form.videoUrl) && (
-            <p className="text-xs text-amber-600 mt-1">⚠️ Paste a YouTube, Vimeo, or TikTok URL to embed a video.</p>
+            <p className="text-xs text-amber-600 mt-1">⚠️ Inserează un link YouTube, Vimeo sau TikTok pentru a adăuga un video.</p>
           )}
         </div>
 
         {/* ── Photo Gallery ─────────────────────────────────── */}
         <div className={sectionCls}>
           <label className={labelCls}>
-            Photo Gallery <span className="text-muted-foreground text-xs font-normal">(optional — up to 5 extra photos)</span>
+            Galerie foto <span className="text-muted-foreground text-xs font-normal">(opțional — până la 5 fotografii extra)</span>
           </label>
           <p className="text-xs text-muted-foreground mb-2">
-            Add step-by-step photos or plating shots. Recommended: <strong>800 × 600 px</strong> minimum, 4:3 ratio.
+            Adaugă fotografii pas cu pas sau de prezentare. Recomandat: minim <strong>800 × 600 px</strong>, raport 4:3.
           </p>
           <div className="space-y-2">
             {form.photoGallery.map((url, idx) => (
@@ -614,17 +614,17 @@ function SubmitRecipePageContent() {
                     className={inputCls}
                     placeholder="https://..."
                   />
-                  <p className="text-xs text-muted-foreground">800 × 600 px minimum, 4:3 ratio best.</p>
+                  <p className="text-xs text-muted-foreground">Minim 800 × 600 px, raport 4:3 recomandat.</p>
                   {url.includes('drive.google.com') && (
                     <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 space-y-1">
-                      <p className="font-semibold">⚠️ Google Drive image — action required</p>
-                      <p>Set the file to <strong>public</strong> (Share → Anyone with the link → Viewer) and use:</p>
+                      <p className="font-semibold">⚠️ Imagine Google Drive — acțiune necesară</p>
+                      <p>Setează fișierul ca <strong>public</strong> (Partajare → Oricine cu link-ul → Vizualizator) și folosește:</p>
                       <code className="block bg-white/60 rounded px-2 py-1 font-mono text-[10px] break-all">
                         https://drive.google.com/uc?export=view&id=YOUR_FILE_ID
                       </code>
                     </div>
                   )}
-                  {url && <Image src={url} alt={`Gallery ${idx + 1}`} className="h-20 w-auto object-cover rounded border" />}
+                  {url && <Image src={url} alt={`Fotografie ${idx + 1}`} className="h-20 w-auto object-cover rounded border" />}
                 </div>
                 {form.photoGallery.length > 1 && (
                   <button
@@ -648,7 +648,7 @@ function SubmitRecipePageContent() {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
-                Add photo
+                Adaugă fotografie
               </button>
             )}
           </div>
@@ -658,17 +658,17 @@ function SubmitRecipePageContent() {
         <div className="rounded-xl border border-border bg-muted/30 p-5 space-y-5">
           <div>
             <p className="text-sm font-semibold mb-0.5">
-              Cuisine Origin <span className="text-destructive">*</span>
+              Origine culinară <span className="text-destructive">*</span>
             </p>
             <p className="text-xs text-muted-foreground">
-              Pick a region, then browse sub-regions to find the exact cuisine.
+              Alege o regiune, apoi navighează prin sub-regiuni pentru a găsi bucătăria exactă.
             </p>
           </div>
 
           {/* Step 1 — Region pills */}
           <div className={sectionCls}>
             <label className={labelCls}>
-              Region <span className="text-destructive">*</span>
+              Regiune <span className="text-destructive">*</span>
             </label>
             <div className="space-y-3">
   {REGION_GROUPS.map(group => (
@@ -709,9 +709,9 @@ function SubmitRecipePageContent() {
             return (
               <div className={sectionCls}>
                 <label className={labelCls}>
-                  Country / Cuisine <span className="text-destructive">*</span>
+                  Țară / Bucătărie <span className="text-destructive">*</span>
                   <span className="text-muted-foreground text-xs font-normal ml-1">
-                    — {regionData.countries.length} cuisines across {regionData.subRegions.length} sub-regions
+                     — {regionData.countries.length} bucătării în {regionData.subRegions.length} sub-regiuni
                   </span>
                 </label>
                 <div className="space-y-4">
@@ -754,7 +754,7 @@ function SubmitRecipePageContent() {
             const subLabel = selectedRegion?.subRegions.find(sr => sr.countries.some(x => x.id === form.countryId))?.label
             return selectedCountry ? (
               <div className="flex items-center gap-2 pt-1 border-t border-border/50">
-                <span className="text-xs text-muted-foreground">Selected:</span>
+                <span className="text-xs text-muted-foreground">Selectat:</span>
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 border border-blue-200 px-3 py-1 text-xs font-semibold text-blue-800">
                   {selectedCountry.emoji} {selectedCountry.label}
                   {subLabel && (
@@ -766,7 +766,7 @@ function SubmitRecipePageContent() {
                   onClick={() => set('countryId', '')}
                   className="text-xs text-muted-foreground hover:text-destructive transition-colors"
                 >
-                  change
+                  schimbă
                 </button>
               </div>
             ) : null
@@ -777,7 +777,7 @@ function SubmitRecipePageContent() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className={sectionCls}>
             <label className={labelCls}>
-              Servings <span className="text-destructive">*</span>
+              Porții <span className="text-destructive">*</span>
             </label>
             <input
               type="number"
@@ -792,8 +792,8 @@ function SubmitRecipePageContent() {
           </div>
           <div className={sectionCls}>
             <label className={labelCls}>
-              Cook Time <span className="text-destructive">*</span>
-              <span className="text-muted-foreground text-xs font-normal ml-1">(minutes)</span>
+              Timp de gătire <span className="text-destructive">*</span>
+              <span className="text-muted-foreground text-xs font-normal ml-1">(minute)</span>
             </label>
             <input
               type="number"
@@ -811,7 +811,7 @@ function SubmitRecipePageContent() {
         {/* ── Diet tags ─────────────────────────────────────── */}
         <div className={sectionCls}>
           <label className={labelCls}>
-            Dietary Labels <span className="text-muted-foreground text-xs font-normal">(optional — tick all that apply)</span>
+            Etichete dietetice <span className="text-muted-foreground text-xs font-normal">(opțional — bifează ce se aplică)</span>
           </label>
           <div className="flex flex-wrap gap-2">
             {DIET_TAGS.map(tag => {
@@ -842,7 +842,7 @@ function SubmitRecipePageContent() {
         {/* ── Food tags — grouped ────────────────────────────── */}
         <div className={sectionCls}>
           <label className={labelCls}>
-            Food Tags <span className="text-muted-foreground text-xs font-normal">(optional — helps discovery)</span>
+            Etichete culinare <span className="text-muted-foreground text-xs font-normal">(opțional — ajută la descoperire)</span>
           </label>
           <div className="space-y-3">
             {FOOD_TAG_GROUPS.map(group => (
@@ -882,13 +882,13 @@ function SubmitRecipePageContent() {
         {/* ── Ingredients ───────────────────────────────────── */}
         <div className={sectionCls}>
           <label className={labelCls}>
-            Ingredients <span className="text-destructive">*</span>
+            Ingrediente <span className="text-destructive">*</span>
           </label>
           {/* Column headers */}
           <div className="flex items-center gap-2 mb-1">
             <span className="w-5 flex-shrink-0" />
-            <span className="w-16 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60 text-center">Qty</span>
-            <span className="w-24 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60 text-center">Unit</span>
+            <span className="w-16 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60 text-center">Cant.</span>
+            <span className="w-24 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60 text-center">Unitate</span>
             <span className="flex-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60">Ingredient</span>
           </div>
           <div className="space-y-2">
@@ -910,7 +910,7 @@ function SubmitRecipePageContent() {
                   className={`w-24 flex-shrink-0 rounded-lg border border-border bg-background px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40 focus:border-ring text-muted-foreground`}
                 >
                   {UNITS.map(u => (
-                    <option key={u} value={u}>{u === '' ? '— unit —' : u}</option>
+                    <option key={u} value={u}>{u === '' ? '— unitate —' : u}</option>
                   ))}
                 </select>
                 {/* Name with autocomplete */}
@@ -918,14 +918,14 @@ function SubmitRecipePageContent() {
                   value={ing.name}
                   onChange={val => updateIngredient(idx, 'name', val)}
                   className={inputCls}
-                  placeholder={idx === 0 ? 'all-purpose flour' : idx === 1 ? 'salt' : ''}
+                   placeholder={idx === 0 ? 'făină albă' : idx === 1 ? 'sare' : ''}
                 />
                 {form.ingredients.length > 1 && (
                   <button
                     type="button"
                     onClick={() => removeIngredient(idx)}
                     className="p-1.5 text-muted-foreground hover:text-destructive rounded transition-colors flex-shrink-0"
-                    aria-label="Remove ingredient"
+                    aria-label="Șterge ingredient"
                   >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -942,7 +942,7 @@ function SubmitRecipePageContent() {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
-              Add ingredient
+              Adaugă ingredient
             </button>
           </div>
           {errors.ingredients && <p className={errorCls} data-error="true">{errors.ingredients}</p>}
@@ -951,7 +951,7 @@ function SubmitRecipePageContent() {
         {/* ── Steps ─────────────────────────────────────────── */}
         <div className={sectionCls}>
           <label className={labelCls}>
-            Steps <span className="text-destructive">*</span>
+            Pași <span className="text-destructive">*</span>
           </label>
           <div className="space-y-3">
             {form.steps.map((step, idx) => (
@@ -962,14 +962,14 @@ function SubmitRecipePageContent() {
                   onChange={e => updateListItem('steps', idx, e.target.value)}
                   rows={2}
                   className={`flex-1 ${inputCls}`}
-                  placeholder={idx === 0 ? 'Preheat the oven to 350°F / 180°C...' : ''}
+                   placeholder={idx === 0 ? 'Preîncălzește cuptorul la 180°C...' : ''}
                 />
                 {form.steps.length > 1 && (
                   <button
                     type="button"
                     onClick={() => removeListItem('steps', idx)}
                     className="p-1.5 text-muted-foreground hover:text-destructive rounded transition-colors mt-2"
-                    aria-label="Remove step"
+                    aria-label="Șterge pas"
                   >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -986,7 +986,7 @@ function SubmitRecipePageContent() {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
-              Add step
+              Adaugă pas
             </button>
           </div>
           {errors.steps && <p className={errorCls} data-error="true">{errors.steps}</p>}
@@ -995,17 +995,17 @@ function SubmitRecipePageContent() {
         {/* ── Action buttons ────────────────────────────────── */}
         <div className="flex flex-wrap items-center gap-3 pt-4 border-t">
           <Button onClick={() => handleSubmit('active')} disabled={saving || rateLimited}>
-            {saving ? 'Saving...' : rateLimited ? 'Limit reached' : editId ? 'Update & Publish' : 'Publish'}
+            {saving ? 'Se salvează...' : rateLimited ? 'Limită atinsă' : editId ? 'Actualizează și publică' : 'Publică'}
           </Button>
           <Button variant="outline" onClick={() => handleSubmit('draft')} disabled={saving || rateLimited}>
-            {saving ? 'Saving...' : rateLimited ? 'Limit reached' : 'Save as Draft'}
+            {saving ? 'Se salvează...' : rateLimited ? 'Limită atinsă' : 'Salvează ca schiță'}
           </Button>
           <Button variant="ghost" onClick={() => setShowPreview(true)}>
-            Preview
+            Previzualizare
           </Button>
           <div className="flex-1" />
           <Link href="/submit" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Cancel
+            Anulează
           </Link>
         </div>
 
@@ -1019,7 +1019,7 @@ export default function SubmitRecipePage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-muted-foreground">Loading...</div>
+        <div className="text-muted-foreground">Se încarcă...</div>
       </div>
     }>
       <SubmitRecipePageContent />

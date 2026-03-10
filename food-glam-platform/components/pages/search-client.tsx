@@ -136,7 +136,7 @@ export default function SearchClient() {
 
   return (
     <main className="container mx-auto px-4 py-8 max-w-5xl">
-      <h1 className="text-2xl font-bold mb-6">Search Recipes</h1>
+      <h1 className="text-2xl font-bold mb-6">Caută rețete</h1>
 
       {/* ── Search bar ── */}
       <div className="flex gap-2 max-w-2xl mb-6">
@@ -144,7 +144,7 @@ export default function SearchClient() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           className="flex-1 rounded border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
-          placeholder="Search by name or ingredient (any language)…"
+          placeholder="Caută după nume sau ingredient..."
         />
         <Button
           onClick={() => {
@@ -154,14 +154,14 @@ export default function SearchClient() {
           disabled={loading}
           className="bg-amber-500 hover:bg-amber-600 text-white"
         >
-          {loading ? "…" : "Search"}
+          {loading ? "…" : "Caută"}
         </Button>
       </div>
 
       {/* Multilingual expansion hint */}
       {expandedTerms && expandedTerms.length > 0 && (
         <p className="text-xs text-muted-foreground mb-4">
-          🌍 Also searched:{" "}
+          🌍 Căutat și:{" "}
           <span className="font-medium">{expandedTerms.slice(0, 8).join(", ")}</span>
         </p>
       )}
@@ -179,7 +179,7 @@ export default function SearchClient() {
           🌍{" "}
           {activeRegion
             ? `${REGION_META[activeRegion]?.emoji ?? ""} ${REGION_META[activeRegion]?.label ?? activeRegion}${activeCountry ? ` › ${ALL_COUNTRIES.find((c) => c.id === activeCountry)?.label ?? activeCountry}` : ""}`
-            : "Country / Region"}
+            : "Țară / Regiune"}
           {activeRegion && (
             <span
               onClick={(e) => {
@@ -206,7 +206,7 @@ export default function SearchClient() {
           🍽️{" "}
           {activeCourse !== "all"
             ? `${COURSES.find((c) => c.id === activeCourse)?.emoji ?? ""} ${COURSES.find((c) => c.id === activeCourse)?.label ?? activeCourse}`
-            : "Dish Type"}
+            : "Tip preparat"}
           {activeCourse !== "all" && (
             <span
               onClick={(e) => {
@@ -226,13 +226,13 @@ export default function SearchClient() {
             onClick={clearFilters}
             className="text-xs text-muted-foreground hover:text-foreground underline ml-1"
           >
-            Clear all filters
+            Șterge filtrele
           </button>
         )}
 
         {total != null && (
           <span className="ml-auto text-sm text-muted-foreground">
-            {total} result{total !== 1 ? "s" : ""}
+            {total} {total === 1 ? "rezultat" : "rezultate"}
           </span>
         )}
       </div>
@@ -242,7 +242,7 @@ export default function SearchClient() {
         <div className="mb-6 p-4 rounded-xl border border-border bg-card shadow-sm">
           {/* Region row */}
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-            Region
+            Regiune
           </p>
           <div className="flex flex-wrap gap-2 mb-4">
             <button
@@ -252,7 +252,7 @@ export default function SearchClient() {
               }}
               className={`${CHIP} ${!activeRegion ? CHIP_ACTIVE : CHIP_IDLE}`}
             >
-              🌐 All regions
+              🌐 Toate regiunile
             </button>
             {Object.entries(REGION_META).map(([id, r]) => (
               <button
@@ -272,14 +272,14 @@ export default function SearchClient() {
           {activeRegion && regionCountries.length > 0 && (
             <>
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                Country
+                Țară
               </p>
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setActiveCountry(null)}
                   className={`${CHIP} text-xs ${!activeCountry ? "bg-amber-400 text-white border-amber-400" : CHIP_IDLE}`}
                 >
-                  🌐 All
+                  🌐 Toate
                 </button>
                 {regionCountries.map((c) => (
                   <button
@@ -302,7 +302,7 @@ export default function SearchClient() {
       {showCoursePanel && (
         <div className="mb-6 p-4 rounded-xl border border-border bg-card shadow-sm">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-            Dish Type / Course
+            Tip preparat / Fel de mâncare
           </p>
           <div className="flex flex-wrap gap-2">
             {COURSES.map((c) => (
@@ -368,7 +368,7 @@ export default function SearchClient() {
         {!loading && results.length === 0 && (q.trim() || activeFilterCount > 0) && (
           <div className="text-center py-16 text-muted-foreground">
             <p className="text-3xl mb-3">🍽️</p>
-            <p className="font-medium mb-2">No recipes found</p>
+            <p className="font-medium mb-2">Nicio rețetă găsită</p>
             <button
               onClick={() => {
                 setQ("");
@@ -376,7 +376,7 @@ export default function SearchClient() {
               }}
               className="text-sm text-amber-600 hover:underline"
             >
-              Clear search &amp; filters
+              Șterge căutarea și filtrele
             </button>
           </div>
         )}
@@ -443,10 +443,10 @@ export default function SearchClient() {
               }}
               disabled={page <= 1}
             >
-              Previous
+              Anterior
             </Button>
             <span className="px-3 py-1 text-sm">
-              Page {page} {!hasMore && total != null ? "(end)" : ""}
+              Pagina {page} {!hasMore && total != null ? "(sfârșit)" : ""}
             </span>
             <Button
               variant="outline"
@@ -458,7 +458,7 @@ export default function SearchClient() {
               }}
               disabled={!hasMore}
             >
-              Next
+              Următor
             </Button>
           </div>
         )}

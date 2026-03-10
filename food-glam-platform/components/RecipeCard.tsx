@@ -113,7 +113,7 @@ export default function RecipeCard({
       if (navigator.share) {
         await navigator.share({
           title,
-          text: summary || `Check out this ${region} recipe!`,
+          text: summary || `Descoperă această rețetă ${region}!`,
           url: `${window.location.origin}/recipes/${slug}`
         })
       } else {
@@ -199,7 +199,7 @@ export default function RecipeCard({
 
         {/* Summary */}
         <p className="text-sm text-muted-foreground mb-3 line-clamp-2 flex-1">
-          {summary || `${region} • ${voteCount} upvotes`}
+          {summary || `${region} • ${voteCount} aprecieri`}
         </p>
 
         {/* Quality score + tags row */}

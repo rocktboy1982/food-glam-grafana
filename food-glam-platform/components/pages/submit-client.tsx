@@ -6,8 +6,8 @@ import Link from "next/link";
 const contentTypes = [
   {
     type: "recipe",
-    label: "Recipe",
-    description: "Share a full recipe with ingredients, steps, and photos",
+    label: "Rețetă",
+    description: "Publică o rețetă completă cu ingrediente, pași și fotografii",
     href: "/submit/recipe",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-8 h-8">
@@ -20,8 +20,8 @@ const contentTypes = [
   },
   {
     type: "short",
-    label: "Short",
-    description: "Quick tip, hack, or food thought — keep it brief",
+    label: "Scurt",
+    description: "Un sfat rapid, trucuri culinare sau gânduri — scurt și la obiect",
     href: "/submit/post?type=short",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-8 h-8">
@@ -34,8 +34,8 @@ const contentTypes = [
   },
   {
     type: "image",
-    label: "Image Post",
-    description: "Share a beautiful food photo with a caption",
+    label: "Fotografie",
+    description: "Publică o fotografie culinară frumoasă cu legendă",
     href: "/submit/post?type=image",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-8 h-8">
@@ -49,7 +49,7 @@ const contentTypes = [
   {
     type: "video",
     label: "Video",
-    description: "Link a cooking video from YouTube, TikTok, or Facebook",
+    description: "Adaugă un video culinar de pe YouTube, TikTok sau Facebook",
     href: "/submit/post?type=video",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-8 h-8">
@@ -66,8 +66,8 @@ export default function SubmitClient() {
   return (
     <main className="min-h-screen container mx-auto px-4 py-12 max-w-3xl" style={{ background: '#dde3ee', color: '#111' }}>
       <div className="mb-10">
-        <h1 className="text-3xl font-bold tracking-tight mb-2">Create something</h1>
-        <p className="text-muted-foreground">Choose what you&apos;d like to share with the community.</p>
+        <h1 className="text-3xl font-bold tracking-tight mb-2">Creează ceva</h1>
+        <p className="text-muted-foreground">Alege ce vrei să împărtășești cu comunitatea.</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -95,7 +95,7 @@ export default function SubmitClient() {
 
       <div className="mt-8 text-center">
         <Link href="/me/posts" className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors">
-          View your drafts &amp; posts
+          Vezi schițele și postările tale
         </Link>
       </div>
     </main>

@@ -22,9 +22,9 @@ const SPIRITS = [
 ] as const
 
 const DIFFICULTY_OPTIONS = [
-  { value: 'easy',   label: 'Easy',   desc: 'No special kit needed' },
-  { value: 'medium', label: 'Medium', desc: 'Shaker or muddler' },
-  { value: 'hard',   label: 'Hard',   desc: 'Advanced technique' },
+  { value: 'easy',   label: 'Ușor',   desc: 'Nu necesită echipament special' },
+  { value: 'medium', label: 'Mediu',  desc: 'Shaker sau muddler' },
+  { value: 'hard',   label: 'Dificil', desc: 'Tehnică avansată' },
 ] as const
 
 const COCKTAIL_TAGS = [
@@ -80,15 +80,15 @@ type Errors = Partial<Record<keyof CocktailFormState | 'ingredients' | 'steps', 
 
 function validate(f: CocktailFormState): Errors {
   const e: Errors = {}
-  if (!f.title.trim())        e.title        = 'Title is required'
-  if (!f.summary.trim())      e.summary      = 'Write a short description'
-  if (!f.heroImageUrl.trim()) e.heroImageUrl = 'A hero photo URL is required'
-  if (!f.spirit)              e.spirit       = 'Select a base spirit (or mocktail)'
+  if (!f.title.trim())        e.title        = 'Titlul este obligatoriu'
+  if (!f.summary.trim())      e.summary      = 'Scrie o descriere scurtă'
+  if (!f.heroImageUrl.trim()) e.heroImageUrl = 'URL-ul fotografiei principale este obligatoriu'
+  if (!f.spirit)              e.spirit       = 'Selectează spirtoasa de bază (sau mocktail)'
   if (f.category === 'alcoholic' && (!f.abv || Number(f.abv) <= 0))
-                              e.abv          = 'Enter approximate ABV %'
-  if (!f.serves || Number(f.serves) < 1) e.serves = 'Enter number of servings'
-  if (f.ingredients.filter(i => i.name.trim()).length === 0) e.ingredients = 'Add at least one ingredient'
-  if (f.steps.filter(s => s.trim()).length === 0) e.steps = 'Add at least one step'
+                              e.abv          = 'Introdu ABV % aproximativ'
+  if (!f.serves || Number(f.serves) < 1) e.serves = 'Introdu numărul de porții'
+  if (f.ingredients.filter(i => i.name.trim()).length === 0) e.ingredients = 'Adaugă cel puțin un ingredient'
+  if (f.steps.filter(s => s.trim()).length === 0) e.steps = 'Adaugă cel puțin un pas'
   return e
 }
 
@@ -186,12 +186,12 @@ function SubmitCocktailPageContent() {
       })
 
       const d = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(d.error || 'Submission failed')
+      if (!res.ok) throw new Error(d.error || 'Trimiterea a eșuat')
 
-      toast.push({ message: '🍹 Cocktail published!', type: 'success' })
+      toast.push({ message: '🍹 Cocktail publicat!', type: 'success' })
       router.push(`/cocktails/${d.slug}`)
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Something went wrong'
+      const msg = err instanceof Error ? err.message : 'Ceva a mers greșit'
       toast.push({ message: msg, type: 'error' })
     } finally {
       setSaving(false)
@@ -212,14 +212,14 @@ function SubmitCocktailPageContent() {
       <div className="min-h-screen" style={{ background: '#dde3ee', color: '#111' }}>
         <div className="max-w-3xl mx-auto px-4 py-10">
            <div className="flex items-center justify-between mb-8">
-             <h1 className="text-2xl font-bold">Preview</h1>
-             <Button variant="outline" onClick={() => setShowPreview(false)}>Back to editor</Button>
+             <h1 className="text-2xl font-bold">Previzualizare</h1>
+             <Button variant="outline" onClick={() => setShowPreview(false)}>Înapoi la editor</Button>
            </div>
           <article className="space-y-6">
             {form.heroImageUrl && (
               <Image src={form.heroImageUrl} alt={form.title} className="w-full h-64 object-cover rounded-xl" />
             )}
-             <h2 className="text-3xl font-bold tracking-tight">{form.title || 'Untitled Cocktail'}</h2>
+             <h2 className="text-3xl font-bold tracking-tight">{form.title || 'Cocktail fără titlu'}</h2>
              {form.summary && <p className="text-muted-foreground leading-relaxed">{form.summary}</p>}
              <div className="flex flex-wrap gap-2">
                <span className="px-3 py-1 rounded-full text-xs font-medium" style={{ background: 'rgba(124,58,237,0.15)', color: '#6d28d9', border: '1px solid rgba(124,58,237,0.3)' }}>
@@ -240,12 +240,12 @@ function SubmitCocktailPageContent() {
                </span>
              </div>
             <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
-               {form.serves && <div><span className="font-medium">Serves:</span> {form.serves}</div>}
-               {form.glassware && <div><span className="font-medium">Glass:</span> {form.glassware}</div>}
-               {form.garnish && <div><span className="font-medium">Garnish:</span> {form.garnish}</div>}
+               {form.serves && <div><span className="font-medium">Porții:</span> {form.serves}</div>}
+               {form.glassware && <div><span className="font-medium">Pahar:</span> {form.glassware}</div>}
+               {form.garnish && <div><span className="font-medium">Garnitură:</span> {form.garnish}</div>}
              </div>
              <div>
-               <h3 className="text-lg font-semibold mb-3">Ingredients</h3>
+               <h3 className="text-lg font-semibold mb-3">Ingrediente</h3>
                <ul className="space-y-1.5">
                  {form.ingredients.filter(i => i.name.trim()).map((ing, i) => (
                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -256,7 +256,7 @@ function SubmitCocktailPageContent() {
               </ul>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-3">Method</h3>
+              <h3 className="text-lg font-semibold mb-3">Metodă</h3>
               <ol className="space-y-4">
                 {form.steps.filter(s => s.trim()).map((step, i) => (
                   <li key={i} className="flex gap-3 text-sm text-foreground">
@@ -285,9 +285,9 @@ function SubmitCocktailPageContent() {
              </svg>
            </Link>
            <div>
-             <h1 className="text-2xl font-bold tracking-tight">🍹 New Cocktail</h1>
+             <h1 className="text-2xl font-bold tracking-tight">🍹 Cocktail nou</h1>
              <p className="text-sm text-muted-foreground">
-               Fields marked <span className="text-destructive font-medium">*</span> are required.
+               Câmpurile marcate cu <span className="text-destructive font-medium">*</span> sunt obligatorii.
              </p>
            </div>
          </div>
@@ -296,13 +296,13 @@ function SubmitCocktailPageContent() {
 
           {/* ── Title ── */}
           <div className={sectionCls}>
-            <label className={labelCls}>Title <span className="text-destructive">*</span></label>
+            <label className={labelCls}>Titlu <span className="text-destructive">*</span></label>
             <input
               type="text"
               value={form.title}
               onChange={e => set('title', e.target.value)}
               className={errors.title ? inputErrCls : inputCls}
-              placeholder="e.g. Smoky Mezcal Negroni"
+              placeholder="ex. Negroni cu Mezcal afumat"
               data-error={!!errors.title}
             />
             {errors.title && <p className={errorCls}>{errors.title}</p>}
@@ -311,15 +311,15 @@ function SubmitCocktailPageContent() {
           {/* ── Summary ── */}
           <div className={sectionCls}>
             <label className={labelCls}>
-              Summary <span className="text-destructive">*</span>
-              <span className="text-muted-foreground text-xs font-normal ml-1">— shown on search cards</span>
+              Rezumat <span className="text-destructive">*</span>
+              <span className="text-muted-foreground text-xs font-normal ml-1">— afișat pe cardurile de căutare</span>
             </label>
             <textarea
               value={form.summary}
               onChange={e => set('summary', e.target.value)}
               rows={3}
               className={errors.summary ? inputErrCls : inputCls}
-              placeholder="A twist on the classic Negroni — mezcal replaces gin for a deep smokiness..."
+              placeholder="O variantă a clasicului Negroni — mezcal înlocuiește ginul pentru o aromă afumată profundă..."
               data-error={!!errors.summary}
             />
             {errors.summary && <p className={errorCls}>{errors.summary}</p>}
@@ -328,7 +328,7 @@ function SubmitCocktailPageContent() {
           {/* ── Hero image ── */}
           <div className={sectionCls}>
             <label className={labelCls}>
-              Hero Photo URL <span className="text-destructive">*</span>
+              URL fotografie principală <span className="text-destructive">*</span>
             </label>
             <input
               type="url"
@@ -346,11 +346,11 @@ function SubmitCocktailPageContent() {
 
           {/* ── Category + Spirit ── */}
           <div className="rounded-xl border p-5 space-y-5" style={{ borderColor: 'rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.02)' }}>
-            <p className="text-sm font-semibold text-foreground">Drink Type <span className="text-destructive">*</span></p>
+            <p className="text-sm font-semibold text-foreground">Tip băutură <span className="text-destructive">*</span></p>
 
             {/* Category */}
             <div>
-              <label className={labelCls}>Category</label>
+              <label className={labelCls}>Categorie</label>
               <div className="flex gap-2">
                 {(['alcoholic', 'non-alcoholic'] as const).map(cat => (
                   <button
@@ -367,7 +367,7 @@ function SubmitCocktailPageContent() {
                       : { background: 'transparent', borderColor: 'rgba(0,0,0,0.1)', color: '#888' }
                     }
                   >
-                    {cat === 'alcoholic' ? '🥃 Alcoholic' : '🍃 Non-Alcoholic'}
+                    {cat === 'alcoholic' ? '🥃 Alcoolic' : '🍃 Nealcoolic'}
                   </button>
                 ))}
               </div>
@@ -375,7 +375,7 @@ function SubmitCocktailPageContent() {
 
             {/* Spirit */}
             <div>
-              <label className={labelCls}>Base Spirit <span className="text-destructive">*</span></label>
+              <label className={labelCls}>Spirtoasă de bază <span className="text-destructive">*</span></label>
               <div className="flex flex-wrap gap-2" data-error={!!errors.spirit}>
                 {SPIRITS.filter(s => form.category === 'non-alcoholic' ? s.value === 'none' : s.value !== 'none').map(sp => (
                   <button
@@ -408,29 +408,29 @@ function SubmitCocktailPageContent() {
                     value={form.abv}
                     onChange={e => set('abv', e.target.value)}
                     className={errors.abv ? inputErrCls : inputCls}
-                    placeholder="e.g. 20"
+                    placeholder="ex. 20"
                     data-error={!!errors.abv}
                   />
                   {errors.abv && <p className={errorCls}>{errors.abv}</p>}
                 </div>
                 <div className={sectionCls}>
-                  <label className={labelCls}>Serves <span className="text-destructive">*</span></label>
-                  <input
-                    type="number"
-                    min={1}
-                    value={form.serves}
-                    onChange={e => set('serves', e.target.value)}
-                    className={errors.serves ? inputErrCls : inputCls}
-                    placeholder="1"
-                    data-error={!!errors.serves}
-                  />
-                  {errors.serves && <p className={errorCls}>{errors.serves}</p>}
-                </div>
-              </div>
-            )}
-            {form.category === 'non-alcoholic' && (
-              <div className={sectionCls}>
-                <label className={labelCls}>Serves <span className="text-destructive">*</span></label>
+                   <label className={labelCls}>Porții <span className="text-destructive">*</span></label>
+                   <input
+                     type="number"
+                     min={1}
+                     value={form.serves}
+                     onChange={e => set('serves', e.target.value)}
+                     className={errors.serves ? inputErrCls : inputCls}
+                     placeholder="1"
+                     data-error={!!errors.serves}
+                   />
+                   {errors.serves && <p className={errorCls}>{errors.serves}</p>}
+                 </div>
+               </div>
+             )}
+             {form.category === 'non-alcoholic' && (
+               <div className={sectionCls}>
+                 <label className={labelCls}>Porții <span className="text-destructive">*</span></label>
                 <input
                   type="number"
                   min={1}
@@ -447,7 +447,7 @@ function SubmitCocktailPageContent() {
 
           {/* ── Difficulty ── */}
           <div className={sectionCls}>
-            <label className={labelCls}>Difficulty</label>
+             <label className={labelCls}>Dificultate</label>
             <div className="flex gap-2">
               {DIFFICULTY_OPTIONS.map(opt => (
                 <button
@@ -470,30 +470,30 @@ function SubmitCocktailPageContent() {
           {/* ── Glassware + Garnish ── */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className={sectionCls}>
-              <label className={labelCls}>Glassware <span className="text-muted-foreground text-xs font-normal">(optional)</span></label>
+               <label className={labelCls}>Pahar <span className="text-muted-foreground text-xs font-normal">(opțional)</span></label>
               <input
                 type="text"
                 value={form.glassware}
                 onChange={e => set('glassware', e.target.value)}
                 className={inputCls}
-                placeholder="e.g. Coupe, Rocks glass"
+                placeholder="ex. Coupe, pahar rocks"
               />
             </div>
             <div className={sectionCls}>
-              <label className={labelCls}>Garnish <span className="text-muted-foreground text-xs font-normal">(optional)</span></label>
+              <label className={labelCls}>Garnitură <span className="text-muted-foreground text-xs font-normal">(opțional)</span></label>
               <input
                 type="text"
                 value={form.garnish}
                 onChange={e => set('garnish', e.target.value)}
                 className={inputCls}
-                placeholder="e.g. Orange twist, Mint sprig"
+                placeholder="ex. Coajă de portocală, crenguță de mentă"
               />
             </div>
           </div>
 
           {/* ── Tags ── */}
           <div className={sectionCls}>
-            <label className={labelCls}>Tags <span className="text-muted-foreground text-xs font-normal">(optional — pick up to 5)</span></label>
+             <label className={labelCls}>Etichete <span className="text-muted-foreground text-xs font-normal">(opțional — alege până la 5)</span></label>
             <div className="flex flex-wrap gap-1.5">
               {COCKTAIL_TAGS.map(tag => {
                 const active = form.tags.includes(tag)
@@ -519,13 +519,13 @@ function SubmitCocktailPageContent() {
 
           {/* ── Ingredients ── */}
           <div className={sectionCls}>
-            <label className={labelCls}>Ingredients <span className="text-destructive">*</span></label>
-             <div className="flex items-center gap-2 mb-1">
+             <label className={labelCls}>Ingrediente <span className="text-destructive">*</span></label>
+              <div className="flex items-center gap-2 mb-1">
                <span className="w-5 flex-shrink-0" />
-               <span className="w-16 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground text-center">Qty</span>
-               <span className="w-24 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground text-center">Unit</span>
+               <span className="w-16 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground text-center">Cant.</span>
+               <span className="w-24 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground text-center">Unitate</span>
                <span className="flex-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Ingredient</span>
-             </div>
+              </div>
             <div className="space-y-2">
               {form.ingredients.map((ing, idx) => (
                  <div key={idx} className="flex items-center gap-2">
@@ -543,7 +543,7 @@ function SubmitCocktailPageContent() {
                      className="w-24 flex-shrink-0 rounded-lg border border-border bg-background px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40 focus:border-ring"
                    >
                     {UNITS.map(u => (
-                      <option key={u} value={u}>{u === '' ? '— unit —' : u}</option>
+                       <option key={u} value={u}>{u === '' ? '— unitate —' : u}</option>
                     ))}
                   </select>
                   <input
@@ -551,7 +551,7 @@ function SubmitCocktailPageContent() {
                     value={ing.name}
                     onChange={e => updateIngredient(idx, 'name', e.target.value)}
                     className={`flex-1 ${inputCls}`}
-                    placeholder={idx === 0 ? 'Gin' : idx === 1 ? 'Sweet vermouth' : ''}
+                     placeholder={idx === 0 ? 'Gin' : idx === 1 ? 'Vermut dulce' : ''}
                   />
                   {form.ingredients.length > 1 && (
                     <button
@@ -574,7 +574,7 @@ function SubmitCocktailPageContent() {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
-                Add ingredient
+                 Adaugă ingredient
               </button>
             </div>
             {errors.ingredients && <p className={errorCls} data-error="true">{errors.ingredients}</p>}
@@ -582,7 +582,7 @@ function SubmitCocktailPageContent() {
 
           {/* ── Steps / Method ── */}
           <div className={sectionCls}>
-            <label className={labelCls}>Method <span className="text-destructive">*</span></label>
+             <label className={labelCls}>Metodă <span className="text-destructive">*</span></label>
             <div className="space-y-3">
               {form.steps.map((step, idx) => (
                 <div key={idx} className="flex items-start gap-2">
@@ -594,7 +594,7 @@ function SubmitCocktailPageContent() {
                     onChange={e => updateStep(idx, e.target.value)}
                     rows={2}
                     className={`flex-1 ${inputCls}`}
-                    placeholder={idx === 0 ? 'Add all ingredients to a mixing glass with ice...' : ''}
+                     placeholder={idx === 0 ? 'Adaugă toate ingredientele în paharul de amestec cu gheață...' : ''}
                   />
                   {form.steps.length > 1 && (
                     <button
@@ -617,7 +617,7 @@ function SubmitCocktailPageContent() {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
-                Add step
+                 Adaugă pas
               </button>
             </div>
             {errors.steps && <p className={errorCls} data-error="true">{errors.steps}</p>}
@@ -625,16 +625,16 @@ function SubmitCocktailPageContent() {
 
           {/* ── Actions ── */}
           <div className="flex flex-wrap items-center gap-3 pt-4 border-t">
-            <Button onClick={handleSubmit} disabled={saving}>
-              {saving ? 'Publishing...' : '🍹 Publish Cocktail'}
-            </Button>
-            <Button variant="outline" onClick={() => setShowPreview(true)}>
-              Preview
-            </Button>
-            <div className="flex-1" />
-            <Link href="/cocktailbooks" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Cancel
-            </Link>
+             <Button onClick={handleSubmit} disabled={saving}>
+               {saving ? 'Se publică...' : '🍹 Publică cocktailul'}
+             </Button>
+             <Button variant="outline" onClick={() => setShowPreview(true)}>
+               Previzualizare
+             </Button>
+             <div className="flex-1" />
+             <Link href="/cocktailbooks" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+               Anulează
+             </Link>
           </div>
 
         </div>
@@ -647,7 +647,7 @@ export default function SubmitCocktailPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center" style={{ background: '#dde3ee' }}>
-        <div className="text-muted-foreground">Loading...</div>
+        <div className="text-muted-foreground">Se încarcă...</div>
       </div>
     }>
       <SubmitCocktailPageContent />

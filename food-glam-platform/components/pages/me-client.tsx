@@ -85,7 +85,7 @@ export default function MeClientPage() {
         </div>
         {user && (
           <div className="mt-2 text-sm">
-            Signed in as <strong>{user.email || user.user_metadata?.full_name || user.id}</strong>
+            Autentificat ca <strong>{user.email || user.user_metadata?.full_name || user.id}</strong>
           </div>
         )}
       </section>
@@ -151,32 +151,32 @@ export default function MeClientPage() {
           <div className="grid grid-cols-2 gap-2">
             {healthMode && (
               <Link href="/health" className="rounded-lg border p-3 hover:bg-muted transition-colors text-sm font-medium text-center">
-                🏥 Health Goals
+                🏥 Obiective sănătate
               </Link>
             )}
             {powerMode && (
               <Link href="/advanced" className="rounded-lg border p-3 hover:bg-muted transition-colors text-sm font-medium text-center">
-                ⚡ Power Features
+                ⚡ Funcții avansate
               </Link>
             )}
             {powerMode && (
               <Link href="/pantry" className="rounded-lg border p-3 hover:bg-muted transition-colors text-sm font-medium text-center">
-                🥫 Pantry
+                🥫 Cămară
               </Link>
             )}
             {powerMode && (
               <Link href="/nutrition-engine" className="rounded-lg border p-3 hover:bg-muted transition-colors text-sm font-medium text-center">
-                🔬 Nutrition Engine
+                🔬 Motor nutrițional
               </Link>
             )}
             {powerMode && (
               <Link href="/food-logging" className="rounded-lg border p-3 hover:bg-muted transition-colors text-sm font-medium text-center">
-                📓 Food Log
+                📓 Jurnal alimentar
               </Link>
             )}
             {powerMode && (
               <Link href="/hydration" className="rounded-lg border p-3 hover:bg-muted transition-colors text-sm font-medium text-center">
-                💧 Hydration
+                💧 Hidratare
               </Link>
             )}
           </div>
@@ -187,16 +187,16 @@ export default function MeClientPage() {
          <h2 className="text-xl font-bold">Setări</h2>
         <div className="grid grid-cols-2 gap-2">
           <Link href="/me/settings/budget" className="rounded-lg border p-3 hover:bg-muted transition-colors text-sm font-medium text-center">
-            💰 Budget
+            💰 Buget
           </Link>
           <Link href="/allergies" className="rounded-lg border p-3 hover:bg-muted transition-colors text-sm font-medium text-center">
-            ⚠️ Allergies
+            ⚠️ Alergii
           </Link>
           <Link href="/habits" className="rounded-lg border p-3 hover:bg-muted transition-colors text-sm font-medium text-center">
-            📅 Habits
+            📅 Obiceiuri
           </Link>
           <Link href="/privacy" className="rounded-lg border p-3 hover:bg-muted transition-colors text-sm font-medium text-center">
-            🔒 Privacy
+            🔒 Confidențialitate
           </Link>
         </div>
        </section>
@@ -232,7 +232,7 @@ export default function MeClientPage() {
        </section>
 
         <section>
-          <h2 className="text-xl font-bold mb-2">Onboarding</h2>
+           <h2 className="text-xl font-bold mb-2">Configurare inițială</h2>
          <p className="text-muted-foreground text-sm mb-3">Stabilește preferințele tale de gust, alergii și obiective dietetice.</p>
          <button className="bg-secondary text-secondary-foreground px-4 py-2 rounded font-medium hover:bg-secondary/80 transition-colors text-sm">
            Începe onboarding-ul
