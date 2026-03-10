@@ -1,0 +1,35 @@
+import { createServiceSupabaseClient } from '@/lib/supabase-server'
+import { getRequestUser, RequestUser } from '@/lib/get-user'
+
+/**
+ * Resolves admin access. In development, any authenticated mock user is
+ * granted admin — no DB role check needed. In production, requires either
+ * an app_roles entry ('admin' or 'moderator') or profiles.is_moderator = true.
+ */
+export async function requireAdmin(req: Request): Promise<RequestUser | null> {
+  const supabase = createServiceSupabaseClient()
+  const user = await getRequestUser(req, supabase)
+  if (!user) return null
+
+  // In development, grant admin to any resolved mock user — no DB check needed
+  if (process.env.NODE_ENV === 'development') return user
+
+  // Production: check app_roles table first
+  const { data: roles } = await supabase
+    .from('app_roles')
+    .select('role')
+    .eq('user_id', user.id)
+    .in('role', ['admin', 'moderator'])
+    .limit(1)
+  if (roles && roles.length > 0) return user
+
+  // Production fallback: check profiles.is_moderator
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('is_moderator')
+    .eq('id', user.id)
+    .single()
+  if (profile?.is_moderator) return user
+
+  return null
+}

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from 'next/image'
 import { useFeatureFlags } from "@/components/feature-flags-provider";
+import { useTheme } from "@/components/theme-provider";
 import { supabase } from "@/lib/supabase-client";
 import SignInButton from "@/components/auth/signin-button";
 import Link from "next/link";
@@ -11,6 +12,7 @@ interface MockUser { id: string; display_name: string; handle: string; avatar_ur
 
 export default function MeClientPage() {
   const { flags, loading, setOverride } = useFeatureFlags();
+  const { theme, setTheme } = useTheme();
   const healthMode = !!flags.healthMode;
   const powerMode = !!flags.powerMode;
 
@@ -197,10 +199,40 @@ export default function MeClientPage() {
             🔒 Privacy
           </Link>
         </div>
-      </section>
+       </section>
 
-       <section>
-         <h2 className="text-xl font-bold mb-2">Onboarding</h2>
+       {/* Theme section */}
+       <section className="rounded-2xl p-5" style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.08)' }}>
+         <h2 className="font-semibold text-base mb-4" style={{ color: '#111' }}>Aspect</h2>
+         <div className="flex gap-3">
+           <button
+             onClick={() => setTheme('dark')}
+             className="flex-1 flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all"
+             style={{
+               borderColor: theme === 'dark' ? '#7c3aed' : 'rgba(0,0,0,0.08)',
+               background: theme === 'dark' ? 'rgba(124,58,237,0.08)' : '#f9f9f9',
+             }}
+           >
+             <span style={{ fontSize: 28 }}>🌙</span>
+             <span className="text-sm font-semibold" style={{ color: theme === 'dark' ? '#7c3aed' : '#666' }}>Întunecat</span>
+           </button>
+           <button
+             onClick={() => setTheme('light')}
+             className="flex-1 flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all"
+             style={{
+               borderColor: theme === 'light' ? '#7c3aed' : 'rgba(0,0,0,0.08)',
+               background: theme === 'light' ? 'rgba(124,58,237,0.08)' : '#f9f9f9',
+             }}
+           >
+             <span style={{ fontSize: 28 }}>☀️</span>
+             <span className="text-sm font-semibold" style={{ color: theme === 'light' ? '#7c3aed' : '#666' }}>Luminos</span>
+           </button>
+         </div>
+         <p className="text-xs mt-3" style={{ color: '#999' }}>Preferința este salvată local în browser.</p>
+       </section>
+
+        <section>
+          <h2 className="text-xl font-bold mb-2">Onboarding</h2>
          <p className="text-muted-foreground text-sm mb-3">Stabilește preferințele tale de gust, alergii și obiective dietetice.</p>
          <button className="bg-secondary text-secondary-foreground px-4 py-2 rounded font-medium hover:bg-secondary/80 transition-colors text-sm">
            Începe onboarding-ul

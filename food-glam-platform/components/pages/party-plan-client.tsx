@@ -224,16 +224,49 @@ export default function PartyPlanClient() {
   const [searchResults, setSearchResults] = useState<CocktailData[]>([])
   const [searchLoading, setSearchLoading] = useState(false)
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount, then re-hydrate any cocktails missing recipe_json
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('party-plan-state')
-      if (saved) {
-        setState(JSON.parse(saved))
+    async function loadAndHydrate() {
+      try {
+        const saved = localStorage.getItem('party-plan-state')
+        if (!saved) return
+
+        const parsed: PartyPlanState = JSON.parse(saved)
+
+        // Detect cocktails that are missing ingredients (saved before API fix)
+        const stale = parsed.cocktails.filter(
+          (item) => !item.cocktail.recipe_json?.ingredients?.length
+        )
+
+        if (stale.length === 0) {
+          setState(parsed)
+          return
+        }
+
+        // Re-fetch full data for stale cocktails by their slugs
+        const hydrated = await Promise.all(
+          parsed.cocktails.map(async (item) => {
+            if (item.cocktail.recipe_json?.ingredients?.length) return item
+            try {
+              const res = await fetch(
+                `/api/search/cocktails?q=${encodeURIComponent(item.cocktail.slug)}&per_page=5`
+              )
+              const data = await res.json()
+              const fresh = (data.cocktails || []).find(
+                (c: CocktailData) => c.slug === item.cocktail.slug || c.id === item.cocktail.id
+              )
+              if (fresh) return { ...item, cocktail: fresh }
+            } catch { /* keep stale on error */ }
+            return item
+          })
+        )
+
+        setState({ ...parsed, cocktails: hydrated })
+      } catch (e) {
+        console.error('Failed to load party plan state:', e)
       }
-    } catch (e) {
-      console.error('Failed to load party plan state:', e)
     }
+    loadAndHydrate()
   }, [])
 
   // Save to localStorage whenever state changes

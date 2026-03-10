@@ -225,6 +225,28 @@ function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void 
    MAIN COMPONENT
 ═══════════════════════════════════════════════════════════════════════════ */
 
+function getMockUserId(): string {
+  try {
+    const raw = typeof window !== "undefined" ? localStorage.getItem("mock_user") : null
+    if (raw) {
+      const parsed = JSON.parse(raw)
+      return parsed.id || "a0000000-0000-0000-0000-000000000001"
+    }
+  } catch { /* ignore */ }
+  return "a0000000-0000-0000-0000-000000000001"
+}
+
+function adminFetch(url: string, options: RequestInit = {}): Promise<Response> {
+  return fetch(url, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      "x-mock-user-id": getMockUserId(),
+      ...(options.headers || {}),
+    },
+  })
+}
+
 export default function AdminClient() {
   const [tab, setTab] = useState<AdminTab>('dashboard')
   const [stats, setStats] = useState<Stats | null>(null)
@@ -265,7 +287,7 @@ export default function AdminClient() {
   /* fetch reports from API */
   useEffect(() => {
     if (tab !== 'reports') return
-    fetch('/api/reports?status=open')
+    adminFetch('/api/reports?status=open')
       .then(r => r.json())
       .then(data => {
         const mapped = (data.reports || []).map((r: { id: string; entity_type: string; entity_id: string; reporter_id: string; category: string; details: string | null; status: string; created_at: string }) => ({
@@ -335,7 +357,7 @@ export default function AdminClient() {
 
   /* ── fetch stats ── */
   useEffect(() => {
-    fetch('/api/admin/stats').then(r => r.json()).then(setStats).catch(() => {})
+    adminFetch('/api/admin/stats').then(r => r.json()).then(setStats).catch(() => {})
   }, [])
 
   /* ── fetch content ── */
@@ -391,19 +413,19 @@ export default function AdminClient() {
   useEffect(() => {
     if (tab !== 'analytics') return
     setAnalyticsLoading(true)
-    fetch('/api/admin/analytics').then(r => r.json()).then(setAnalytics).catch(() => {}).finally(() => setAnalyticsLoading(false))
+    adminFetch('/api/admin/analytics').then(r => r.json()).then(setAnalytics).catch(() => {}).finally(() => setAnalyticsLoading(false))
   }, [tab])
 
   /* ── fetch sanctions ── */
   useEffect(() => {
     if (tab !== 'users') return
-    fetch('/api/admin/sanctions').then(r => r.json()).then(d => setSanctions(d.sanctions || [])).catch(() => {})
+    adminFetch('/api/admin/sanctions').then(r => r.json()).then(d => setSanctions(d.sanctions || [])).catch(() => {})
   }, [tab])
 
   /* ── content actions ── */
   const setContentStatus = useCallback(async (ids: string[], status: ContentStatus) => {
     try {
-      await fetch('/api/admin/content', {
+      await adminFetch('/api/admin/content', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: ids, status }),
@@ -423,7 +445,7 @@ export default function AdminClient() {
       onConfirm: async () => {
         setConfirm(null)
         try {
-          await fetch('/api/admin/content', {
+          await adminFetch('/api/admin/content', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id: ids }),
@@ -449,7 +471,7 @@ export default function AdminClient() {
       onConfirm: async () => {
         setConfirm(null)
         try {
-          await fetch('/api/admin/chefs', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status }) })
+          await adminFetch('/api/admin/chefs', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status }) })
           showToast(`Chef ${verb.toLowerCase()}d`)
           addAudit(`Chef ${status}`, chef?.display_name ?? id, `Status → ${status}`, status === 'banned' ? 'danger' : status === 'suspended' ? 'warn' : 'info')
           fetchChefs()
@@ -460,7 +482,7 @@ export default function AdminClient() {
 
   const setChefTier = useCallback(async (id: string, tier: 'pro' | 'amateur' | 'user') => {
     const chef = chefs.find(c => c.id === id)
-    await fetch('/api/admin/chefs', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, tier }) })
+    await adminFetch('/api/admin/chefs', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, tier }) })
     setChefs(prev => prev.map(c => c.id === id ? { ...c, tier } : c))
     showToast('Tier updated')
     addAudit('Tier changed', chef?.display_name ?? id, `→ ${tier}`, 'info')
@@ -490,7 +512,7 @@ export default function AdminClient() {
 
   const saveChefNotes = useCallback(async (id: string, notes: string) => {
     try {
-      await fetch('/api/admin/chefs', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, notes }) })
+      await adminFetch('/api/admin/chefs', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, notes }) })
       showToast('Notes saved'); setEditingChef(null); fetchChefs()
     } catch { showToast('Save failed', 'error') }
   }, [fetchChefs, showToast])
@@ -499,7 +521,7 @@ export default function AdminClient() {
     if (!bulkChefTier || selectedChefs.size === 0) return
     const tier = bulkChefTier as 'pro' | 'amateur' | 'user'
     await Promise.all(Array.from(selectedChefs).map(id =>
-      fetch('/api/admin/chefs', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, tier }) })
+      adminFetch('/api/admin/chefs', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, tier }) })
     ))
     setChefs(prev => prev.map(c => selectedChefs.has(c.id) ? { ...c, tier } : c))
     showToast(`${selectedChefs.size} chefs set to "${tier}"`)
@@ -520,7 +542,7 @@ export default function AdminClient() {
       onConfirm: async () => {
         setConfirm(null)
         try {
-          await fetch('/api/admin/users', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status }) })
+          await adminFetch('/api/admin/users', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status }) })
           showToast(`User ${status === 'active' ? 'restored' : status}`)
           addAudit(`User ${status}`, user?.display_name ?? id, `Status → ${status}`, status === 'deleted' ? 'danger' : status === 'blocked' ? 'warn' : 'info')
           fetchUsers()
@@ -532,7 +554,7 @@ export default function AdminClient() {
   const promoteUser = useCallback(async (userId: string, tier: 'amateur' | 'pro') => {
     const user = users.find(u => u.id === userId)
     try {
-      await fetch('/api/admin/users', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: userId, tier }) })
+      await adminFetch('/api/admin/users', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: userId, tier }) })
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, tier } : u))
       showToast(`${user?.display_name ?? 'User'} promoted to ${tier} chef!`)
       addAudit('User promoted', user?.display_name ?? userId, `→ ${tier} chef`, 'info')
@@ -547,7 +569,7 @@ export default function AdminClient() {
       onConfirm: async () => {
         setConfirm(null)
         await Promise.all(Array.from(selectedUsers).map(id =>
-          fetch('/api/admin/users', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status: 'blocked' }) })
+          adminFetch('/api/admin/users', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status: 'blocked' }) })
         ))
         showToast(`${selectedUsers.size} users blocked`)
         addAudit('Bulk block', `${selectedUsers.size} users`, '', 'danger')
@@ -559,7 +581,7 @@ export default function AdminClient() {
 
   const saveUserNotes = useCallback(async (id: string, notes: string) => {
     try {
-      await fetch('/api/admin/users', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, notes }) })
+      await adminFetch('/api/admin/users', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, notes }) })
       showToast('Notes saved'); setEditingUser(null); fetchUsers()
     } catch { showToast('Save failed', 'error') }
   }, [fetchUsers, showToast])
@@ -567,7 +589,7 @@ export default function AdminClient() {
   /* ── report actions ── */
   const dismissReport = useCallback(async (id: string, title: string) => {
     try {
-      await fetch('/api/reports', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status: 'closed' }) })
+      await adminFetch('/api/reports', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status: 'closed' }) })
     } catch { /* ignore */ }
     setReports(prev => prev.map(r => r.id === id ? { ...r, status: 'dismissed' as const } : r))
     showToast('Raport respins', 'info')
@@ -603,7 +625,7 @@ export default function AdminClient() {
       onConfirm: async () => {
         setConfirm(null)
         try {
-          await fetch('/api/admin/sanctions', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
+          await adminFetch('/api/admin/sanctions', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
           setSanctions(prev => prev.filter(s => s.id !== id))
           showToast(`Sancțiune revocată pentru ${userName}`)
           addAudit('Sancțiune revocată', userName, '', 'info')

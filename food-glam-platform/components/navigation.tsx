@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter, usePathname } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
+import { useTheme } from '@/components/theme-provider'
 
 /* ─── nav items ──────────────────────────────────────────────────────────── */
 
@@ -83,6 +84,7 @@ export function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchVal, setSearchVal] = useState('')
   const searchRef = useRef<HTMLInputElement>(null)
+  const { theme, toggleTheme } = useTheme()
 
   /* close mobile menu on route change */
   useEffect(() => { setMobileOpen(false) }, [pathname])
@@ -171,6 +173,14 @@ export function Navigation() {
 
           {/* Auth area */}
           <div className="flex-shrink-0 flex items-center gap-3">
+            <button
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? 'Activează tema luminoasă' : 'Activează tema întunecoasă'}
+              className="w-8 h-8 rounded-full flex items-center justify-center transition-all"
+              style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', fontSize: 16 }}
+            >
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </button>
             {hydrated && user ? (
               <>
                 <Link
@@ -311,6 +321,16 @@ export function Navigation() {
             </Link>
           ))}
           <div className="px-5 pt-3 mt-1" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm" style={{ color: '#888' }}>Temă</span>
+              <button
+                onClick={toggleTheme}
+                className="text-xs px-3 py-1.5 rounded-full transition-all"
+                style={{ background: 'rgba(255,255,255,0.07)', color: '#ccc', border: '1px solid rgba(255,255,255,0.1)' }}
+              >
+                {theme === 'dark' ? '☀️ Luminoasă' : '🌙 Întunecată'}
+              </button>
+            </div>
             {hydrated && user ? (
                <div className="flex items-center justify-between">
                  <span className="text-sm" style={{ color: '#888' }}>{user.display_name}</span>

@@ -1,34 +1,9 @@
+import { requireAdmin } from '@/lib/require-admin'
 import { NextResponse } from 'next/server'
 import { createServiceSupabaseClient } from '@/lib/supabase-server'
-import { getRequestUser } from '@/lib/get-user'
 
 type UserStatus = 'active' | 'warned' | 'blocked' | 'deleted'
 
-async function requireAdmin(req: Request) {
-  const supabase = createServiceSupabaseClient()
-  const user = await getRequestUser(req, supabase)
-  if (!user) return null
-  
-  // Check app_roles for admin/moderator
-  const { data: roles } = await supabase
-    .from('app_roles')
-    .select('role')
-    .eq('user_id', user.id)
-    .in('role', ['admin', 'moderator'])
-    .limit(1)
-  
-  if (roles && roles.length > 0) return user
-  
-  // Fallback: check is_moderator flag
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('is_moderator')
-    .eq('id', user.id)
-    .single()
-  
-  if (profile?.is_moderator) return user
-  return null
-}
 
 function mapSanctionToStatus(sanctions: any[]): UserStatus {
   if (!sanctions || sanctions.length === 0) return 'active'

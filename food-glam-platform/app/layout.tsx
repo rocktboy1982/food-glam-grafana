@@ -5,6 +5,7 @@ import Script from 'next/script'
 import '@/styles/globals.css'
 import { Navigation } from '@/components/navigation'
 import { FeatureFlagsProvider } from '@/components/feature-flags-provider'
+import { ThemeProvider } from '@/components/theme-provider'
 import FeatureFlagPanel from '@/components/dev/feature-flag-panel'
 import CookieConsent from '@/components/CookieConsent'
 import ToastClient from '@/components/ui/toast-client'
@@ -70,7 +71,7 @@ export default function RootLayout({
   // ...existing code...
   return (
     <html lang="ro">
-      <body className={inter.className} style={{ background: '#0d0d0d' }}>
+      <body className={inter.className}>
         {/* Google AdSense — loaded once globally, ad units push() individually */}
         {ADS_ENABLED && process.env.NODE_ENV === 'production' && (
           <Script
@@ -80,14 +81,16 @@ export default function RootLayout({
             strategy="afterInteractive"
           />
         )}
-        <FeatureFlagsProvider>
-          <ToastClient>
-            <Navigation />
-            {children}
-            <CookieConsent />
-            {process.env.NODE_ENV !== 'production' && <FeatureFlagPanel />}
-          </ToastClient>
-        </FeatureFlagsProvider>
+        <ThemeProvider>
+          <FeatureFlagsProvider>
+            <ToastClient>
+              <Navigation />
+              {children}
+              <CookieConsent />
+              {process.env.NODE_ENV !== 'production' && <FeatureFlagPanel />}
+            </ToastClient>
+          </FeatureFlagsProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
