@@ -26,10 +26,10 @@ interface BudgetPrefs {
 }
 
 const BUDGET_META: Record<BudgetTier, { label: string; color: string; bg: string; desc: string }> = {
-  budget:  { label: '💚 Budget',  color: '#1b5e20', bg: '#e8f5e9', desc: 'Lowest price · Kaufland → Bringo → Glovo' },
-  normal:  { label: '💛 Normal',  color: '#5d4037', bg: '#fff8e1', desc: 'Price + convenience · Bringo → Carrefour → Freshful' },
-  premium: { label: '💜 Premium', color: '#4a148c', bg: '#f3e5f5', desc: 'Best quality · Freshful → Carrefour → Bringo' },
-}
+   budget:  { label: '💚 Budget',  color: '#1b5e20', bg: '#e8f5e9', desc: 'Preț minim · Kaufland → Bringo → Glovo' },
+   normal:  { label: '💛 Normal',  color: '#5d4037', bg: '#fff8e1', desc: 'Preț + comoditate · Bringo → Carrefour → Freshful' },
+   premium: { label: '💜 Premium', color: '#4a148c', bg: '#f3e5f5', desc: 'Cea mai bună calitate · Freshful → Carrefour → Bringo' },
+ }
 
 const BG = '#dde3ee'
 
@@ -124,7 +124,7 @@ export default function GroceryDashboardClient() {
       <main style={{ background: BG, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center', color: '#555' }}>
           <div style={{ width: 32, height: 32, border: '3px solid #ccc', borderTopColor: '#555', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
-          Loading…
+           Se încarcă…
         </div>
         <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       </main>
@@ -144,18 +144,18 @@ export default function GroceryDashboardClient() {
         <button
           onClick={() => router.back()}
           style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', color: '#555', fontSize: 14, padding: '8px 0', marginBottom: 12, minHeight: 44 }}
-        >
-          ← Back
-        </button>
+         >
+           ← Înapoi
+         </button>
 
-        <h1 style={{ fontSize: 26, fontWeight: 700, margin: '0 0 2px' }}>🛒 Grocery Shop</h1>
+        <h1 style={{ fontSize: 26, fontWeight: 700, margin: '0 0 2px' }}>🛒 Magazin de alimente</h1>
         <p style={{ color: '#666', fontSize: 14, margin: '0 0 20px' }}>
-          Send your shopping list to a store, optimised for your budget.
+          Trimite lista de cumpărături la un magazin, optimizată pentru bugetul tău.
         </p>
 
         {fromScan && (
           <div style={{ background: '#e8f0fe', borderRadius: 12, padding: '12px 16px', marginBottom: 16, fontSize: 13, color: '#1a56db', display: 'flex', alignItems: 'center', gap: 8 }}>
-            📷 <span>Came from a scan — pick a list below to order missing ingredients.</span>
+             📷 <span>Vii de la o scanare — alege o listă de mai jos pentru a comanda ingredientele lipsă.</span>
           </div>
         )}
 
@@ -173,10 +173,10 @@ export default function GroceryDashboardClient() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 18 }}>⚙️</span>
             <div style={{ textAlign: 'left' }}>
-              <div style={{ fontWeight: 600, fontSize: 14 }}>Store settings</div>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>Setări magazine</div>
               <div style={{ fontSize: 12, color: '#888', marginTop: 1 }}>
                 {noStoresSelected
-                  ? '⚠️ No stores selected — tap to choose'
+                  ? '⚠️ Niciun magazin selectat — atinge pentru a alege'
                   : `${budgetMeta.label} · ${activeVendorNames.join(', ')}`}
               </div>
             </div>
@@ -190,7 +190,7 @@ export default function GroceryDashboardClient() {
 
               {/* Budget selector */}
               <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#666', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>Budget Mode</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#666', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>Mod buget</div>
                 <div style={{ display: 'flex', gap: 7 }}>
                   {(Object.entries(BUDGET_META) as [BudgetTier, typeof BUDGET_META[BudgetTier]][]).map(([tier, meta]) => (
                     <button
@@ -216,7 +216,7 @@ export default function GroceryDashboardClient() {
 
               {/* Store selector */}
               <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#666', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>My Stores</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#666', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>Magazinele mele</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {(vendors ?? []).map(v => {
                     const active = activeVendorIds.has(v.id)
@@ -269,30 +269,30 @@ export default function GroceryDashboardClient() {
           }}
         >
           <span style={{ fontSize: 18 }}>📋</span>
-          <span style={{ flex: 1, textAlign: 'left', fontSize: 14, fontWeight: 500, color: '#333' }}>Order History</span>
+          <span style={{ flex: 1, textAlign: 'left', fontSize: 14, fontWeight: 500, color: '#333' }}>Istoric comenzi</span>
           <span style={{ color: '#888', fontSize: 14 }}>→</span>
         </button>
 
         {/* ── Shopping lists ───────────────────────────────────── */}
         <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h2 style={{ fontSize: 15, fontWeight: 600, margin: 0 }}>Your Lists</h2>
+          <h2 style={{ fontSize: 15, fontWeight: 600, margin: 0 }}>Listele tale</h2>
           <button
             onClick={() => router.push('/me/shopping-lists')}
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555', fontSize: 13, padding: '4px 0' }}
           >
-            Manage →
+            Administrează →
           </button>
         </div>
 
         {noStoresSelected && (
           <div style={{ background: '#fff3cd', borderRadius: 12, padding: '12px 16px', marginBottom: 12, fontSize: 13, color: '#856404', display: 'flex', alignItems: 'center', gap: 8 }}>
             <span>⚠️</span>
-            <span>Select at least one store above before sending a list.</span>
+            <span>Selectează cel puțin un magazin mai sus înainte de a trimite o listă.</span>
             <button
               onClick={() => setShowSetup(true)}
               style={{ marginLeft: 'auto', background: '#856404', color: '#fff', border: 'none', borderRadius: 7, padding: '5px 10px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
             >
-              Set up
+              Configurează
             </button>
           </div>
         )}
@@ -300,12 +300,12 @@ export default function GroceryDashboardClient() {
         {lists.length === 0 ? (
           <div style={{ background: '#fff', borderRadius: 14, padding: '28px 20px', textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.07)' }}>
             <div style={{ fontSize: 36, marginBottom: 8 }}>📋</div>
-            <p style={{ color: '#888', fontSize: 14, marginBottom: 12 }}>No shopping lists yet.</p>
+            <p style={{ color: '#888', fontSize: 14, marginBottom: 12 }}>Nicio listă de cumpărături încă.</p>
             <button
               onClick={() => router.push('/me/shopping-lists')}
               style={{ background: '#111', color: '#fff', border: 'none', borderRadius: 9, padding: '11px 20px', fontSize: 14, fontWeight: 600, cursor: 'pointer', minHeight: 44 }}
             >
-              Create a list
+              Creează o listă
             </button>
           </div>
         ) : (
@@ -333,9 +333,9 @@ export default function GroceryDashboardClient() {
                     whiteSpace: 'nowrap', minHeight: 40,
                     transition: 'background 0.15s',
                   }}
-                  title={noStoresSelected ? 'Select a store first' : undefined}
+                  title={noStoresSelected ? 'Selectează un magazin mai întâi' : undefined}
                 >
-                  Send →
+                  Trimite →
                 </button>
               </div>
             ))}

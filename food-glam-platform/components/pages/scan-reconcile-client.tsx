@@ -53,11 +53,11 @@ export default function ScanReconcileClient({ sessionId }: { sessionId: string }
       })
       if (!res.ok) {
         const d = await res.json()
-        throw new Error(d.error ?? 'Reconcile failed')
+        throw new Error(d.error ?? 'Reconcilierea a eșuat')
       }
       setResult(await res.json())
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong')
+       setError(e instanceof Error ? e.message : 'Ceva a mers greșit')
     } finally {
       setReconciling(false)
     }
@@ -68,7 +68,7 @@ export default function ScanReconcileClient({ sessionId }: { sessionId: string }
       <main style={{ background: BG, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ color: '#555', textAlign: 'center' }}>
           <div style={{ width: 32, height: 32, border: '3px solid #ccc', borderTopColor: '#555', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
-          Loading…
+           Se încarcă…
         </div>
         <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       </main>
@@ -88,13 +88,13 @@ export default function ScanReconcileClient({ sessionId }: { sessionId: string }
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
             }}
-            aria-label="Back"
-          >
-            ←
-          </button>
-          <div>
-            <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>✅ Update Shopping List</h1>
-            <p style={{ color: '#555', fontSize: 13, margin: '2px 0 0' }}>Cross off ingredients you already have.</p>
+            aria-label="Înapoi"
+           >
+             ←
+           </button>
+           <div>
+             <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>✅ Actualizează Lista de Cumpărături</h1>
+             <p style={{ color: '#555', fontSize: 13, margin: '2px 0 0' }}>Bifează ingredientele pe care le ai deja.</p>
           </div>
         </div>
 
@@ -110,17 +110,17 @@ export default function ScanReconcileClient({ sessionId }: { sessionId: string }
             {lists.length === 0 ? (
               <div style={{ background: '#fff', borderRadius: 16, padding: 24, textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}>
                 <div style={{ fontSize: 36, marginBottom: 8 }}>📋</div>
-                <p style={{ color: '#888', fontSize: 14, marginBottom: 12 }}>No shopping lists found.</p>
-                <button
-                  onClick={() => router.push('/me/shopping-lists')}
-                  style={{ background: '#111', color: '#fff', border: 'none', borderRadius: 8, padding: '10px 20px', fontSize: 14, cursor: 'pointer' }}
-                >
-                  Create a list
+                 <p style={{ color: '#888', fontSize: 14, marginBottom: 12 }}>Nicio listă de cumpărături găsită.</p>
+                 <button
+                   onClick={() => router.push('/me/shopping-lists')}
+                   style={{ background: '#111', color: '#fff', border: 'none', borderRadius: 8, padding: '10px 20px', fontSize: 14, cursor: 'pointer' }}
+                 >
+                   Creează o listă
                 </button>
               </div>
             ) : (
               <section style={{ background: '#fff', borderRadius: 16, padding: 20, marginBottom: 20, boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}>
-                <h2 style={{ fontSize: 15, fontWeight: 600, margin: '0 0 12px' }}>Choose a list</h2>
+                <h2 style={{ fontSize: 15, fontWeight: 600, margin: '0 0 12px' }}>Alege o listă</h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {lists.map(list => (
                     <div
@@ -160,7 +160,7 @@ export default function ScanReconcileClient({ sessionId }: { sessionId: string }
                 boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
               }}
             >
-              {reconciling ? '⏳ Updating…' : '✅ Cross off matched items'}
+              {reconciling ? '⏳ Se actualizează…' : '✅ Bifează articolele potrivite'}
             </button>
           </>
         )}
@@ -174,8 +174,8 @@ export default function ScanReconcileClient({ sessionId }: { sessionId: string }
             {result.matched.length > 0 && (
               <div style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: '#555', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 8 }}>
-                  Matched
-                </div>
+                   Potrivite
+                 </div>
                 {result.matched.map((m, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: '1px solid #f0f0f0' }}>
                     <span style={{ color: '#1a7f37', fontSize: 16 }}>✓</span>
@@ -191,8 +191,8 @@ export default function ScanReconcileClient({ sessionId }: { sessionId: string }
             {result.unmatched_ingredients.length > 0 && (
               <div style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 8 }}>
-                  Not found in list
-                </div>
+                   Nu a fost găsit în listă
+                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                   {result.unmatched_ingredients.map((ing, i) => (
                     <span key={i} style={{ padding: '3px 10px', borderRadius: 12, background: '#f5f5f5', fontSize: 12, color: '#666' }}>
@@ -208,21 +208,21 @@ export default function ScanReconcileClient({ sessionId }: { sessionId: string }
                 onClick={() => router.push(`/me/shopping-lists/${selectedListId}`)}
                 style={{
                   flex: 1, padding: '11px', borderRadius: 10,
-                  background: '#111', color: '#fff', border: 'none',
-                  fontSize: 14, fontWeight: 600, cursor: 'pointer',
-                }}
-              >
-                View list →
+                   background: '#111', color: '#fff', border: 'none',
+                   fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                 }}
+               >
+                 Vezi lista →
               </button>
               <button
                 onClick={() => router.push(`/me/scan/${sessionId}/review`)}
                 style={{
                   padding: '11px 16px', borderRadius: 10,
-                  background: '#f0f0f0', color: '#333', border: 'none',
-                  fontSize: 14, fontWeight: 600, cursor: 'pointer',
-                }}
-              >
-                ← Back to results
+                   background: '#f0f0f0', color: '#333', border: 'none',
+                   fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                 }}
+               >
+                 ← Înapoi la rezultate
               </button>
             </div>
           </section>

@@ -30,7 +30,7 @@ export default function ScanReviewClient({ sessionId }: { sessionId: string }) {
     // Fallback: the session data is in the server SESSION_STORE but not in sessionStorage
     // (e.g. user refreshed the page). We can't recover without an API endpoint that
     // reads a session by ID — so show a graceful error instead of crashing the merge API.
-    setError('Session expired. Please scan again to continue.')
+    setError('Sesiunea a expirat. Te rog scanează din nou pentru a continua.')
     setLoading(false)
   }, [sessionId])
 
@@ -39,7 +39,7 @@ export default function ScanReviewClient({ sessionId }: { sessionId: string }) {
       <main style={{ background: BG, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ color: '#555', textAlign: 'center' }}>
           <div style={{ width: 40, height: 40, border: '3px solid #ccc', borderTopColor: '#555', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 14px' }} />
-          <p style={{ fontSize: 15, fontWeight: 500 }}>Analysing your ingredients…</p>
+           <p style={{ fontSize: 15, fontWeight: 500 }}>Se analizează ingredientele tale…</p>
         </div>
         <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       </main>
@@ -51,15 +51,15 @@ export default function ScanReviewClient({ sessionId }: { sessionId: string }) {
       <main style={{ background: BG, minHeight: '100vh', padding: '32px 16px' }}>
         <div style={{ maxWidth: 480, margin: '0 auto', textAlign: 'center', paddingTop: 60 }}>
           <div style={{ fontSize: 52, marginBottom: 16 }}>⏱️</div>
-          <h2 style={{ fontSize: 20, fontWeight: 700, color: '#111', marginBottom: 8 }}>Session expired</h2>
-          <p style={{ color: '#666', fontSize: 14, marginBottom: 24 }}>
-            {error ?? 'We couldn\'t find your scan results. Please try again.'}
+           <h2 style={{ fontSize: 20, fontWeight: 700, color: '#111', marginBottom: 8 }}>Sesiunea a expirat</h2>
+           <p style={{ color: '#666', fontSize: 14, marginBottom: 24 }}>
+             {error ?? 'Nu am putut găsi rezultatele scanării tale. Te rog încearcă din nou.'}
           </p>
           <button
-            onClick={() => router.push('/me/scan')}
-            style={{ background: '#111', color: '#fff', border: 'none', borderRadius: 12, padding: '13px 28px', fontSize: 15, fontWeight: 600, cursor: 'pointer', minHeight: 48 }}
-          >
-            Scan again
+             onClick={() => router.push('/me/scan')}
+             style={{ background: '#111', color: '#fff', border: 'none', borderRadius: 12, padding: '13px 28px', fontSize: 15, fontWeight: 600, cursor: 'pointer', minHeight: 48 }}
+           >
+             Scanează din nou
           </button>
         </div>
       </main>
@@ -75,17 +75,17 @@ export default function ScanReviewClient({ sessionId }: { sessionId: string }) {
       <div style={{ maxWidth: 600, margin: '0 auto', padding: '20px 16px' }}>
 
         {/* Back */}
-        <button
-          onClick={() => router.push('/me/scan')}
-          style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', color: '#555', fontSize: 14, padding: '8px 0', marginBottom: 12, minHeight: 44 }}
-        >
-          ← New scan
-        </button>
+         <button
+           onClick={() => router.push('/me/scan')}
+           style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', color: '#555', fontSize: 14, padding: '8px 0', marginBottom: 12, minHeight: 44 }}
+         >
+           ← Scanare nouă
+         </button>
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 16 }}>
           <div>
-            <h1 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 4px' }}>✨ Found {ingredients.length} ingredient{ingredients.length !== 1 ? 's' : ''}</h1>
+             <h1 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 4px' }}>✨ Am găsit {ingredients.length} ingredient{ingredients.length !== 1 ? 'e' : ''}</h1>
             {result.confidence_overall > 0 && (
               <span style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
@@ -106,22 +106,22 @@ export default function ScanReviewClient({ sessionId }: { sessionId: string }) {
               padding: '8px 12px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
               color: '#333', whiteSpace: 'nowrap', minHeight: 40, flexShrink: 0,
             }}
-          >
-            📷 Add photo
-          </button>
+             >
+               📷 Adaugă fotografie
+             </button>
         </div>
 
         {/* Ingredients */}
         {ingredients.length === 0 ? (
           <section style={{ background: '#fff', borderRadius: 16, padding: '24px 20px', marginBottom: 16, textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.07)' }}>
-            <div style={{ fontSize: 40, marginBottom: 8 }}>🤔</div>
-            <p style={{ color: '#666', fontSize: 14, marginBottom: 12 }}>No ingredients detected.</p>
-            <p style={{ color: '#999', fontSize: 13 }}>Try a photo with better lighting, or add a hint below.</p>
+             <div style={{ fontSize: 40, marginBottom: 8 }}>🤔</div>
+             <p style={{ color: '#666', fontSize: 14, marginBottom: 12 }}>Niciun ingredient detectat.</p>
+             <p style={{ color: '#999', fontSize: 13 }}>Încearcă o fotografie cu iluminare mai bună, sau adaugă un indiciu mai jos.</p>
             <button
-              onClick={() => router.push('/me/scan')}
-              style={{ marginTop: 14, background: '#111', color: '#fff', border: 'none', borderRadius: 10, padding: '11px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer', minHeight: 44 }}
-            >
-              Try again
+               onClick={() => router.push('/me/scan')}
+               style={{ marginTop: 14, background: '#111', color: '#fff', border: 'none', borderRadius: 10, padding: '11px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer', minHeight: 44 }}
+             >
+               Încearcă din nou
             </button>
           </section>
         ) : (
@@ -146,9 +146,9 @@ export default function ScanReviewClient({ sessionId }: { sessionId: string }) {
             {lowConf.length > 0 && (
               <div>
                 {highConf.length > 0 && (
-                  <div style={{ fontSize: 11, color: '#aaa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 7 }}>
-                    Less certain
-                  </div>
+                   <div style={{ fontSize: 11, color: '#aaa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 7 }}>
+                     Mai puțin sigur
+                   </div>
                 )}
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
                   {lowConf.map((ing, idx) => (
@@ -169,46 +169,46 @@ export default function ScanReviewClient({ sessionId }: { sessionId: string }) {
         {/* 4 action cards — only show when we have ingredients */}
         {ingredients.length > 0 && (
           <>
-            <h2 style={{ fontSize: 14, fontWeight: 600, color: '#555', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              What do you want to do?
-            </h2>
+             <h2 style={{ fontSize: 14, fontWeight: 600, color: '#555', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+               Ce vrei să faci?
+             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
 
-              <ActionCard
-                emoji="🍽️"
-                title="Find Recipes"
-                desc="What you can cook right now"
-                onClick={() => router.push(`/me/scan/${sessionId}/recipes?sort=perfect`)}
-                accent="#e8f5e9"
-                accentBorder="#a5d6a7"
-              />
+               <ActionCard
+                 emoji="🍽️"
+                 title="Găsește Rețete"
+                 desc="Ce poți gătit chiar acum"
+                 onClick={() => router.push(`/me/scan/${sessionId}/recipes?sort=perfect`)}
+                 accent="#e8f5e9"
+                 accentBorder="#a5d6a7"
+               />
 
-              <ActionCard
-                emoji="🛒"
-                title="Cook + Shop"
-                desc="Fewest additions needed"
-                onClick={() => router.push(`/me/scan/${sessionId}/recipes?sort=fewest&budget=true`)}
-                accent="#e8f0fe"
-                accentBorder="#b3cff5"
-              />
+               <ActionCard
+                 emoji="🛒"
+                 title="Gătit + Cumpărături"
+                 desc="Cele mai puține adăugiri necesare"
+                 onClick={() => router.push(`/me/scan/${sessionId}/recipes?sort=fewest&budget=true`)}
+                 accent="#e8f0fe"
+                 accentBorder="#b3cff5"
+               />
 
-              <ActionCard
-                emoji="✅"
-                title="Update List"
-                desc="Cross off what you have"
-                onClick={() => router.push(`/me/scan/${sessionId}/reconcile`)}
-                accent="#fff8e1"
-                accentBorder="#ffe082"
-              />
+               <ActionCard
+                 emoji="✅"
+                 title="Actualizează Lista"
+                 desc="Bifează ce ai"
+                 onClick={() => router.push(`/me/scan/${sessionId}/reconcile`)}
+                 accent="#fff8e1"
+                 accentBorder="#ffe082"
+               />
 
-              <ActionCard
-                emoji="🥫"
-                title="Log Pantry"
-                desc="Save to your ingredient stock"
-                onClick={() => router.push(`/me/scan/${sessionId}/pantry`)}
-                accent="#fce4ec"
-                accentBorder="#f48fb1"
-              />
+               <ActionCard
+                 emoji="🥫"
+                 title="Înregistrează Cămara"
+                 desc="Salvează în stocul tău de ingrediente"
+                 onClick={() => router.push(`/me/scan/${sessionId}/pantry`)}
+                 accent="#fce4ec"
+                 accentBorder="#f48fb1"
+               />
             </div>
           </>
         )}

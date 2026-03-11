@@ -34,7 +34,7 @@ export default function ScanClient() {
   }, [existingSessionId])
 
   const loadFile = useCallback((f: File) => {
-    if (!f.type.startsWith('image/')) { setError('Please choose an image file.'); return }
+    if (!f.type.startsWith('image/')) { setError('Alege un fișier imagine.'); return }
     setFile(f)
     const reader = new FileReader()
     reader.onload = (ev) => setPreview(ev.target?.result as string)
@@ -72,7 +72,7 @@ export default function ScanClient() {
 
       if (!res.ok) {
         const d = await res.json()
-        throw new Error(d.error ?? 'Scan failed')
+         throw new Error(d.error ?? 'Scanarea a eșuat')
       }
 
       const data = await res.json()
@@ -114,7 +114,7 @@ export default function ScanClient() {
         router.push(`/me/scan/${data.session_id}/review`)
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong')
+       setError(e instanceof Error ? e.message : 'Ceva a mers greșit')
     } finally {
       setScanning(false)
     }
@@ -129,27 +129,27 @@ export default function ScanClient() {
           onClick={() => router.back()}
           style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', color: '#555', fontSize: 14, padding: '8px 0', marginBottom: 8, minHeight: 44 }}
         >
-          ← {isMergeMode ? 'Back to results' : 'Back'}
+           ← {isMergeMode ? 'Înapoi la rezultate' : 'Înapoi'}
         </button>
 
         {/* Header */}
         {isMergeMode ? (
           <div style={{ marginBottom: 20 }}>
-            <h1 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 4px' }}>📷 Add Another Photo</h1>
+            <h1 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 4px' }}>📷 Adaugă altă fotografie</h1>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#e8f0fe', borderRadius: 8, padding: '5px 10px' }}>
               <span style={{ fontSize: 13, color: '#1a56db', fontWeight: 600 }}>
-                {existingCount} ingredient{existingCount !== 1 ? 's' : ''} already found
+                {existingCount} ingredient{existingCount !== 1 ? 'e' : ''} găsite deja
               </span>
             </div>
             <p style={{ color: '#555', fontSize: 13, marginTop: 8 }}>
-              New photo will be merged with existing scan results.
+              Fotografia nouă va fi combinată cu rezultatele scanării existente.
             </p>
           </div>
         ) : (
           <div style={{ marginBottom: 20 }}>
-            <h1 style={{ fontSize: 26, fontWeight: 700, margin: '0 0 4px' }}>📷 Scan Ingredients</h1>
+            <h1 style={{ fontSize: 26, fontWeight: 700, margin: '0 0 4px' }}>📷 Scanează ingrediente</h1>
             <p style={{ color: '#555', fontSize: 14, margin: 0 }}>
-              Take or upload a photo of your fridge, pantry, or market haul.
+              Fotografiază sau încarcă o poză cu frigiderul, cămara sau cumpărăturile.
             </p>
           </div>
         )}
@@ -186,8 +186,8 @@ export default function ScanClient() {
           ) : (
             <div style={{ textAlign: 'center', padding: 24, color: '#667' }}>
               <div style={{ fontSize: 52, marginBottom: 8 }}>🖼️</div>
-              <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4 }}>Tap to choose a photo</div>
-              <div style={{ fontSize: 13 }}>or drag and drop here</div>
+              <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4 }}>Atinge pentru a alege o fotografie</div>
+              <div style={{ fontSize: 13 }}>sau trage și plasează aici</div>
             </div>
           )}
         </div>
@@ -203,13 +203,13 @@ export default function ScanClient() {
               onClick={() => fileRef.current?.click()}
               style={{ padding: '11px', borderRadius: 10, border: '1.5px solid #ccc', background: '#fff', color: '#333', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 44 }}
             >
-              🗂️ Gallery
+              🗂️ Galerie
             </button>
             <button
               onClick={() => cameraRef.current?.click()}
               style={{ padding: '11px', borderRadius: 10, border: '1.5px solid #ccc', background: '#fff', color: '#333', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 44 }}
             >
-              📷 Camera
+              📷 Cameră
             </button>
           </div>
         ) : (
@@ -217,20 +217,20 @@ export default function ScanClient() {
             onClick={() => { setPreview(null); setFile(null) }}
             style={{ background: 'none', border: 'none', color: '#c00', fontSize: 13, cursor: 'pointer', marginBottom: 12, padding: '4px 0' }}
           >
-            ✕ Remove photo
+            ✕ Șterge fotografia
           </button>
         )}
 
         {/* Context hint */}
         <div style={{ marginBottom: 20 }}>
           <label style={{ fontSize: 13, fontWeight: 600, color: '#333', display: 'block', marginBottom: 6 }}>
-            Hint <span style={{ fontWeight: 400, color: '#888' }}>(optional — helps AI)</span>
+            Indiciu <span style={{ fontWeight: 400, color: '#888' }}>(opțional — ajută AI-ul)</span>
           </label>
           <input
             type="text"
             value={context}
             onChange={(e) => setContext(e.target.value)}
-            placeholder="e.g. fridge, farmers market, leftover veggies…"
+            placeholder="ex. frigider, piața de legume, resturi de legume…"
             style={{ width: '100%', boxSizing: 'border-box', padding: '11px 14px', borderRadius: 10, border: '1px solid #ccc', fontSize: 14, background: '#fff', color: '#111', minHeight: 44 }}
           />
         </div>
@@ -249,14 +249,14 @@ export default function ScanClient() {
           }}
         >
           {scanning
-            ? '⏳ Scanning…'
-            : isMergeMode
-              ? '✨ Add & Merge'
-              : '✨ Identify Ingredients'}
+             ? '⏳ Se scanează…'
+             : isMergeMode
+               ? '✨ Adaugă și combină'
+               : '✨ Identifică ingredientele'}
         </button>
 
         <p style={{ textAlign: 'center', fontSize: 12, color: '#999', marginTop: 12 }}>
-          Powered by Gemini Vision · Results are AI-generated
+          Powered by Gemini Vision · Rezultatele sunt generate de AI
         </p>
       </div>
     </main>

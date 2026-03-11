@@ -74,15 +74,15 @@ type Ingredient = { name: string; qty: number; unit: string; category: string; s
 function getIngredients(recipe: Recipe): Ingredient[] {
   if (!recipe.ingredients || recipe.ingredients.length === 0) {
     return [
-      { name: "Ingredients", qty: 1, unit: "portion", category: "Pantry", subtypeNote: "see recipe page" }
+      { name: "Ingrediente", qty: 1, unit: "porție", category: "Cămară", subtypeNote: "vezi pagina rețetei" }
     ]
   }
   // Map raw ingredient strings to structured format
   return recipe.ingredients.map((ingredientStr) => ({
     name: ingredientStr,
     qty: 1,
-    unit: "item",
-    category: "Uncategorized",
+    unit: "buc",
+    category: "Necategorizat",
     subtypeNote: ""
   }))
 }
@@ -103,8 +103,8 @@ function emptyPlanner(): PlannerState {
 
 function weekLabel(weekIndex: number): string {
   const w = YEAR_WEEKS[weekIndex]
-  if (!w) return `Week ${weekIndex + 1}`
-  const fmt = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+  if (!w) return `Săpt. ${weekIndex + 1}`
+  const fmt = (d: Date) => d.toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' })
   return `${fmt(w.monday)} – ${fmt(w.sunday)}`
 }
 
@@ -571,8 +571,8 @@ export default function PlanClient() {
         }
       } catch { /* ignore */ }
 
-      const now = new Date()
-      const listName = `Meal Plan \u2013 ${now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+       const now = new Date()
+       const listName = `Plan de Masă \u2013 ${now.toLocaleDateString('ro-RO', { month: 'short', day: 'numeric', year: 'numeric' })}`
 
       const createRes = await fetch('/api/shopping-lists', {
         method: 'POST',
@@ -748,7 +748,7 @@ export default function PlanClient() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3 mb-8">
             {DAYS.map((day, di) => {
               const date = dateForDay(currentWeek, di)
-              const dateStr = date.toLocaleDateString("en-GB", { day: "numeric", month: "short" })
+              const dateStr = date.toLocaleDateString("ro-RO", { day: "numeric", month: "short" })
               const now = new Date()
               const isToday = date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth() && date.getDate() === now.getDate()
               return (
@@ -1060,22 +1060,22 @@ export default function PlanClient() {
 
                     {/* Scope selector */}
                     <div>
-                      <p style={{ fontSize: 13, fontWeight: 500, marginBottom: 12, color: '#333' }}>Time range</p>
+                      <p style={{ fontSize: 13, fontWeight: 500, marginBottom: 12, color: '#333' }}>Interval de timp</p>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-                        {([{ label: 'Today', icon: '📅' }, { label: 'This week', icon: '📆' }, { label: 'Week range', icon: '🗓️' }] as const).map(({ label, icon }) => {
+                        {([{ label: 'Azi', icon: '📅' }, { label: 'Săptămâna asta', icon: '📆' }, { label: 'Interval săptămâni', icon: '🗓️' }] as const).map(({ label, icon }) => {
                           const isSelected = (
-                            (shopScope.type === 'day' && label === 'Today') ||
-                            (shopScope.type === 'week' && label === 'This week') ||
-                            (shopScope.type === 'range' && label === 'Week range')
+                            (shopScope.type === 'day' && label === 'Azi') ||
+                            (shopScope.type === 'week' && label === 'Săptămâna asta') ||
+                            (shopScope.type === 'range' && label === 'Interval săptămâni')
                           )
                           return (
                             <button
                               key={label}
                               onClick={() => {
-                                if (label === 'Today') setShopScope({ type: 'day', weekIndex: currentWeek, day: DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1] })
-                                else if (label === 'This week') setShopScope({ type: 'week', weekIndex: currentWeek })
-                                else setShopScope({ type: 'range', from: shopRangeFrom, to: shopRangeTo })
-                              }}
+                                 if (label === 'Azi') setShopScope({ type: 'day', weekIndex: currentWeek, day: DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1] })
+                                 else if (label === 'Săptămâna asta') setShopScope({ type: 'week', weekIndex: currentWeek })
+                                 else setShopScope({ type: 'range', from: shopRangeFrom, to: shopRangeTo })
+                               }}
                               style={{
                                 display: 'flex',
                                 alignItems: 'center',
@@ -1106,9 +1106,9 @@ export default function PlanClient() {
 
                     {/* Range pickers if needed */}
                     {shopScope.type === 'range' && (
-                      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-                        <div>
-                          <label style={{ fontSize: 12, color: '#666', display: 'block', marginBottom: 6 }}>From week</label>
+                       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+                         <div>
+                           <label style={{ fontSize: 12, color: '#666', display: 'block', marginBottom: 6 }}>De la săptămâna</label>
                           <select
                             value={shopRangeFrom}
                             onChange={(e) => setShopRangeFrom(Number(e.target.value))}
@@ -1126,9 +1126,9 @@ export default function PlanClient() {
                             ))}
                           </select>
                         </div>
-                        <span style={{ color: '#999', fontSize: 13 }}>to</span>
-                        <div>
-                          <label style={{ fontSize: 12, color: '#666', display: 'block', marginBottom: 6 }}>To week</label>
+                         <span style={{ color: '#999', fontSize: 13 }}>până la</span>
+                         <div>
+                           <label style={{ fontSize: 12, color: '#666', display: 'block', marginBottom: 6 }}>Până la săptămâna</label>
                           <select
                             value={shopRangeTo}
                             onChange={(e) => setShopRangeTo(Number(e.target.value))}

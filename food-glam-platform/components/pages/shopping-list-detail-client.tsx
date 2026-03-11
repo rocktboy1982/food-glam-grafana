@@ -296,7 +296,7 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
       <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#dde3ee' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ width: 32, height: 32, border: '3px solid #ccc', borderTopColor: '#111', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
-          <p style={{ fontSize: 13, color: '#888' }}>Loading list…</p>
+           <p style={{ fontSize: 13, color: '#888' }}>Se încarcă lista…</p>
         </div>
         <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       </div>
@@ -376,7 +376,7 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
                       fontSize: 20, fontWeight: 700, color: '#111', margin: 0,
                       cursor: 'text', lineHeight: 1.3,
                     }}
-                    title="Click to rename"
+                    title="Click pentru a redenumi"
                   >
                     {meta.name}
                   </h1>
@@ -404,9 +404,9 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
               {/* Action buttons */}
               <div className="no-print" style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
                 {([
-                  { label: '📋', title: 'Copy', fn: handleCopyList, disabled: false },
-                  { label: '🖨️', title: 'Print', fn: handlePrint, disabled: false },
-                  { label: '🔗', title: 'Share', fn: handleShare, disabled: sharing },
+                   { label: '📋', title: 'Copiază', fn: handleCopyList, disabled: false },
+                   { label: '🖨️', title: 'Tipărire', fn: handlePrint, disabled: false },
+                   { label: '🔗', title: 'Partajează', fn: handleShare, disabled: sharing },
                 ] as const).map(({ label, title, fn, disabled }) => (
                   <button
                     key={title}
@@ -427,7 +427,7 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
                 ))}
                 <button
                   onClick={() => router.push(`/me/grocery/match/${listId}`)}
-                  title="Match to Store"
+                   title="Potrivește cu magazinul"
                   style={{
                     padding: '0 12px', height: 36, borderRadius: 8, border: 'none',
                     background: '#111', color: '#fff', fontSize: 12, fontWeight: 600,
@@ -442,7 +442,7 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
                   href={freshfulReferralUrl()}
                   target="_blank"
                   rel="noopener noreferrer sponsored"
-                  title="Order ingredients via Freshful (delivery)"
+                   title="Comandă ingrediente prin Freshful (livrare)"
                   style={{
                     padding: '0 12px', height: 36, borderRadius: 8, border: 'none',
                     background: '#00a651', color: '#fff', fontSize: 12, fontWeight: 600,
@@ -461,26 +461,26 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
             {items.length > 0 && (
               <div className="no-print" style={{ display: 'flex', gap: 8, marginTop: 14, paddingTop: 12, borderTop: '1px solid #f0f0f0' }}>
                 <button
-                  onClick={() => handleCheckAll(true)}
-                  style={{
-                    fontSize: 11, padding: '5px 10px', borderRadius: 6, border: '1px solid #ddd',
-                    background: '#fff', color: '#555', cursor: 'pointer', fontWeight: 500,
-                  }}
-                  onMouseOver={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#f5f5f5' }}
-                  onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#fff' }}
-                >
-                  Check all
+                   onClick={() => handleCheckAll(true)}
+                   style={{
+                     fontSize: 11, padding: '5px 10px', borderRadius: 6, border: '1px solid #ddd',
+                     background: '#fff', color: '#555', cursor: 'pointer', fontWeight: 500,
+                   }}
+                   onMouseOver={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#f5f5f5' }}
+                   onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#fff' }}
+                 >
+                   Bifează toate
                 </button>
                 <button
-                  onClick={() => handleCheckAll(false)}
-                  style={{
-                    fontSize: 11, padding: '5px 10px', borderRadius: 6, border: '1px solid #ddd',
-                    background: '#fff', color: '#555', cursor: 'pointer', fontWeight: 500,
-                  }}
-                  onMouseOver={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#f5f5f5' }}
-                  onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#fff' }}
-                >
-                  Uncheck all
+                   onClick={() => handleCheckAll(false)}
+                   style={{
+                     fontSize: 11, padding: '5px 10px', borderRadius: 6, border: '1px solid #ddd',
+                     background: '#fff', color: '#555', cursor: 'pointer', fontWeight: 500,
+                   }}
+                   onMouseOver={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#f5f5f5' }}
+                   onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#fff' }}
+                 >
+                   Debifează toate
                 </button>
               </div>
             )}
@@ -492,9 +492,9 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
               background: '#fff', borderRadius: 16, padding: '20px 24px',
               boxShadow: '0 1px 4px rgba(0,0,0,0.08)', marginBottom: 16,
             }}>
-              <h2 style={{ fontSize: 14, fontWeight: 600, color: '#111', margin: '0 0 16px 0' }}>
-                🛒 {unchecked.length} item{unchecked.length !== 1 ? 's' : ''} remaining
-              </h2>
+               <h2 style={{ fontSize: 14, fontWeight: 600, color: '#111', margin: '0 0 16px 0' }}>
+                 🛒 {unchecked.length} articol{unchecked.length !== 1 ? 'e' : ''} rămase
+               </h2>
 
               {sortedCategories(uncheckedGrouped).map(([category, catItems]) => (
                 <div key={category} style={{ marginBottom: 14 }}>
@@ -555,15 +555,15 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
                               placeholder="Unit"
                               style={{ width: 50, padding: '3px 6px', fontSize: 12, border: '1px solid #ddd', borderRadius: 6, outline: 'none', textAlign: 'center' }}
                             />
-                            <button onClick={handleSaveEdit} style={{ padding: '3px 10px', fontSize: 11, fontWeight: 600, borderRadius: 6, border: 'none', background: '#111', color: '#fff', cursor: 'pointer' }}>Save</button>
-                            <button onClick={() => setEditingItemId(null)} style={{ padding: '3px 8px', fontSize: 11, color: '#888', background: 'transparent', border: 'none', cursor: 'pointer' }}>Cancel</button>
+                             <button onClick={handleSaveEdit} style={{ padding: '3px 10px', fontSize: 11, fontWeight: 600, borderRadius: 6, border: 'none', background: '#111', color: '#fff', cursor: 'pointer' }}>Salvează</button>
+                             <button onClick={() => setEditingItemId(null)} style={{ padding: '3px 8px', fontSize: 11, color: '#888', background: 'transparent', border: 'none', cursor: 'pointer' }}>Anulează</button>
                           </div>
                         ) : (
                           <div
                             className="no-print"
                             style={{ flex: 1, minWidth: 0, cursor: 'pointer' }}
                             onClick={() => handleStartEdit(item)}
-                            title="Click to edit"
+                            title="Click pentru a edita"
                           >
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                               <span style={{ fontSize: 13, fontWeight: 500, color: '#111' }}>
@@ -635,7 +635,7 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
                     value={newItemName}
                     onChange={(e) => setNewItemName(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
-                    placeholder="Add an item…"
+                    placeholder="Adaugă un articol…"
                     style={{
                       flex: 1, fontSize: 13, background: 'transparent', border: 'none',
                       outline: 'none', color: '#111', padding: '4px 0',
@@ -668,12 +668,12 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
                       onClick={handleAddItem}
                       disabled={addingItem}
                       style={{
-                        padding: '4px 12px', fontSize: 12, fontWeight: 600, borderRadius: 6,
-                        border: 'none', background: '#111', color: '#fff', cursor: 'pointer',
-                        opacity: addingItem ? 0.5 : 1,
-                      }}
-                    >
-                      Add
+                       padding: '4px 12px', fontSize: 12, fontWeight: 600, borderRadius: 6,
+                       border: 'none', background: '#111', color: '#fff', cursor: 'pointer',
+                       opacity: addingItem ? 0.5 : 1,
+                     }}
+                   >
+                     Adaugă
                     </button>
                   )}
                 </div>
@@ -688,8 +688,8 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
               boxShadow: '0 1px 4px rgba(0,0,0,0.08)', marginBottom: 16, textAlign: 'center',
             }}>
               <p style={{ fontSize: 32, marginBottom: 8 }}>🛒</p>
-              <p style={{ fontSize: 14, fontWeight: 500, color: '#666', marginBottom: 4 }}>No items yet</p>
-              <p style={{ fontSize: 12, color: '#999' }}>Start adding items below</p>
+               <p style={{ fontSize: 14, fontWeight: 500, color: '#666', marginBottom: 4 }}>Niciun articol încă</p>
+               <p style={{ fontSize: 12, color: '#999' }}>Începe să adaugi articole mai jos</p>
 
               {/* Add item inline */}
               <div className="no-print" style={{ marginTop: 20, display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -727,9 +727,9 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
               background: '#fff', borderRadius: 16, padding: '24px',
               boxShadow: '0 1px 4px rgba(0,0,0,0.08)', marginBottom: 16, textAlign: 'center',
             }}>
-              <p style={{ fontSize: 28, marginBottom: 4 }}>🎉</p>
-              <p style={{ fontSize: 14, fontWeight: 600, color: '#1a7f37' }}>All done!</p>
-              <p style={{ fontSize: 12, color: '#999', marginTop: 2 }}>All {checked.length} items checked off</p>
+               <p style={{ fontSize: 28, marginBottom: 4 }}>🎉</p>
+               <p style={{ fontSize: 14, fontWeight: 600, color: '#1a7f37' }}>Gata!</p>
+               <p style={{ fontSize: 12, color: '#999', marginTop: 2 }}>Toate {checked.length} articolele sunt bifate</p>
 
               {/* Add item inline */}
               <div className="no-print" style={{ marginTop: 16, display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -766,9 +766,9 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
               background: '#fff', borderRadius: 16, padding: '16px 24px',
               boxShadow: '0 1px 4px rgba(0,0,0,0.08)', marginBottom: 16, opacity: 0.7,
             }}>
-              <h3 style={{ fontSize: 12, fontWeight: 600, color: '#999', textTransform: 'uppercase', letterSpacing: 0.5, margin: '0 0 10px 0' }}>
-                ✓ Checked ({checked.length})
-              </h3>
+               <h3 style={{ fontSize: 12, fontWeight: 600, color: '#999', textTransform: 'uppercase', letterSpacing: 0.5, margin: '0 0 10px 0' }}>
+                 ✓ Bifate ({checked.length})
+               </h3>
 
               {sortedCategories(checkedGrouped).map(([category, catItems]) => (
                 <div key={category} style={{ marginBottom: 8 }}>
@@ -843,8 +843,8 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
               boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
             }}
           >
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: '#111', margin: '0 0 4px 0' }}>Share Shopping List</h2>
-            <p style={{ fontSize: 13, color: '#888', margin: '0 0 16px 0' }}>Anyone with this link can view the list.</p>
+             <h2 style={{ fontSize: 18, fontWeight: 600, color: '#111', margin: '0 0 4px 0' }}>Partajează Lista de Cumpărături</h2>
+             <p style={{ fontSize: 13, color: '#888', margin: '0 0 16px 0' }}>Oricine cu acest link poate vedea lista.</p>
 
             <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
               <input
@@ -857,26 +857,26 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
                 }}
               />
               <button
-                onClick={handleCopyShareLink}
-                style={{
-                  padding: '10px 16px', fontSize: 13, fontWeight: 600, borderRadius: 8,
-                  border: 'none', background: '#111', color: '#fff', cursor: 'pointer',
-                }}
-                onMouseOver={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#333' }}
-                onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#111' }}
-              >
-                Copy
+                 onClick={handleCopyShareLink}
+                 style={{
+                   padding: '10px 16px', fontSize: 13, fontWeight: 600, borderRadius: 8,
+                   border: 'none', background: '#111', color: '#fff', cursor: 'pointer',
+                 }}
+                 onMouseOver={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#333' }}
+                 onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#111' }}
+               >
+                 Copiază
               </button>
             </div>
 
             <div style={{ textAlign: 'right' }}>
               <button
                 onClick={() => setShowShareModal(false)}
-                style={{ fontSize: 13, color: '#888', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                onMouseOver={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#111' }}
-                onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#888' }}
-              >
-                Done
+                 style={{ fontSize: 13, color: '#888', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                 onMouseOver={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#111' }}
+                 onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#888' }}
+               >
+                 Gata
               </button>
             </div>
           </div>

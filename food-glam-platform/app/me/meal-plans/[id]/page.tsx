@@ -38,8 +38,8 @@ function toISO(d: Date): string {
 
 function formatDayHeader(d: Date): { weekday: string; date: string } {
   return {
-    weekday: d.toLocaleDateString("en-US", { weekday: "short" }),
-    date: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    weekday: d.toLocaleDateString("ro-RO", { weekday: "short" }),
+    date: d.toLocaleDateString("ro-RO", { month: "short", day: "numeric" }),
   }
 }
 
@@ -91,9 +91,9 @@ export default function MealPlanCalendarPage() {
         const found = plans.find(p => p.id === planId)
         if (found) setPlan(found)
       }
-    } catch {
-      push({ message: "Failed to load meal plan", type: "error" })
-    } finally {
+     } catch {
+       push({ message: "Încărcarea planului de masă a eșuat", type: "error" })
+     } finally {
       setLoading(false)
     }
   }, [planId, weekStart, push])
@@ -164,16 +164,16 @@ export default function MealPlanCalendarPage() {
           recipe_image: recipe.hero_image_url,
         }),
       })
-      if (!res.ok) throw new Error("Add failed")
-      push({ message: `Added "${recipe.title}"`, type: "success" })
+       if (!res.ok) throw new Error("Add failed")
+       push({ message: `Adăugat "${recipe.title}"`, type: "success" })
       setPickerOpen(false)
       setSearchQuery("")
       setSearchResults([])
       fetchPlan()
-    } catch {
-      push({ message: "Failed to add recipe", type: "error" })
-    }
-  }
+     } catch {
+       push({ message: "Adăugarea rețetei a eșuat", type: "error" })
+     }
+   }
 
   // ── Update servings ──
   const handleUpdateServings = async (entryId: string) => {
@@ -189,11 +189,11 @@ export default function MealPlanCalendarPage() {
           servings: val,
         }),
       })
-      if (!res.ok) throw new Error("Update failed")
-      setEditingEntry(null)
-      fetchPlan()
-    } catch {
-      push({ message: "Failed to update servings", type: "error" })
+       if (!res.ok) throw new Error("Update failed")
+       setEditingEntry(null)
+       fetchPlan()
+     } catch {
+       push({ message: "Actualizarea porțiilor a eșuat", type: "error" })
     }
   }
 
@@ -208,10 +208,10 @@ export default function MealPlanCalendarPage() {
           entry_id: entryId,
         }),
       })
-      if (!res.ok) throw new Error("Delete failed")
-      fetchPlan()
-    } catch {
-      push({ message: "Failed to remove recipe", type: "error" })
+       if (!res.ok) throw new Error("Delete failed")
+       fetchPlan()
+     } catch {
+       push({ message: "Eliminarea rețetei a eșuat", type: "error" })
     }
   }
 
@@ -245,9 +245,9 @@ export default function MealPlanCalendarPage() {
            >
             &larr; Toate Planurile de Masă
           </Link>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            {plan?.title || "Meal Plan"}
-          </h1>
+           <h1 className="text-2xl font-bold tracking-tight text-foreground">
+             {plan?.title || "Plan de Masă"}
+           </h1>
         </div>
         <div className="flex items-center gap-2">
           <Link href={`/me/meal-plans/${planId}/shopping-list?from=${toISO(weekStart)}&to=${toISO(addDays(weekStart, 6))}`}>
@@ -269,12 +269,12 @@ export default function MealPlanCalendarPage() {
           &larr; Săptămâna Anterioară
         </Button>
         <div className="text-sm font-medium text-foreground">
-          {weekDates[0].toLocaleDateString("en-US", {
+          {weekDates[0].toLocaleDateString("ro-RO", {
             month: "long",
             day: "numeric",
           })}{" "}
           &mdash;{" "}
-          {weekDates[6].toLocaleDateString("en-US", {
+          {weekDates[6].toLocaleDateString("ro-RO", {
             month: "long",
             day: "numeric",
             year: "numeric",
@@ -425,7 +425,7 @@ export default function MealPlanCalendarPage() {
               </div>
               <p className="text-xs text-muted-foreground mb-3">
                 {MEAL_SLOT_ICONS[pickerSlot]} {MEAL_SLOT_LABELS[pickerSlot]} &middot;{" "}
-                {new Date(pickerDate + "T00:00:00").toLocaleDateString("en-US", {
+                {new Date(pickerDate + "T00:00:00").toLocaleDateString("ro-RO", {
                   weekday: "long",
                   month: "short",
                   day: "numeric",

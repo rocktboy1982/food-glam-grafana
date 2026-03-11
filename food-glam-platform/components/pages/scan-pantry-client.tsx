@@ -57,7 +57,7 @@ export default function ScanPantryClient({ sessionId }: { sessionId: string }) {
       })
       if (!res.ok) {
         const d = await res.json()
-        throw new Error(d.error ?? 'Sync failed')
+        throw new Error(d.error ?? 'Sincronizarea a eșuat')
       }
       const data = await res.json()
       setResult(data)
@@ -67,7 +67,7 @@ export default function ScanPantryClient({ sessionId }: { sessionId: string }) {
       const refreshed = await fetch('/api/vision/sync-pantry', { headers: authHeaders })
       if (refreshed.ok) setPantryItems((await refreshed.json()).items)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong')
+       setError(e instanceof Error ? e.message : 'Ceva a mers greșit')
     } finally {
       setSyncing(false)
     }
@@ -95,13 +95,13 @@ export default function ScanPantryClient({ sessionId }: { sessionId: string }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
             }}
-            aria-label="Back"
-          >
-            ←
-          </button>
-          <div>
-            <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>🥫 Update Pantry</h1>
-            <p style={{ color: '#555', fontSize: 13, margin: '2px 0 0' }}>Log what&apos;s in your kitchen from this scan.</p>
+            aria-label="Înapoi"
+           >
+             ←
+           </button>
+           <div>
+             <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>🥫 Actualizează Cămara</h1>
+             <p style={{ color: '#555', fontSize: 13, margin: '2px 0 0' }}>Înregistrează ce este în bucătăria ta din această scanare.</p>
           </div>
         </div>
 
@@ -115,10 +115,10 @@ export default function ScanPantryClient({ sessionId }: { sessionId: string }) {
         {/* Scanned ingredients preview */}
         <section style={{ background: '#fff', borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}>
           <h2 style={{ fontSize: 15, fontWeight: 600, margin: '0 0 12px' }}>
-            From this scan ({ingredients.length} item{ingredients.length !== 1 ? 's' : ''})
-          </h2>
+             Din această scanare ({ingredients.length} articol{ingredients.length !== 1 ? 'e' : ''})
+           </h2>
           {ingredients.length === 0 ? (
-            <p style={{ color: '#888', fontSize: 14 }}>No ingredients found. Please scan again.</p>
+            <p style={{ color: '#888', fontSize: 14 }}>Niciun ingredient găsit. Te rog scanează din nou.</p>
           ) : (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {ingredients.map((ing, i) => (
@@ -144,7 +144,7 @@ export default function ScanPantryClient({ sessionId }: { sessionId: string }) {
               marginBottom: 20,
             }}
           >
-            {syncing ? '⏳ Saving to pantry…' : '🥫 Save to my pantry'}
+             {syncing ? '⏳ Se salvează în cămară…' : '🥫 Salvează în cămara mea'}
           </button>
         )}
 
@@ -152,8 +152,8 @@ export default function ScanPantryClient({ sessionId }: { sessionId: string }) {
         {result && (
           <div style={{ background: '#e8f5e9', borderRadius: 12, padding: '14px 16px', marginBottom: 20, border: '1px solid #a5d6a7' }}>
             <div style={{ fontWeight: 600, fontSize: 14, color: '#1b5e20', marginBottom: 4 }}>
-              ✅ Pantry updated!
-            </div>
+               ✅ Cămara actualizată!
+             </div>
             <div style={{ fontSize: 13, color: '#2e7d32' }}>
               {result.added.length > 0 && <span>{result.added.length} new item{result.added.length !== 1 ? 's' : ''} added. </span>}
               {result.updated.length > 0 && <span>{result.updated.length} item{result.updated.length !== 1 ? 's' : ''} updated. </span>}
@@ -166,8 +166,8 @@ export default function ScanPantryClient({ sessionId }: { sessionId: string }) {
         {pantryItems.length > 0 && (
           <section style={{ background: '#fff', borderRadius: 16, padding: 20, boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}>
             <h2 style={{ fontSize: 15, fontWeight: 600, margin: '0 0 12px' }}>
-              My Pantry ({pantryItems.length})
-            </h2>
+               Cămara Mea ({pantryItems.length})
+             </h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {pantryItems.map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 4px', borderBottom: '1px solid #f3f3f3' }}>
@@ -186,7 +186,7 @@ export default function ScanPantryClient({ sessionId }: { sessionId: string }) {
                   <button
                     onClick={() => handleRemove(item.name)}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#bbb', fontSize: 14, padding: '2px 6px', borderRadius: 4 }}
-                    title="Remove"
+                    title="Elimină"
                   >
                     ✕
                   </button>

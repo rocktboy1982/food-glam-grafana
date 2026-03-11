@@ -16,9 +16,9 @@ const SPIRITS = [
   { value: 'tequila',  label: 'Tequila / Mezcal',  emoji: '🌵' },
   { value: 'vodka',    label: 'Vodka',             emoji: '🧊' },
   { value: 'brandy',   label: 'Brandy / Cognac',   emoji: '🍇' },
-  { value: 'liqueur',  label: 'Liqueur / Aperitif', emoji: '🍊' },
-  { value: 'wine',     label: 'Wine / Champagne',  emoji: '🍾' },
-  { value: 'none',     label: 'No spirit (mocktail)', emoji: '🫧' },
+  { value: 'liqueur',  label: 'Lichior / Aperitiv', emoji: '🍊' },
+  { value: 'wine',     label: 'Vin / Șampanie',    emoji: '🍾' },
+  { value: 'none',     label: 'Fără spirit (mocktail)', emoji: '🫧' },
 ] as const
 
 const DIFFICULTY_OPTIONS = [
@@ -36,9 +36,9 @@ const COCKTAIL_TAGS = [
 
 const UNITS = [
   '', 'ml', 'cl', 'oz', 'fl oz',
-  'tsp', 'tbsp', 'cup', 'dash', 'splash',
-  'part', 'parts', 'drop', 'slice', 'wedge',
-  'sprig', 'leaf', 'leaves', 'piece', 'pinch',
+  'linguriță', 'lingură', 'cană', 'strop', 'splash',
+  'parte', 'părți', 'picătură', 'felie', 'sfert',
+  'rămurică', 'frunză', 'frunze', 'bucată', 'vârf de cuțit',
 ] as const
 
 interface IngredientRow { qty: string; unit: string; name: string }

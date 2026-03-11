@@ -23,9 +23,9 @@ export default function MealPlansListPage() {
       if (!res.ok) throw new Error("Failed to fetch")
       const data = await res.json()
       setPlans(data)
-    } catch {
-      push({ message: "Failed to load meal plans", type: "error" })
-    } finally {
+     } catch {
+       push({ message: "Încărcarea planurilor de masă a eșuat", type: "error" })
+     } finally {
       setLoading(false)
     }
   }, [push])
@@ -45,16 +45,16 @@ export default function MealPlansListPage() {
           end_date: newEndDate || undefined,
         }),
       })
-      if (!res.ok) throw new Error("Create failed")
-      push({ message: "Meal plan created!", type: "success" })
+       if (!res.ok) throw new Error("Create failed")
+       push({ message: "Plan de masă creat!", type: "success" })
       setNewTitle("")
       setNewStartDate("")
       setNewEndDate("")
       setShowCreate(false)
       fetchPlans()
-    } catch {
-      push({ message: "Failed to create meal plan", type: "error" })
-    } finally {
+     } catch {
+       push({ message: "Crearea planului de masă a eșuat", type: "error" })
+     } finally {
       setCreating(false)
     }
   }
@@ -66,13 +66,13 @@ export default function MealPlansListPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       })
-      if (!res.ok) throw new Error("Delete failed")
-      push({ message: "Meal plan deleted", type: "success" })
+       if (!res.ok) throw new Error("Delete failed")
+       push({ message: "Plan de masă șters", type: "success" })
       fetchPlans()
-    } catch {
-      push({ message: "Failed to delete", type: "error" })
-    }
-  }
+     } catch {
+       push({ message: "Ștergerea a eșuat", type: "error" })
+     }
+   }
 
   const getEntryCount = (plan: MealPlan): number => {
     const meals = plan.meals as MealsData | null
@@ -94,12 +94,12 @@ export default function MealPlansListPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Meal Plans
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Plan your week, generate shopping lists
-          </p>
+           <h1 className="text-3xl font-bold tracking-tight text-foreground">
+             Planuri de Masă
+           </h1>
+           <p className="text-muted-foreground mt-1">
+             Planifică-ți săptămâna, generează liste de cumpărături
+           </p>
         </div>
         <Button onClick={() => setShowCreate(!showCreate)}>
           {showCreate ? "Anulează" : "+ Nou Plan"}
@@ -233,7 +233,7 @@ export default function MealPlansListPage() {
 function formatDate(iso: string): string {
   try {
     const d = new Date(iso + "T00:00:00")
-    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+    return d.toLocaleDateString("ro-RO", { month: "short", day: "numeric" })
   } catch {
     return iso
   }

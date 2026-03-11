@@ -208,7 +208,7 @@ export default async function CollectionPage({ params }: PageProps) {
                           color: '#fff',
                         }}
                       >
-                        {category === 'alcoholic' ? '🥃' : '🍃'} {category === 'alcoholic' ? 'Alcoolic' : 'Fără alcool'}
+                         {category === 'alcoholic' ? '🥃' : '🍃'} {category === 'alcoholic' ? 'Cu alcool' : 'Fără alcool'}
                       </span>
                     </div>
 

@@ -132,7 +132,7 @@ export function Navigation() {
       ═══════════════════════════════════════════════════════════════════════ */}
       <header
         className="hidden md:block sticky top-0 z-50"
-        style={{ background: '#000', borderBottom: '1px solid rgba(255,255,255,0.08)' }}
+        style={{ background: theme === 'dark' ? '#000' : '#6b6560', borderBottom: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.1)' }}
       >
         {/* ── Row 1: logo + search + auth ─────────────────────────────── */}
         <div className="flex items-center gap-4 px-6 py-3">
@@ -145,7 +145,7 @@ export function Navigation() {
           <form onSubmit={handleSearch} className="flex-1 max-w-xl mx-auto">
             <div
               className="flex items-center gap-2 px-4 py-2 rounded-full"
-              style={{ background: '#111', border: '1px solid rgba(255,255,255,0.12)' }}
+              style={{ background: theme === 'dark' ? '#111' : 'rgba(255,255,255,0.25)', border: theme === 'dark' ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(255,255,255,0.3)' }}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2">
                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
@@ -259,9 +259,9 @@ export function Navigation() {
       <header
         className="md:hidden sticky top-0 z-50 flex items-center justify-between px-4 py-3"
         style={{
-          background: 'rgba(0,0,0,0.95)',
+          background: theme === 'dark' ? 'rgba(0,0,0,0.95)' : 'rgba(107,101,96,0.97)',
           backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(255,255,255,0.07)',
+          borderBottom: theme === 'dark' ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,0.1)',
         }}
       >
         <Link href="/" className="flex items-center gap-2">
@@ -272,7 +272,7 @@ export function Navigation() {
         <form onSubmit={handleSearch} className="flex-1 mx-3">
           <div
             className="flex items-center gap-2 px-3 py-1.5 rounded-full"
-            style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)' }}
+            style={{ background: theme === 'dark' ? '#111' : 'rgba(255,255,255,0.25)', border: theme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.3)' }}
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2">
               <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
@@ -304,7 +304,7 @@ export function Navigation() {
       {mobileOpen && (
         <div
           className="md:hidden fixed top-[57px] left-0 right-0 z-40 py-4"
-          style={{ background: '#000', borderBottom: '1px solid rgba(255,255,255,0.08)' }}
+          style={{ background: theme === 'dark' ? '#000' : '#6b6560', borderBottom: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.1)' }}
         >
           {NAV_ITEMS.map(item => (
             <Link
@@ -355,9 +355,9 @@ export function Navigation() {
       <nav
         className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-1 py-2"
         style={{
-          background: 'rgba(0,0,0,0.97)',
+          background: theme === 'dark' ? 'rgba(0,0,0,0.97)' : 'rgba(107,101,96,0.97)',
           backdropFilter: 'blur(20px)',
-          borderTop: '1px solid rgba(255,255,255,0.07)',
+          borderTop: theme === 'dark' ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,0.1)',
         }}
       >
         {MOBILE_TABS.map(item => {

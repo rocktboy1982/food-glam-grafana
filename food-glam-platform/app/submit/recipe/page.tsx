@@ -19,12 +19,12 @@ const ALL_REGIONS = Object.entries(REGION_META).map(([id, r]) => ({
 
 /* ── Continent groupings for the region picker ───────────────────── */
 const REGION_GROUPS = [
-  { continent: 'Europe',                    ids: ['western-europe', 'northern-europe', 'eastern-europe'] },
-  { continent: 'Middle East & Central Asia', ids: ['middle-east', 'central-asia'] },
-  { continent: 'Asia',                       ids: ['east-asia', 'southeast-asia', 'south-asia'] },
-  { continent: 'Africa',                     ids: ['north-africa', 'west-africa', 'east-africa', 'southern-africa'] },
-  { continent: 'Americas',                   ids: ['north-america', 'south-america'] },
-  { continent: 'Oceania & International',    ids: ['oceania', 'international'] },
+  { continent: 'Europa',                           ids: ['western-europe', 'northern-europe', 'eastern-europe'] },
+  { continent: 'Orientul Mijlociu și Asia Centrală', ids: ['middle-east', 'central-asia'] },
+  { continent: 'Asia',                              ids: ['east-asia', 'southeast-asia', 'south-asia'] },
+  { continent: 'Africa',                            ids: ['north-africa', 'west-africa', 'east-africa', 'southern-africa'] },
+  { continent: 'Americi',                           ids: ['north-america', 'south-america'] },
+  { continent: 'Oceania și Internațional',          ids: ['oceania', 'international'] },
 ]
 
 /* ── Diet & Food tag constants ───────────────────────────── */
@@ -32,6 +32,51 @@ const DIET_TAGS = [
   'Vegetarian', 'Vegan', 'Gluten-Free', 'Dairy-Free', 'Keto',
   'Paleo', 'Low-Carb', 'Nut-Free', 'Sugar-Free', 'Halal', 'Kosher',
 ] as const
+
+/* ── Romanian display labels (DB values stay English for search compat) ── */
+const DIET_TAG_LABELS: Record<string, string> = {
+  'Vegetarian':  'Vegetarian',
+  'Vegan':       'Vegan',
+  'Gluten-Free': 'Fără gluten',
+  'Dairy-Free':  'Fără lactate',
+  'Keto':        'Keto',
+  'Paleo':       'Paleo',
+  'Low-Carb':    'Sărac în carbohidrați',
+  'Nut-Free':    'Fără nuci',
+  'Sugar-Free':  'Fără zahăr',
+  'Halal':       'Halal',
+  'Kosher':      'Kosher',
+}
+
+const FOOD_TAG_GROUP_LABELS: Record<string, string> = {
+  'Dish':      'Fel de mâncare',
+  'Protein':   'Proteină',
+  'Character': 'Caracter',
+}
+
+const FOOD_TAG_LABELS: Record<string, string> = {
+  /* Dish */
+  'pizza': 'pizza', 'noodles': 'tăiței', 'sushi': 'sushi',
+  'pastry': 'patiserie', 'tacos': 'tacos', 'curry': 'curry',
+  'paella': 'paella', 'rice': 'orez', 'bowl': 'bol',
+  'stew': 'tocăniță', 'casserole': 'caserola', 'dumpling': 'găluște',
+  'burger': 'burger', 'salad': 'salată', 'soup': 'supă',
+  'wrap': 'wrap', 'sandwich': 'sandwich', 'flatbread': 'pâine plată',
+  'skewer': 'frigărui', 'fritter': 'chiftele prăjite', 'risotto': 'risotto',
+  'tartare': 'tartare', 'roast': 'friptură', 'pie': 'plăcintă',
+  'broth': 'bulion', 'gratin': 'gratin',
+  /* Protein */
+  'seafood': 'fructe de mare', 'chicken': 'pui', 'lamb': 'miel',
+  'pork': 'porc', 'beef': 'vită', 'tofu': 'tofu', 'veal': 'vițel',
+  'duck': 'rață', 'game': 'vânat', 'venison': 'cerb', 'rabbit': 'iepure',
+  'turkey': 'curcan', 'eggs': 'ouă', 'tempeh': 'tempeh',
+  'legumes': 'leguminoase', 'cheese': 'brânză', 'bison': 'bizon',
+  'goat': 'capră', 'quail': 'prepeliță', 'offal': 'organe',
+  /* Character */
+  'spicy': 'picant', 'sweet': 'dulce', 'smoky': 'afumat',
+  'crispy': 'crocant', 'healthy': 'sănătos', 'street-food': 'street food',
+  'breakfast': 'mic dejun', 'dessert': 'desert', 'comfort': 'comfort food',
+}
 
 const FOOD_TAG_GROUPS = [
   { label: 'Dish',      tags: ['pizza', 'noodles', 'sushi', 'pastry', 'tacos', 'curry', 'paella', 'rice', 'bowl', 'stew', 'casserole', 'dumpling', 'burger', 'salad', 'soup', 'wrap', 'sandwich', 'flatbread', 'skewer', 'fritter', 'risotto', 'tartare', 'roast', 'pie', 'broth', 'gratin'] },
@@ -42,10 +87,10 @@ const FOOD_TAGS = FOOD_TAG_GROUPS.flatMap(g => [...g.tags])
 /* ── Ingredient units ────────────────────────────────────── */
 const UNITS = [
   '', 'g', 'kg', 'ml', 'l', 'oz', 'lb',
-  'tsp', 'tbsp', 'cup', 'cups', 'fl oz', 'pint', 'quart',
-  'piece', 'pieces', 'slice', 'slices', 'bunch', 'handful',
-  'pinch', 'dash', 'can', 'package', 'clove', 'cloves',
-  'stalk', 'sprig', 'leaf', 'leaves', 'sheet',
+  'linguriță', 'lingură', 'cană', 'căni', 'fl oz', 'pint', 'quart',
+  'bucată', 'bucăți', 'felie', 'felii', 'legătură', 'pumn',
+  'vârf de cuțit', 'strop', 'conservă', 'pachet', 'cățel', 'căței',
+  'tulpină', 'rămurică', 'frunză', 'frunze', 'foaie',
 ] as const
 
 interface IngredientRow { qty: string; unit: string; name: string }
@@ -428,7 +473,7 @@ function SubmitRecipePageContent() {
             </div>
           )}
           <div>
-            <h3 className="text-lg font-semibold mb-3">Ingredients</h3>
+            <h3 className="text-lg font-semibold mb-3">Ingrediente</h3>
             <ul className="space-y-1.5">
               {form.ingredients.filter(i => i.name.trim()).map((ing, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm">
@@ -439,7 +484,7 @@ function SubmitRecipePageContent() {
             </ul>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-3">Steps</h3>
+            <h3 className="text-lg font-semibold mb-3">Pași</h3>
             <ol className="space-y-4">
               {form.steps.filter(s => s.trim()).map((step, i) => (
                 <li key={i} className="flex gap-3 text-sm">
@@ -832,7 +877,7 @@ function SubmitRecipePageContent() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                     </svg>
                   )}
-                  {tag}
+                  {DIET_TAG_LABELS[tag] || tag}
                 </button>
               )
             })}
@@ -848,7 +893,7 @@ function SubmitRecipePageContent() {
             {FOOD_TAG_GROUPS.map(group => (
               <div key={group.label}>
                 <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-1.5">
-                  {group.label}
+                  {FOOD_TAG_GROUP_LABELS[group.label] || group.label}
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   {group.tags.map(tag => {
@@ -869,7 +914,7 @@ function SubmitRecipePageContent() {
                             <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                           </svg>
                         )}
-                        {tag}
+                        {FOOD_TAG_LABELS[tag] || tag}
                       </button>
                     )
                   })}
@@ -907,7 +952,7 @@ function SubmitRecipePageContent() {
                 <select
                   value={ing.unit}
                   onChange={e => updateIngredient(idx, 'unit', e.target.value)}
-                  className={`w-24 flex-shrink-0 rounded-lg border border-border bg-background px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40 focus:border-ring text-muted-foreground`}
+                  className={`w-24 flex-shrink-0 rounded-lg border border-border bg-background px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40 focus:border-ring ${ing.unit ? 'text-foreground' : 'text-muted-foreground'}`}
                 >
                   {UNITS.map(u => (
                     <option key={u} value={u}>{u === '' ? '— unitate —' : u}</option>

@@ -108,7 +108,7 @@ export default function RecipeSubmissionClient() {
         if (data.errors) {
           setErrors(data.errors);
         }
-        setMessage(data.message || "Failed to submit recipe");
+         setMessage(data.message || "Trimiterea rețetei a eșuat");
       } else {
         setMessage("✅ Recipe submitted successfully! It's now pending admin approval.");
         // Reset form
@@ -126,7 +126,7 @@ export default function RecipeSubmissionClient() {
       }
     } catch (error) {
       console.error("Submission error:", error);
-      setMessage("Error submitting recipe. Please try again.");
+       setMessage("Eroare la trimiterea rețetei. Încearcă din nou.");
     } finally {
       setLoading(false);
     }

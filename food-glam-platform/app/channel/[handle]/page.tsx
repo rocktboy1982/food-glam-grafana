@@ -54,11 +54,11 @@ interface Post {
 type TabKey = 'recipe' | 'short' | 'image' | 'collection' | 'about'
 
 const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
-  { key: 'recipe', label: 'Recipes', icon: <Grid3X3 size={16} /> },
-  { key: 'short', label: 'Shorts', icon: <Play size={16} /> },
-  { key: 'image', label: 'Images', icon: <ImageIcon size={16} /> },
-  { key: 'collection', label: 'Collections', icon: <BookOpen size={16} /> },
-  { key: 'about', label: 'About', icon: <Info size={16} /> },
+  { key: 'recipe', label: 'Rețete', icon: <Grid3X3 size={16} /> },
+  { key: 'short', label: 'Scurt-metraje', icon: <Play size={16} /> },
+  { key: 'image', label: 'Imagini', icon: <ImageIcon size={16} /> },
+  { key: 'collection', label: 'Colecții', icon: <BookOpen size={16} /> },
+  { key: 'about', label: 'Despre', icon: <Info size={16} /> },
 ]
 
 // ─── Component ───────────────────────────────────────────────────────
@@ -90,7 +90,7 @@ export default function ChannelPage() {
 
     fetch(`/api/profiles/${encodeURIComponent(handle)}`)
       .then(res => {
-        if (!res.ok) throw new Error(res.status === 404 ? 'Creator not found' : 'Failed to load profile')
+        if (!res.ok) throw new Error(res.status === 404 ? 'Creator negăsit' : 'Încărcarea profilului a eșuat')
         return res.json()
       })
       .then(data => {
@@ -148,11 +148,11 @@ export default function ChannelPage() {
       })
 
       if (!res.ok) {
-        if (res.status === 401) {
-          toast({ title: 'Please login to follow creators' })
-          setFollowLoading(false)
-          return
-        }
+       if (res.status === 401) {
+           toast({ title: 'Autentifică-te pentru a urmări creatori' })
+           setFollowLoading(false)
+           return
+         }
         throw new Error('Failed')
       }
 
@@ -163,13 +163,13 @@ export default function ChannelPage() {
         follower_count: data.follower_count ?? prev.follower_count,
       } : null)
 
-      toast({
-        title: profile.is_following
-          ? `Unfollowed @${profile.handle}`
-          : `Following @${profile.handle}`,
-      })
-    } catch {
-      toast({ title: 'Something went wrong', variant: 'destructive' })
+       toast({
+         title: profile.is_following
+           ? `Nu mai urmărești @${profile.handle}`
+           : `Urmărești @${profile.handle}`,
+       })
+     } catch {
+       toast({ title: 'Ceva a mers greșit', variant: 'destructive' })
     }
 
     setFollowLoading(false)
@@ -198,13 +198,13 @@ export default function ChannelPage() {
   if (error || !profile) {
     return (
       <main className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-6xl mb-4">🍳</div>
-          <h1 className="text-2xl font-bold mb-2">Creator Not Found</h1>
-          <p className="text-muted-foreground">
-            {error || `No creator with handle @${handle} exists.`}
-          </p>
-        </div>
+       <div className="text-center">
+           <div className="text-6xl mb-4">🍳</div>
+           <h1 className="text-2xl font-bold mb-2">Creator negăsit</h1>
+           <p className="text-muted-foreground">
+             {error || `Nu există un creator cu handle-ul @${handle}.`}
+           </p>
+         </div>
       </main>
     )
   }
@@ -218,7 +218,7 @@ export default function ChannelPage() {
     .slice(0, 2)
     .toUpperCase()
 
-  const joinDate = new Date(profile.created_at).toLocaleDateString('en-US', {
+  const joinDate = new Date(profile.created_at).toLocaleDateString('ro-RO', {
     month: 'long',
     year: 'numeric',
   })
@@ -275,17 +275,17 @@ export default function ChannelPage() {
           <div className="flex items-center gap-6 mt-4 text-sm">
             <div className="text-center">
               <span className="font-bold text-foreground">{profile.post_count}</span>
-              <span className="text-muted-foreground ml-1">posts</span>
+              <span className="text-muted-foreground ml-1">postări</span>
             </div>
             <div className="w-px h-4 bg-border" />
             <div className="text-center">
               <span className="font-bold text-foreground">{profile.follower_count}</span>
-              <span className="text-muted-foreground ml-1">followers</span>
+              <span className="text-muted-foreground ml-1">urmăritori</span>
             </div>
             <div className="w-px h-4 bg-border" />
             <div className="text-center">
               <span className="font-bold text-foreground">{profile.following_count}</span>
-              <span className="text-muted-foreground ml-1">following</span>
+              <span className="text-muted-foreground ml-1">urmăresc</span>
             </div>
           </div>
 
@@ -310,15 +310,15 @@ export default function ChannelPage() {
             >
               {followLoading ? (
                 <Loader2 size={16} className="animate-spin" />
-              ) : profile.is_following ? (
-                followHover ? (
-                  <><UserMinus size={16} /> Unfollow</>
-                ) : (
-                  <><UserCheck size={16} /> Following</>
-                )
-              ) : (
-                <><UserPlus size={16} /> Follow</>
-              )}
+               ) : profile.is_following ? (
+                 followHover ? (
+                   <><UserMinus size={16} /> Nu mai urmări</>
+                 ) : (
+                   <><UserCheck size={16} /> Urmărești</>
+                 )
+               ) : (
+                 <><UserPlus size={16} /> Urmărește</>
+               )}
             </button>
           )}
         </div>
@@ -376,21 +376,21 @@ function AboutTab({ profile, joinDate }: { profile: Profile; joinDate: string })
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="bg-card border rounded-lg p-6">
-        <h3 className="font-semibold text-lg mb-3">About {profile.display_name}</h3>
-        <p className="text-muted-foreground leading-relaxed">
-          {profile.bio || 'This creator hasn\'t added a bio yet.'}
-        </p>
+        <h3 className="font-semibold text-lg mb-3">Despre {profile.display_name}</h3>
+         <p className="text-muted-foreground leading-relaxed">
+           {profile.bio || 'Acest creator nu a adăugat încă o biografie.'}
+         </p>
       </div>
 
-      <div className="bg-card border rounded-lg p-6">
-        <h3 className="font-semibold text-lg mb-3">Stats</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard label="Posts" value={profile.post_count} />
-          <StatCard label="Followers" value={profile.follower_count} />
-          <StatCard label="Following" value={profile.following_count} />
-          <StatCard label="Joined" value={joinDate} />
-        </div>
-      </div>
+       <div className="bg-card border rounded-lg p-6">
+         <h3 className="font-semibold text-lg mb-3">Statistici</h3>
+         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+           <StatCard label="Postări" value={profile.post_count} />
+           <StatCard label="Urmăritori" value={profile.follower_count} />
+           <StatCard label="Urmăresc" value={profile.following_count} />
+           <StatCard label="Înscris" value={joinDate} />
+         </div>
+       </div>
     </div>
   )
 }
@@ -449,9 +449,9 @@ function ContentGrid({
         <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
           <EmptyIcon tab={activeTab} />
         </div>
-        <h3 className="font-semibold text-lg mb-1">No {tabLabel} Yet</h3>
+        <h3 className="font-semibold text-lg mb-1">Niciun {tabLabel} încă</h3>
         <p className="text-muted-foreground text-sm max-w-xs">
-          This creator hasn&apos;t published any {tabLabel.toLowerCase()} yet. Check back later!
+          Acest creator nu a publicat încă niciun {tabLabel.toLowerCase()}. Revino mai târziu!
         </p>
       </div>
     )
@@ -461,7 +461,7 @@ function ContentGrid({
     <>
       {/* Post count */}
       <p className="text-sm text-muted-foreground mb-4">
-        {total} {tabLabel.toLowerCase()} total
+        {total} {tabLabel.toLowerCase()} în total
       </p>
 
       {/* Grid of recipe cards (reuse RecipeCard) */}
@@ -530,7 +530,7 @@ function ContentGrid({
                <div className="p-3">
                  <h4 className="font-medium text-sm line-clamp-2">{post.title}</h4>
                  <p className="text-xs text-muted-foreground mt-1">
-                   {post.votes} votes
+                   {post.votes} voturi
                  </p>
                </div>
              </div>
@@ -538,7 +538,7 @@ function ContentGrid({
          </div>
        )}
 
-      {/* Load More */}
+      {/* Încarcă mai multe */}
       {hasMore && (
         <div className="flex justify-center mt-8">
           <button
@@ -547,7 +547,7 @@ function ContentGrid({
             className="px-6 py-2 bg-secondary text-secondary-foreground rounded-full text-sm font-medium hover:bg-secondary/80 transition-colors disabled:opacity-50 flex items-center gap-2"
           >
             {loading && <Loader2 size={16} className="animate-spin" />}
-            Load More
+            Încarcă mai multe
           </button>
         </div>
       )}

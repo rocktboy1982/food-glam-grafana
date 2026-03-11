@@ -74,6 +74,12 @@ function StarDisplay({ score }: { score: number | null }) {
   )
 }
 
+const DIFFICULTY_LABELS: Record<string, string> = {
+  'easy': 'ușor',
+  'medium': 'mediu',
+  'hard': 'greu'
+}
+
 /* ── Static Generation ──────────────────────────────────────────────────── */
 
 export async function generateStaticParams() {
@@ -237,7 +243,7 @@ export default async function CocktailDetailPage({ params }: PageProps) {
                     }
               }
             >
-              {isAlcoholic ? '🥃 Alcoolic' : '🍃 Non-alcoolic'}
+               {isAlcoholic ? '🥃 Cu alcool' : '🍃 Fără alcool'}
             </Pill>
             {spiritLabel && (
               <Pill style={{ background: 'rgba(0,0,0,0.06)', color: '#555', border: '1px solid rgba(0,0,0,0.1)' }}>
@@ -249,17 +255,17 @@ export default async function CocktailDetailPage({ params }: PageProps) {
                 {rj.abv}% ABV
               </Pill>
             )}
-            {rj.difficulty && (
-              <Pill
-                style={{
-                  background: 'transparent',
-                  color: difficultyColor,
-                  border: `1px solid ${difficultyColor}40`,
-                }}
-              >
-                {rj.difficulty}
-              </Pill>
-            )}
+             {rj.difficulty && (
+               <Pill
+                 style={{
+                   background: 'transparent',
+                   color: difficultyColor,
+                   border: `1px solid ${difficultyColor}40`,
+                 }}
+               >
+                 {DIFFICULTY_LABELS[rj.difficulty ?? ''] || rj.difficulty || '—'}
+               </Pill>
+             )}
           </div>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2" style={{ color: '#111' }}>
             {cocktail.title}
@@ -276,13 +282,13 @@ export default async function CocktailDetailPage({ params }: PageProps) {
             {/* Quick stats */}
             <div className="grid grid-cols-3 gap-3">
               {[
-                { label: 'Porții', value: rj.serves || '—' },
-                { label: 'Dificultate', value: rj.difficulty || '—' },
-                {
-                  label: 'Calitate',
-                  value: cocktail.quality_score ? `${cocktail.quality_score.toFixed(1)}/5` : '—',
-                },
-              ].map(stat => (
+                 { label: 'Porții', value: rj.serves || '—' },
+                 { label: 'Dificultate', value: DIFFICULTY_LABELS[rj.difficulty ?? ''] || rj.difficulty || '—' },
+                 {
+                   label: 'Calitate',
+                   value: cocktail.quality_score ? `${cocktail.quality_score.toFixed(1)}/5` : '—',
+                 },
+               ].map(stat => (
                 <div
                   key={stat.label}
                   className="rounded-xl p-4 text-center"

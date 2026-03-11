@@ -41,11 +41,11 @@ interface VlogEntry {
 function timeAgo(isoString: string): string {
   const diff = Date.now() - new Date(isoString).getTime()
   const mins = Math.floor(diff / 60000)
-  if (mins < 60) return `${mins}m ago`
+  if (mins < 60) return `${mins}m`
   const hours = Math.floor(mins / 60)
-  if (hours < 24) return `${hours}h ago`
+  if (hours < 24) return `${hours}h`
   const days = Math.floor(hours / 24)
-  return `${days}d ago`
+  return `${days}z`
 }
 
 function fmtNumber(n: number): string {
@@ -55,9 +55,9 @@ function fmtNumber(n: number): string {
 }
 
 const TIER_LABEL: Record<string, string> = {
-  pro: 'Professional Chef',
-  amateur: 'Amateur / Influencer',
-  user: 'Home Cook',
+  pro: 'Chef Profesionist',
+  amateur: 'Amator / Influencer',
+  user: 'Bucătar Casnic',
 }
 
 /* ─── component ───────────────────────────────────────────────────────────── */
@@ -163,8 +163,8 @@ export default function ChefPage() {
       <div style={{ minHeight: '100vh', background: '#dde3ee', color: '#111' }}
         className="flex flex-col items-center justify-center gap-4">
         <p className="text-2xl">😕</p>
-        <p className="text-lg font-semibold">Chef not found</p>
-        <Link href="/" style={{ color: '#ff9500' }} className="text-sm">← Back home</Link>
+        <p className="text-lg font-semibold">Chef negăsit</p>
+        <Link href="/" style={{ color: '#ff9500' }} className="text-sm">← Acasă</Link>
       </div>
     )
   }
@@ -182,14 +182,14 @@ export default function ChefPage() {
         />
         <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(245,245,245,0.97) 100%)' }} />
 
-        {/* back button */}
-        <button
-          onClick={() => router.back()}
-          className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold backdrop-blur"
-          style={{ background: 'rgba(255,255,255,0.7)', color: '#111', border: '1px solid rgba(0,0,0,0.12)' }}
-        >
-          ← Back
-        </button>
+         {/* back button */}
+         <button
+           onClick={() => router.back()}
+           className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold backdrop-blur"
+           style={{ background: 'rgba(255,255,255,0.7)', color: '#111', border: '1px solid rgba(0,0,0,0.12)' }}
+         >
+           ← Înapoi
+         </button>
       </div>
 
       {/* ── Profile header ── */}
@@ -232,65 +232,65 @@ export default function ChefPage() {
           </div>
 
           {/* owner: edit profile | others: follow */}
-          {mockUser && mockUser.handle === handle ? (
-            <Link
-              href="/me/profile/edit"
-              className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold transition-all"
-              style={{ background: 'rgba(0,0,0,0.06)', color: '#333', border: '1px solid rgba(0,0,0,0.15)' }}
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-              Edit Profile
-            </Link>
-          ) : (
-            <button
-              onClick={() => {
-                setIsFollowing(f => !f)
-                setFollowerCount(c => isFollowing ? c - 1 : c + 1)
-              }}
-              className="flex-shrink-0 px-5 py-2 rounded-full text-sm font-bold transition-all"
-              style={isFollowing
-                ? { background: 'rgba(0,0,0,0.08)', color: '#333', border: '1px solid rgba(0,0,0,0.15)' }
-                : { background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}
-            >
-              {isFollowing ? '✓ Following' : '+ Follow'}
-            </button>
-          )}
+           {mockUser && mockUser.handle === handle ? (
+             <Link
+               href="/me/profile/edit"
+               className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold transition-all"
+               style={{ background: 'rgba(0,0,0,0.06)', color: '#333', border: '1px solid rgba(0,0,0,0.15)' }}
+             >
+               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+               Editează profilul
+             </Link>
+           ) : (
+             <button
+               onClick={() => {
+                 setIsFollowing(f => !f)
+                 setFollowerCount(c => isFollowing ? c - 1 : c + 1)
+               }}
+               className="flex-shrink-0 px-5 py-2 rounded-full text-sm font-bold transition-all"
+               style={isFollowing
+                 ? { background: 'rgba(0,0,0,0.08)', color: '#333', border: '1px solid rgba(0,0,0,0.15)' }
+                 : { background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}
+             >
+               {isFollowing ? '✓ Urmărești' : '+ Urmărește'}
+             </button>
+           )}
         </div>
 
         {/* bio */}
         <p className="text-sm leading-relaxed mb-4" style={{ color: '#555' }}>{sanitizeText(profile.bio)}</p>
 
-        {/* stats row */}
-        <div className="flex gap-6 mb-6 pb-4" style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
-          {[
-            { label: 'Posts', value: fmtNumber(profile.post_count) },
-            { label: 'Followers', value: fmtNumber(followerCount) },
-            { label: 'Following', value: fmtNumber(profile.following_count) },
-          ].map(stat => (
-            <div key={stat.label} className="text-center">
-              <p className="ff-display text-lg font-bold">{stat.value}</p>
-              <p className="text-[11px] uppercase tracking-wide" style={{ color: '#999' }}>{stat.label}</p>
-            </div>
-          ))}
-        </div>
+         {/* stats row */}
+         <div className="flex gap-6 mb-6 pb-4" style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+           {[
+             { label: 'Postări', value: fmtNumber(profile.post_count) },
+             { label: 'Urmăritori', value: fmtNumber(followerCount) },
+             { label: 'Urmăresc', value: fmtNumber(profile.following_count) },
+           ].map(stat => (
+             <div key={stat.label} className="text-center">
+               <p className="ff-display text-lg font-bold">{stat.value}</p>
+               <p className="text-[11px] uppercase tracking-wide" style={{ color: '#999' }}>{stat.label}</p>
+             </div>
+           ))}
+         </div>
 
-        {/* ── Posts ── */}
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="ff-display text-lg font-bold">
-            Posts <span style={{ color: '#999' }}>{posts.length + vlogEntries.length}</span>
-          </h2>
-          {mockUser && mockUser.handle === handle && (
-            <Link href={`/chefs/${handle}/new-post`}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all"
-              style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14"/></svg>
-              New Entry
-            </Link>
-          )}
-        </div>
+         {/* ── Posts ── */}
+         <div className="flex items-center justify-between mb-4">
+           <h2 className="ff-display text-lg font-bold">
+             Postări <span style={{ color: '#999' }}>{posts.length + vlogEntries.length}</span>
+           </h2>
+           {mockUser && mockUser.handle === handle && (
+             <Link href={`/chefs/${handle}/new-post`}
+               className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all"
+               style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}>
+               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14"/></svg>
+               Intrare nouă
+             </Link>
+           )}
+         </div>
 
-        {posts.length === 0 && vlogEntries.length === 0 ? (
-          <p className="text-sm text-center py-12" style={{ color: '#bbb' }}>No posts yet.</p>
+         {posts.length === 0 && vlogEntries.length === 0 ? (
+           <p className="text-sm text-center py-12" style={{ color: '#bbb' }}>Nicio postare încă.</p>
         ) : (
           <div className="pb-20">
             {/* Merge and sort all items by date (newest first) */}
@@ -312,8 +312,8 @@ export default function ChefPage() {
               return (
                 <div className="space-y-6">
                   {Array.from(grouped.entries()).map(([date, items]) => {
-                    const dateObj = new Date(date + 'T00:00:00')
-                    const dateLabel = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
+                     const dateObj = new Date(date + 'T00:00:00')
+                     const dateLabel = dateObj.toLocaleDateString('ro-RO', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
                     
                     return (
                       <div key={date}>
@@ -334,11 +334,11 @@ export default function ChefPage() {
                                     alt={item.data.title}
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                   />
-                                  <div className="absolute top-2 left-2">
-                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ background: 'rgba(255,149,0,0.9)', backdropFilter: 'blur(4px)' }}>
-                      🍽️ Recipe
-                                    </span>
-                                  </div>
+                                   <div className="absolute top-2 left-2">
+                                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ background: 'rgba(255,149,0,0.9)', backdropFilter: 'blur(4px)' }}>
+                       🍽️ Rețetă
+                                     </span>
+                                   </div>
                                 </Link>
 
                                 {/* Text panel — right */}
@@ -360,12 +360,12 @@ export default function ChefPage() {
                                       <span>{timeAgo(item.data.created_at)}</span>
                                     </div>
                                     <Link
-                                      href={`/recipes/${item.data.slug}`}
-                                      className="text-sm font-semibold px-4 py-2 rounded-full flex-shrink-0 transition-all"
-                                      style={{ background: 'rgba(255,149,0,0.12)', color: '#ff9500', border: '1px solid rgba(255,149,0,0.2)' }}
-                                    >
-                                      View →
-                                    </Link>
+                                       href={`/recipes/${item.data.slug}`}
+                                       className="text-sm font-semibold px-4 py-2 rounded-full flex-shrink-0 transition-all"
+                                       style={{ background: 'rgba(255,149,0,0.12)', color: '#ff9500', border: '1px solid rgba(255,149,0,0.2)' }}
+                                     >
+                                       Vezi →
+                                     </Link>
                                   </div>
                                 </div>
                               </article>
@@ -413,27 +413,27 @@ export default function ChefPage() {
                                       </div>
                                     </div>
                                     <a
-                                      href={sanitizeUrl(item.data.sponsoredProduct.linkUrl)}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="inline-block text-xs font-semibold px-3 py-1.5 rounded-full transition-all hover:opacity-80"
-                                      style={{ background: 'rgba(212,160,23,0.15)', color: '#d4a017', border: '1px solid rgba(212,160,23,0.3)' }}
-                                    >
-                                      Shop now →
-                                    </a>
+                                       href={sanitizeUrl(item.data.sponsoredProduct.linkUrl)}
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       className="inline-block text-xs font-semibold px-3 py-1.5 rounded-full transition-all hover:opacity-80"
+                                       style={{ background: 'rgba(212,160,23,0.15)', color: '#d4a017', border: '1px solid rgba(212,160,23,0.3)' }}
+                                     >
+                                       Cumpără →
+                                     </a>
                                   </div>
                                 )}
 
-                                {mockUser && mockUser.handle === handle && (
-                                  <div className="flex justify-end">
-                                    <Link href={`/chefs/${handle}/new-post?date=${item.data.date}`}
-                                      className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full opacity-60 hover:opacity-100 transition-opacity"
-                                      style={{ background: 'rgba(0,0,0,0.05)' }}>
-                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                                      Edit
-                                    </Link>
-                                  </div>
-                                )}
+                                 {mockUser && mockUser.handle === handle && (
+                                   <div className="flex justify-end">
+                                     <Link href={`/chefs/${handle}/new-post?date=${item.data.date}`}
+                                       className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full opacity-60 hover:opacity-100 transition-opacity"
+                                       style={{ background: 'rgba(0,0,0,0.05)' }}>
+                                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                       Editează
+                                     </Link>
+                                   </div>
+                                 )}
                               </article>
                             )
                           ))}

@@ -109,6 +109,12 @@ export default async function CocktailsPage() {
     return '🔥'
   }
 
+  const DIFFICULTY_LABELS: Record<string, string> = {
+    'easy': 'ușor',
+    'medium': 'mediu',
+    'hard': 'greu'
+  }
+
   return (
     <main
       className="min-h-screen"
@@ -237,24 +243,24 @@ export default async function CocktailsPage() {
                               color: getDifficultyColor(difficulty),
                               border: `1px solid ${getDifficultyColor(difficulty)}60`,
                             }}
-                          >
-                            {getDifficultyEmoji(difficulty)} {difficulty}
-                          </span>
-                        </div>
+                           >
+                             {getDifficultyEmoji(difficulty)} {DIFFICULTY_LABELS[difficulty] || difficulty}
+                           </span>
+                         </div>
 
-                        {/* Category badge */}
-                        <div className="absolute top-3 right-3">
-                          <span
-                            className="px-2.5 py-1 rounded-full text-xs font-bold"
-                            style={{
-                              background:
-                                category === 'alcoholic'
-                                  ? 'rgba(167, 139, 250, 0.9)'
-                                  : 'rgba(5, 150, 105, 0.9)',
-                              color: '#fff',
-                            }}
-                          >
-                            {category === 'alcoholic' ? '🥃' : '🍃'} {category === 'alcoholic' ? 'Alcoolic' : 'Fără alcool'}
+                         {/* Category badge */}
+                         <div className="absolute top-3 right-3">
+                           <span
+                             className="px-2.5 py-1 rounded-full text-xs font-bold"
+                             style={{
+                               background:
+                                 category === 'alcoholic'
+                                   ? 'rgba(167, 139, 250, 0.9)'
+                                   : 'rgba(5, 150, 105, 0.9)',
+                               color: '#fff',
+                             }}
+                           >
+                             {category === 'alcoholic' ? '🥃' : '🍃'} {category === 'alcoholic' ? 'Cu alcool' : 'Fără alcool'}
                           </span>
                         </div>
 

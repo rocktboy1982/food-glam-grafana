@@ -53,7 +53,7 @@ export default function ScanRecipesClient({ sessionId }: { sessionId: string }) 
       } catch { /* ignore */ }
 
       if (ingredients.length === 0) {
-        setError('No ingredients found. Please scan again.')
+        setError('Niciun ingredient găsit. Te rog scanează din nou.')
         return
       }
 
@@ -63,11 +63,11 @@ export default function ScanRecipesClient({ sessionId }: { sessionId: string }) 
         body: JSON.stringify({ ingredients, sort, limit: 12, budget_tier: tier }),
       })
 
-      if (!res.ok) throw new Error('Recipe match failed')
+       if (!res.ok) throw new Error('Potrivirea rețetei a eșuat')
       const data = await res.json()
       setRecipes(data.recipes)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong')
+       setError(e instanceof Error ? e.message : 'Ceva a mers greșit')
     } finally {
       setLoading(false)
     }
@@ -107,7 +107,7 @@ export default function ScanRecipesClient({ sessionId }: { sessionId: string }) 
       <main style={{ background: BG, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ color: '#555', textAlign: 'center' }}>
           <div style={{ width: 36, height: 36, border: '3px solid #ccc', borderTopColor: '#555', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
-          <p style={{ fontSize: 14 }}>Finding recipes…</p>
+           <p style={{ fontSize: 14 }}>Se caută rețete…</p>
         </div>
         <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       </main>
@@ -118,25 +118,25 @@ export default function ScanRecipesClient({ sessionId }: { sessionId: string }) 
     <main style={{ background: BG, minHeight: '100vh', color: '#111', paddingBottom: 80 }}>
       <div style={{ maxWidth: 680, margin: '0 auto', padding: '24px 16px' }}>
 
-        <button
-          onClick={() => router.back()}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555', fontSize: 13, padding: 0, marginBottom: 8 }}
-        >
-          ← Back
-        </button>
+         <button
+           onClick={() => router.back()}
+           style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555', fontSize: 13, padding: 0, marginBottom: 8 }}
+         >
+           ← Înapoi
+         </button>
 
-        <h1 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 4px' }}>🍽️ Recipe Matches</h1>
+         <h1 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 4px' }}>🍽️ Potriviri Rețete</h1>
         <p style={{ color: '#555', fontSize: 14, margin: '0 0 6px' }}>
-          Sorted by: <strong>{sort === 'perfect' ? 'fewest missing' : sort === 'closest' ? 'best match' : sort === 'fewest' ? 'fewest to buy' : 'cheapest to complete'}</strong>
+           Sortat după: <strong>{sort === 'perfect' ? 'cele mai puține lipsă' : sort === 'closest' ? 'cea mai bună potrivire' : sort === 'fewest' ? 'cele mai puține de cumpărat' : 'cea mai ieftină pentru a completa'}</strong>
         </p>
 
         {/* Sort tabs */}
         <div style={{ display: 'flex', gap: 6, marginBottom: 20, flexWrap: 'wrap' }}>
           {[
-            { key: 'perfect', label: '🎯 Perfect' },
-            { key: 'closest', label: '📊 Closest' },
-            { key: 'fewest', label: '🧾 Fewest' },
-            ...(showBudget ? [{ key: 'cheapest', label: '💸 Cheapest' }] : []),
+             { key: 'perfect', label: '🎯 Perfect' },
+             { key: 'closest', label: '📊 Cel mai apropiat' },
+             { key: 'fewest', label: '🧾 Cel mai puțin' },
+             ...(showBudget ? [{ key: 'cheapest', label: '💸 Cel mai ieftin' }] : []),
           ].map(({ key, label }) => (
             <button
               key={key}
@@ -158,12 +158,12 @@ export default function ScanRecipesClient({ sessionId }: { sessionId: string }) 
           <div style={{ background: '#ffe0e0', borderRadius: 12, padding: '16px', color: '#c00', fontSize: 14 }}>
             {error}
           </div>
-        ) : recipes.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '48px 0', color: '#777' }}>
-            <div style={{ fontSize: 48, marginBottom: 12 }}>🤷</div>
-            <p style={{ fontSize: 15 }}>No matching recipes found.</p>
-            <p style={{ fontSize: 13 }}>Try adding more ingredients or adjusting the sort.</p>
-          </div>
+         ) : recipes.length === 0 ? (
+           <div style={{ textAlign: 'center', padding: '48px 0', color: '#777' }}>
+             <div style={{ fontSize: 48, marginBottom: 12 }}>🤷</div>
+             <p style={{ fontSize: 15 }}>Nicio rețetă potrivită găsită.</p>
+             <p style={{ fontSize: 13 }}>Încearcă să adaugi mai multe ingrediente sau ajustează sortarea.</p>
+           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {recipes.map(recipe => (
@@ -180,12 +180,12 @@ export default function ScanRecipesClient({ sessionId }: { sessionId: string }) 
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 8 }}>
                     <div style={{ flex: 1 }}>
                       <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>{recipe.title}</h3>
-                      <div style={{ fontSize: 12, color: '#666', marginTop: 4 }}>
-                        {recipe.matched_count} of {recipe.matched_count + recipe.missing_count} ingredients matched
-                        {recipe.effective_missing_count === 0 && (
-                          <span style={{ color: '#1a7f37', fontWeight: 600, marginLeft: 6 }}>· Can make now!</span>
-                        )}
-                      </div>
+                       <div style={{ fontSize: 12, color: '#666', marginTop: 4 }}>
+                         {recipe.matched_count} din {recipe.matched_count + recipe.missing_count} ingrediente potrivite
+                         {recipe.effective_missing_count === 0 && (
+                           <span style={{ color: '#1a7f37', fontWeight: 600, marginLeft: 6 }}>· Poți gătit acum!</span>
+                         )}
+                       </div>
                     </div>
                     <div style={{
                       background: recipe.match_ratio >= 0.8 ? '#e8f5e9' : recipe.match_ratio >= 0.5 ? '#fff8e1' : '#fce4ec',
@@ -199,8 +199,8 @@ export default function ScanRecipesClient({ sessionId }: { sessionId: string }) 
                   {/* Missing ingredients */}
                   {recipe.missing_ingredients.length > 0 && (
                     <div style={{ marginBottom: 10 }}>
-                      <div style={{ fontSize: 11, color: '#999', fontWeight: 600, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                        Need to buy:
+                       <div style={{ fontSize: 11, color: '#999', fontWeight: 600, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                         Trebuie să cumperi:
                       </div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                         {recipe.missing_ingredients.map((ing, i) => (
@@ -209,24 +209,24 @@ export default function ScanRecipesClient({ sessionId }: { sessionId: string }) 
                           </span>
                         ))}
                       </div>
-                      {recipe.estimated_missing_cost_ron !== null && (
-                        <div style={{ fontSize: 12, color: '#9a6700', marginTop: 6, fontWeight: 600 }}>
-                          Est. cost: ~{recipe.estimated_missing_cost_ron.toFixed(2)} RON
-                        </div>
-                      )}
+                       {recipe.estimated_missing_cost_ron !== null && (
+                         <div style={{ fontSize: 12, color: '#9a6700', marginTop: 6, fontWeight: 600 }}>
+                           Cost estimat: ~{recipe.estimated_missing_cost_ron.toFixed(2)} RON
+                         </div>
+                       )}
                     </div>
                   )}
 
                   <div style={{ display: 'flex', gap: 8 }}>
                     <button
-                      onClick={() => router.push(`/recipes/${recipe.slug}`)}
-                      style={{
-                        flex: 1, padding: '9px 0', borderRadius: 8,
-                        background: '#111', color: '#fff', border: 'none',
-                        fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                      }}
-                    >
-                      View Recipe
+                       onClick={() => router.push(`/recipes/${recipe.slug}`)}
+                       style={{
+                         flex: 1, padding: '9px 0', borderRadius: 8,
+                         background: '#111', color: '#fff', border: 'none',
+                         fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                       }}
+                     >
+                       Vezi Rețeta
                     </button>
                     {showBudget && recipe.missing_ingredients.length > 0 && (
                       <button
@@ -238,7 +238,7 @@ export default function ScanRecipesClient({ sessionId }: { sessionId: string }) 
                           fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
                         }}
                       >
-                        {orderingFor === recipe.recipe_id ? '…' : 'Order missing →'}
+                         {orderingFor === recipe.recipe_id ? '…' : 'Comandă lipsă →'}
                       </button>
                     )}
                   </div>

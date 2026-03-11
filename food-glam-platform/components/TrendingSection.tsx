@@ -136,7 +136,7 @@ export default function TrendingSection() {
               : { background: 'rgba(255,255,255,0.05)', color: '#666' }
           }
         >
-          🍽️ Recipes
+          🍽️ Rețete
         </button>
         <button
           onClick={() => setTab('cocktails')}
@@ -147,7 +147,7 @@ export default function TrendingSection() {
               : { background: 'rgba(255,255,255,0.05)', color: '#666' }
           }
         >
-          🍹 Cocktails
+          🍹 Cocktailuri
         </button>
       </div>
 

@@ -77,27 +77,27 @@ const SPIRIT_GROUPS = [
     desc: 'Cognacuri VS, VSOP, XO și Armagnac, calvados, pisco',
     img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
   },
-  {
-    family: 'Liqueurs & Aperitifs',
-    slug: 'liqueur',
-    emoji: '🍊',
-    desc: 'Lichioruri amare, dulci și cu plante aromă — Campari, Aperol, Amaro',
-    img: 'https://images.unsplash.com/photo-1560508180-03f285f67ded?w=600&q=80',
-  },
-  {
-    family: 'Wine & Champagne',
-    slug: 'wine',
-    emoji: '🍾',
-    desc: 'Cocktail-uri spumante, spritz-uri pe bază de vin și sangria',
-    img: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&q=80',
-  },
-  {
-    family: 'Non-Alcoholic',
-    slug: 'mocktail',
-    emoji: '🍃',
-    desc: 'Mocktail-uri artizanale fără alcool și sofisticate',
-    img: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600&q=80',
-  },
+   {
+     family: 'Lichioruri și Aperitive',
+     slug: 'liqueur',
+     emoji: '🍊',
+     desc: 'Lichioruri amare, dulci și cu plante aromă — Campari, Aperol, Amaro',
+     img: 'https://images.unsplash.com/photo-1560508180-03f285f67ded?w=600&q=80',
+   },
+   {
+     family: 'Vin și Șampanie',
+     slug: 'wine',
+     emoji: '🍾',
+     desc: 'Cocktail-uri spumante, spritz-uri pe bază de vin și sangria',
+     img: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&q=80',
+   },
+   {
+     family: 'Fără alcool',
+     slug: 'mocktail',
+     emoji: '🍃',
+     desc: 'Mocktail-uri artizanale fără alcool și sofisticate',
+     img: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600&q=80',
+   },
 ]
 
 /* ─── featured cocktail collections ─────────────────────────────────────── */
@@ -158,7 +158,7 @@ export default async function CocktailBooksPage() {
               className="text-xs font-bold px-2.5 py-1 rounded-full inline-block"
               style={{ background: 'rgba(139,92,246,0.2)', color: '#a78bfa' }}
             >
-              {SPIRIT_GROUPS.length} spirit families · {COCKTAIL_COLLECTIONS.length} collections
+               {SPIRIT_GROUPS.length} familii de spirtoase · {COCKTAIL_COLLECTIONS.length} colecții
             </p>
           </div>
 

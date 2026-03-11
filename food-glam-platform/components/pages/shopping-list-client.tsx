@@ -9,17 +9,17 @@ export default function ShoppingListClient() {
   // Placeholder UI: merge, export, print
   return (
     <div className="space-y-4 max-w-2xl">
-      <h2 className="text-lg font-semibold">Shopping Lists</h2>
+       <h2 className="text-lg font-semibold">Liste de cumpărături</h2>
       <div className="flex gap-2">
         <Button onClick={async () => {
           try {
             const res = await fetch('/api/shopping-lists/merge', { method: 'POST' });
-            if (!res.ok) throw new Error('Merge failed');
-            push({ message: 'Merged lists (placeholder)', type: 'success' });
-          } catch (e) {
-            push({ message: 'Merge failed', type: 'error' });
+             if (!res.ok) throw new Error('Combinarea a eșuat');
+             push({ message: 'Liste combinate (placeholder)', type: 'success' });
+           } catch (e) {
+             push({ message: 'Combinarea a eșuat', type: 'error' });
           }
-        }}>Merge Lists</Button>
+         }}>Combină listele</Button>
         <Button onClick={() => {
           // Export via simple CSV download placeholder
           const csv = 'Item,Qty\nTomatoes,2\nEggs,12';
@@ -27,10 +27,10 @@ export default function ShoppingListClient() {
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url; a.download = 'shopping-list.csv'; a.click(); URL.revokeObjectURL(url);
-        }}>Export CSV</Button>
-        <Button onClick={() => window.print()}>Print</Button>
+         }}>Exportă CSV</Button>
+         <Button onClick={() => window.print()}>Printează</Button>
       </div>
-      <div className="text-sm text-muted-foreground">This is a scaffold; server-side merge and sharing will be implemented next.</div>
+       <div className="text-sm text-muted-foreground">Aceasta este o versiune preliminară; combinarea pe server și partajarea vor fi implementate în curând.</div>
     </div>
   );
 }

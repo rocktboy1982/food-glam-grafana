@@ -41,6 +41,13 @@ interface RecipeInput {
   hero_image_url: string
 }
 
+const DISCLOSURE_LABELS: Record<string, string> = {
+  'Ad': 'Reclamă',
+  'Sponsored': 'Sponsorizat',
+  'Partner': 'Partener',
+  'Gifted': 'Cadou'
+}
+
 export default function NewPostPage() {
   const router = useRouter()
   const params = useParams()
@@ -118,12 +125,12 @@ export default function NewPostPage() {
     return (
       <main style={{ background: '#dde3ee', minHeight: '100vh', color: '#111' }} className="px-4 py-8">
         <div className="max-w-2xl mx-auto">
-          <h1 className="ff-display text-2xl font-bold mb-4">Sign in to post</h1>
-          <p className="mb-6" style={{ color: '#666' }}>You need to be signed in to create vlog entries.</p>
+          <h1 className="ff-display text-2xl font-bold mb-4">Autentifică-te pentru a posta</h1>
+          <p className="mb-6" style={{ color: '#666' }}>Trebuie să fii autentificat pentru a crea intrări în vlog.</p>
           <Link href="/auth/signin"
             className="px-6 py-3 rounded-full text-sm font-semibold text-white inline-block"
             style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)' }}>
-            Sign In
+            Autentifică-te
           </Link>
         </div>
       </main>
@@ -136,12 +143,12 @@ export default function NewPostPage() {
     return (
       <main style={{ background: '#dde3ee', minHeight: '100vh', color: '#111' }} className="px-4 py-8">
         <div className="max-w-2xl mx-auto">
-          <h1 className="ff-display text-2xl font-bold mb-4">Not your page</h1>
-          <p className="mb-6" style={{ color: '#666' }}>You can only edit your own vlog entries.</p>
+          <h1 className="ff-display text-2xl font-bold mb-4">Nu este pagina ta</h1>
+          <p className="mb-6" style={{ color: '#666' }}>Poți edita doar propriile tale intrări de vlog.</p>
           <Link href={`/chefs/${mockUser.handle}`}
             className="px-6 py-3 rounded-full text-sm font-semibold text-white inline-block"
             style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)' }}>
-            Go to my chef page
+            Mergi la pagina mea de chef
           </Link>
         </div>
       </main>
@@ -174,58 +181,58 @@ export default function NewPostPage() {
     setShowSearchResults(false)
   }
 
-  const handleSave = async () => {
-    if (!body.trim()) {
-      alert('Please write something for your vlog entry.')
-      return
-    }
+   const handleSave = async () => {
+     if (!body.trim()) {
+       alert('Scrie ceva pentru intrarea ta în vlog.')
+       return
+     }
 
-    setLoading(true)
-    try {
-      const entriesStr = localStorage.getItem(`chef_vlog_${resolvedHandle}`)
-      let entries: VlogEntry[] = []
-      
-      if (entriesStr) {
-        try {
-          entries = JSON.parse(entriesStr)
-        } catch {}
-      }
+     setLoading(true)
+     try {
+       const entriesStr = localStorage.getItem(`chef_vlog_${resolvedHandle}`)
+       let entries: VlogEntry[] = []
+       
+       if (entriesStr) {
+         try {
+           entries = JSON.parse(entriesStr)
+         } catch {}
+       }
 
-      // Check if entry exists for this date
-      const existingIndex = entries.findIndex(e => e.date === date)
-      const now = new Date().toISOString()
+       // Check if entry exists for this date
+       const existingIndex = entries.findIndex(e => e.date === date)
+       const now = new Date().toISOString()
 
-      const newEntry: VlogEntry = {
-        id: existingIndex >= 0 ? entries[existingIndex].id : crypto.randomUUID(),
-        date,
-        body,
-        attachedRecipe: attachedRecipe || undefined,
-        sponsoredProduct: (productName.trim() && productLinkUrl.trim()) ? {
-          name: productName,
-          imageUrl: productImageUrl,
-          linkUrl: productLinkUrl,
-          description: productDescription,
-          disclosure: productDisclosure
-        } : undefined,
-        createdAt: existingIndex >= 0 ? entries[existingIndex].createdAt : now,
-        updatedAt: now
-      }
+       const newEntry: VlogEntry = {
+         id: existingIndex >= 0 ? entries[existingIndex].id : crypto.randomUUID(),
+         date,
+         body,
+         attachedRecipe: attachedRecipe || undefined,
+         sponsoredProduct: (productName.trim() && productLinkUrl.trim()) ? {
+           name: productName,
+           imageUrl: productImageUrl,
+           linkUrl: productLinkUrl,
+           description: productDescription,
+           disclosure: productDisclosure
+         } : undefined,
+         createdAt: existingIndex >= 0 ? entries[existingIndex].createdAt : now,
+         updatedAt: now
+       }
 
-      if (existingIndex >= 0) {
-        entries[existingIndex] = newEntry
-      } else {
-        entries.push(newEntry)
-      }
+       if (existingIndex >= 0) {
+         entries[existingIndex] = newEntry
+       } else {
+         entries.push(newEntry)
+       }
 
-      localStorage.setItem(`chef_vlog_${resolvedHandle}`, JSON.stringify(entries))
-      router.push(`/chefs/${resolvedHandle}`)
-    } catch (err) {
-      console.error('Failed to save:', err)
-      alert('Failed to save entry')
-    } finally {
-      setLoading(false)
-    }
-  }
+       localStorage.setItem(`chef_vlog_${resolvedHandle}`, JSON.stringify(entries))
+       router.push(`/chefs/${resolvedHandle}`)
+     } catch (err) {
+       console.error('Failed to save:', err)
+       alert('Salvarea a eșuat')
+     } finally {
+       setLoading(false)
+     }
+   }
 
   return (
     <main style={{ background: '#dde3ee', minHeight: '100vh', color: '#111' }}>
@@ -238,17 +245,17 @@ export default function NewPostPage() {
         }}>
         <Link href={`/chefs/${resolvedHandle}`} className="flex items-center gap-1 text-sm opacity-70 hover:opacity-100 transition-opacity">
           <span>←</span>
-          <span>Back</span>
+          <span>Înapoi</span>
         </Link>
       </div>
 
       {/* Main content */}
       <div className="px-4 py-8 max-w-2xl mx-auto">
-        <h1 className="ff-display text-2xl font-bold mb-6">New Vlog Entry</h1>
+        <h1 className="ff-display text-2xl font-bold mb-6">Intrare nouă în Vlog</h1>
 
         {/* Date field */}
         <div className="mb-6">
-          <label className="block text-sm font-semibold mb-2">Date</label>
+          <label className="block text-sm font-semibold mb-2">Data</label>
           <input
             type="date"
             value={date}
@@ -260,11 +267,11 @@ export default function NewPostPage() {
 
         {/* Vlog text area */}
         <div className="mb-6">
-          <label className="block text-sm font-semibold mb-2">{"What's on your mind today?"}</label>
+          <label className="block text-sm font-semibold mb-2">{"Ce ai în minte azi?"}</label>
           <textarea
             value={body}
             onChange={e => setBody(e.target.value)}
-            placeholder="What's on your mind today?"
+            placeholder="Ce ai în minte azi?"
             className="w-full px-4 py-3 rounded-lg text-sm resize-none focus:outline-none"
             style={{ ...inputStyle, minHeight: 140 }}
           />
@@ -272,7 +279,7 @@ export default function NewPostPage() {
 
         {/* Recipe attachment */}
         <div className="mb-6">
-          <label className="block text-sm font-semibold mb-2">Attach a recipe (optional)</label>
+          <label className="block text-sm font-semibold mb-2">Atașează o rețetă (opțional)</label>
 
           {/* Recipe search */}
           <div className="relative mb-3">
@@ -280,7 +287,7 @@ export default function NewPostPage() {
               type="text"
               value={searchQuery}
               onChange={handleSearchChange}
-              placeholder="Search recipes..."
+              placeholder="Caută rețete..."
               className="w-full px-4 py-2 rounded-lg text-sm focus:outline-none"
               style={inputStyle}
             />
@@ -332,7 +339,7 @@ export default function NewPostPage() {
             className="flex items-center gap-2 text-sm font-semibold mb-3 hover:text-orange-400 transition-colors"
             style={{ color: '#ff9500' }}
           >
-            {showProductSection ? '−' : '+'} Add product promotion
+            {showProductSection ? '−' : '+'} Adaugă promovare produs
             <span>🛍️</span>
           </button>
 
@@ -340,12 +347,12 @@ export default function NewPostPage() {
             <div className="p-4 rounded-lg" style={{ background: 'rgba(0,0,0,0.03)', border: '1px solid rgba(0,0,0,0.08)' }}>
               {/* Product name */}
               <div className="mb-4">
-                <label className="block text-xs font-semibold mb-2 uppercase" style={{ color: '#666' }}>Product name</label>
+                <label className="block text-xs font-semibold mb-2 uppercase" style={{ color: '#666' }}>Numele produsului</label>
                 <input
                   type="text"
                   value={productName}
                   onChange={e => setProductName(e.target.value)}
-                  placeholder="e.g., My Organic Pasta"
+                  placeholder="ex. Paste organice"
                   className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none"
                   style={inputStyle}
                 />
@@ -353,7 +360,7 @@ export default function NewPostPage() {
 
               {/* Product image URL with preview */}
               <div className="mb-4">
-                <label className="block text-xs font-semibold mb-2 uppercase" style={{ color: '#666' }}>Product image URL</label>
+                <label className="block text-xs font-semibold mb-2 uppercase" style={{ color: '#666' }}>URL imagine produs</label>
                 <div className="flex gap-3">
                   <input
                     type="url"
@@ -373,7 +380,7 @@ export default function NewPostPage() {
 
               {/* Shop/Affiliate link */}
               <div className="mb-4">
-                <label className="block text-xs font-semibold mb-2 uppercase" style={{ color: '#666' }}>Shop / affiliate link</label>
+                <label className="block text-xs font-semibold mb-2 uppercase" style={{ color: '#666' }}>Link magazin / afiliat</label>
                 <input
                   type="url"
                   value={productLinkUrl}
@@ -384,42 +391,42 @@ export default function NewPostPage() {
                 />
               </div>
 
-              {/* Description with char counter */}
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-semibold uppercase" style={{ color: '#666' }}>Short description</label>
-                  <span className="text-xs" style={{ color: '#aaa' }}>{productDescription.length} / 120</span>
-                </div>
-                <textarea
-                  value={productDescription}
-                  onChange={e => setProductDescription(e.target.value.slice(0, 120))}
-                  placeholder="Brief product description..."
+               {/* Description with char counter */}
+               <div className="mb-4">
+                 <div className="flex items-center justify-between mb-2">
+                   <label className="text-xs font-semibold uppercase" style={{ color: '#666' }}>Descriere scurtă</label>
+                   <span className="text-xs" style={{ color: '#aaa' }}>{productDescription.length} / 120</span>
+                 </div>
+                 <textarea
+                   value={productDescription}
+                   onChange={e => setProductDescription(e.target.value.slice(0, 120))}
+                   placeholder="Descriere scurtă a produsului..."
                   maxLength={120}
                   className="w-full px-3 py-2 rounded-lg text-sm resize-none focus:outline-none"
                   style={{ ...inputStyle, minHeight: 80 }}
                 />
               </div>
 
-              {/* Disclosure label selector */}
-              <div>
-                <label className="block text-xs font-semibold mb-2 uppercase" style={{ color: '#666' }}>Disclosure</label>
-                <div className="flex gap-2">
-                  {(['Ad', 'Sponsored', 'Partner', 'Gifted'] as const).map(label => (
-                    <button
-                      key={label}
-                      onClick={() => setProductDisclosure(label)}
-                      className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
-                      style={{
-                        background: productDisclosure === label ? 'rgba(212,160,23,0.2)' : 'rgba(0,0,0,0.06)',
-                        border: productDisclosure === label ? '1px solid rgba(212,160,23,0.5)' : '1px solid rgba(0,0,0,0.1)',
-                        color: productDisclosure === label ? '#d4a017' : '#666'
-                      }}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
+               {/* Disclosure label selector */}
+               <div>
+                 <label className="block text-xs font-semibold mb-2 uppercase" style={{ color: '#666' }}>Declarație</label>
+                 <div className="flex gap-2">
+                   {(['Ad', 'Sponsored', 'Partner', 'Gifted'] as const).map(label => (
+                     <button
+                       key={label}
+                       onClick={() => setProductDisclosure(label)}
+                       className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
+                       style={{
+                         background: productDisclosure === label ? 'rgba(212,160,23,0.2)' : 'rgba(0,0,0,0.06)',
+                         border: productDisclosure === label ? '1px solid rgba(212,160,23,0.5)' : '1px solid rgba(0,0,0,0.1)',
+                         color: productDisclosure === label ? '#d4a017' : '#666'
+                       }}
+                     >
+                       {DISCLOSURE_LABELS[label] || label}
+                     </button>
+                   ))}
+                 </div>
+               </div>
             </div>
           )}
         </div>
@@ -433,14 +440,14 @@ export default function NewPostPage() {
               border: '1px solid rgba(0,0,0,0.12)',
               color: '#444'
             }}>
-            Cancel
+            Anulează
           </Link>
           <button
             onClick={handleSave}
             disabled={loading || !body.trim()}
             className="px-6 py-2 rounded-full text-sm font-semibold text-white transition-opacity disabled:opacity-50"
             style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)' }}>
-            {loading ? 'Saving...' : 'Publish'}
+            {loading ? 'Se salvează...' : 'Publică'}
           </button>
         </div>
       </div>

@@ -91,16 +91,16 @@ export default function GroceryMatchClient({ listId }: { listId: string }) {
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({ ingredients, vendor_id: vendorId, budget_tier: budgetTier }),
       })
-      if (!res.ok) throw new Error('Match failed')
+       if (!res.ok) throw new Error('Potrivirea a eșuat')
       const data = await res.json()
       setMatches(data.matches as IngredientMatch[])
       setEstimatedTotal(data.estimatedTotal)
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong')
-    } finally {
-      setMatching(false)
-    }
-  }
+     } catch (e) {
+       setError(e instanceof Error ? e.message : 'Ceva a mers greșit')
+     } finally {
+       setMatching(false)
+     }
+   }
 
   const handleCheckout = async () => {
     setCheckingOut(true)
@@ -114,14 +114,14 @@ export default function GroceryMatchClient({ listId }: { listId: string }) {
           ingredientRef: m.ingredientRef,
         }))
 
-      if (cartItems.length === 0) throw new Error('No products to order')
+      if (cartItems.length === 0) throw new Error('Niciun produs de comandat')
 
       const res = await fetch('/api/grocery/checkout', {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({ vendor_id: vendorId, items: cartItems, budget_tier: budgetTier }),
       })
-      if (!res.ok) throw new Error('Checkout failed')
+      if (!res.ok) throw new Error('Comanda a eșuat')
       const data: CartResult = await res.json()
       setCartResult(data)
 
@@ -143,12 +143,12 @@ export default function GroceryMatchClient({ listId }: { listId: string }) {
       if (data.checkoutUrl) {
         window.open(data.checkoutUrl, '_blank', 'noopener,noreferrer')
       }
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong')
-    } finally {
-      setCheckingOut(false)
-    }
-  }
+     } catch (e) {
+       setError(e instanceof Error ? e.message : 'Ceva a mers greșit')
+     } finally {
+       setCheckingOut(false)
+     }
+   }
 
   const vendorLabel = VENDOR_LABELS[vendorId] ?? vendorId
   const unchecked = items.filter(i => !i.checked)
@@ -159,7 +159,7 @@ export default function GroceryMatchClient({ listId }: { listId: string }) {
       <main style={{ background: BG, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ color: '#555', textAlign: 'center' }}>
           <div style={{ width: 32, height: 32, border: '3px solid #ccc', borderTopColor: '#555', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
-          Loading…
+           Se încarcă…
         </div>
         <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       </main>
@@ -180,12 +180,12 @@ export default function GroceryMatchClient({ listId }: { listId: string }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: '0 1px 3px rgba(0,0,0,0.1)', flexShrink: 0,
             }}
-            aria-label="Back"
+            aria-label="Înapoi"
           >
             ←
           </button>
           <div style={{ flex: 1 }}>
-            <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>🛒 Match Products</h1>
+            <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>🛒 Potrivire Produse</h1>
             <p style={{ color: '#666', fontSize: 13, margin: '2px 0 0' }}>
               {unchecked.length} item{unchecked.length !== 1 ? 's' : ''} · {vendorLabel} · {BUDGET_LABELS[budgetTier]}
             </p>
@@ -207,11 +207,11 @@ export default function GroceryMatchClient({ listId }: { listId: string }) {
         {/* Settings panel */}
         {showSettings && (
           <div style={{ background: '#fff', borderRadius: 16, padding: 16, marginBottom: 16, boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}>
-            <h3 style={{ fontSize: 13, fontWeight: 700, color: '#888', margin: '0 0 12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Match Settings</h3>
+            <h3 style={{ fontSize: 13, fontWeight: 700, color: '#888', margin: '0 0 12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Setări Potrivire</h3>
 
             {/* Vendor picker */}
             <div style={{ marginBottom: 14 }}>
-              <div style={{ fontSize: 13, color: '#555', marginBottom: 6, fontWeight: 500 }}>Store</div>
+               <div style={{ fontSize: 13, color: '#555', marginBottom: 6, fontWeight: 500 }}>Magazin</div>
               {availableVendors.length > 0 ? (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                   {availableVendors.map(v => (
@@ -253,7 +253,7 @@ export default function GroceryMatchClient({ listId }: { listId: string }) {
 
             {/* Budget picker */}
             <div>
-              <div style={{ fontSize: 13, color: '#555', marginBottom: 6, fontWeight: 500 }}>Budget</div>
+              <div style={{ fontSize: 13, color: '#555', marginBottom: 6, fontWeight: 500 }}>Buget</div>
               <div style={{ display: 'flex', gap: 6 }}>
                 {(Object.entries(BUDGET_LABELS) as [BudgetTier, string][]).map(([tier, label]) => (
                   <button
@@ -284,9 +284,9 @@ export default function GroceryMatchClient({ listId }: { listId: string }) {
         {/* Items preview (before match) */}
         {matches.length === 0 && (
           <section style={{ background: '#fff', borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}>
-            <h2 style={{ fontSize: 15, fontWeight: 600, margin: '0 0 12px' }}>Items to send ({unchecked.length})</h2>
+            <h2 style={{ fontSize: 15, fontWeight: 600, margin: '0 0 12px' }}>Articole de trimis ({unchecked.length})</h2>
             {unchecked.length === 0 ? (
-              <p style={{ color: '#888', fontSize: 14 }}>All items are checked — nothing to send.</p>
+              <p style={{ color: '#888', fontSize: 14 }}>Toate articolele sunt bifate — nimic de trimis.</p>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {unchecked.map(item => (
@@ -335,8 +335,8 @@ export default function GroceryMatchClient({ listId }: { listId: string }) {
                       <span style={{ fontSize: 18 }}>✅</span>
                     </div>
                   ) : (
-                    <div style={{ color: '#c55', fontSize: 13, fontStyle: 'italic' }}>
-                      No product found
+                   <div style={{ color: '#c55', fontSize: 13, fontStyle: 'italic' }}>
+                       Niciun produs găsit
                       {match.substitution && (
                         <span style={{ color: '#777', marginLeft: 6, fontStyle: 'normal' }}>· Try: {match.substitution.substitute}</span>
                       )}
@@ -373,12 +373,12 @@ export default function GroceryMatchClient({ listId }: { listId: string }) {
                 <pre style={{ background: '#f5f5f5', borderRadius: 8, padding: 12, fontSize: 12, overflow: 'auto', maxHeight: 200, whiteSpace: 'pre-wrap' }}>
                   {cartResult.handoffMessage}
                 </pre>
-                <button
-                  onClick={() => navigator.clipboard.writeText(cartResult.handoffMessage!)}
-                  style={{ marginTop: 8, background: '#555', color: '#fff', border: 'none', borderRadius: 8, padding: '10px 16px', fontSize: 12, cursor: 'pointer', minHeight: 36 }}
-                >
-                  Copy to clipboard
-                </button>
+                 <button
+                   onClick={() => navigator.clipboard.writeText(cartResult.handoffMessage!)}
+                   style={{ marginTop: 8, background: '#555', color: '#fff', border: 'none', borderRadius: 8, padding: '10px 16px', fontSize: 12, cursor: 'pointer', minHeight: 36 }}
+                 >
+                   Copiază în clipboard
+                 </button>
               </div>
             )}
           </section>
@@ -407,7 +407,7 @@ export default function GroceryMatchClient({ listId }: { listId: string }) {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
               }}
             >
-              {matching ? '⏳ Matching…' : `🔍 Match on ${vendorLabel}`}
+              {matching ? '⏳ Se potrivește…' : `🔍 Potrivire pe ${vendorLabel}`}
             </button>
           ) : (
             <>
@@ -420,7 +420,7 @@ export default function GroceryMatchClient({ listId }: { listId: string }) {
                   display: 'flex', alignItems: 'center', gap: 6,
                 }}
               >
-                ← Redo
+                 ← Refă
               </button>
               {!cartResult && (
                 <button
@@ -436,7 +436,7 @@ export default function GroceryMatchClient({ listId }: { listId: string }) {
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   }}
                 >
-                  {checkingOut ? '⏳ Preparing…' : `🚀 Send to ${vendorLabel}`}
+                  {checkingOut ? '⏳ Se pregătește…' : `🚀 Trimite la ${vendorLabel}`}
                 </button>
               )}
             </>
