@@ -427,11 +427,11 @@ function SubmitRecipePageContent() {
     const country = availableCountries.find(c => c.id === form.countryId)
     const region  = ALL_REGIONS.find(r => r.id === form.regionId)
     return (
-      <div className="min-h-screen" style={{ background: '#dde3ee', color: '#111' }}><div className="max-w-3xl mx-auto px-4 py-10">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold">Previzualizare</h1>
-          <Button variant="outline" onClick={() => setShowPreview(false)}>Înapoi la editor</Button>
-        </div>
+      <div className="min-h-screen" style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}><div className="max-w-3xl mx-auto px-4 py-10">
+         <div className="flex items-center justify-between mb-8">
+           <h1 className="text-2xl font-bold">Previzualizare</h1>
+           <Button variant="outline" onClick={() => setShowPreview(false)}>Înapoi la editor</Button>
+         </div>
         <article className="space-y-6">
           {form.heroImageUrl && (
             <Image src={form.heroImageUrl} alt={form.title} className="w-full h-64 object-cover rounded-xl" />
@@ -502,10 +502,10 @@ function SubmitRecipePageContent() {
 
   /* ── main form ───────────────────────────────────────────── */
   return (
-    <div className="min-h-screen" style={{ background: '#dde3ee', color: '#111' }}><div className="max-w-3xl mx-auto px-4 py-10">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-8">
-        <Link href="/submit" className="text-muted-foreground hover:text-foreground transition-colors">
+    <div className="min-h-screen" style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}><div className="max-w-3xl mx-auto px-4 py-10">
+       {/* Header */}
+       <div className="flex items-center gap-3 mb-8">
+         <Link href="/submit" className="text-muted-foreground hover:text-foreground transition-colors">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
           </svg>

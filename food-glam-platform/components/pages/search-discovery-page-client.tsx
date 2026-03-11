@@ -539,7 +539,7 @@ function SearchDiscoveryPageClientContent() {
   const cocktailTotalPages = Math.max(1, Math.ceil(cocktailTotal / PER_PAGE))
 
   return (
-    <main className="min-h-screen" style={{ background: '#dde3ee' }}>
+    <main className="min-h-screen" style={{ background: 'hsl(var(--background))' }}>
 
       {/* ---- Mode toggle: Recipes / Cocktails ---- */}
       <div className="flex justify-center pt-4 pb-0">
@@ -1150,7 +1150,7 @@ function SearchDiscoveryPageClientContent() {
 export default function SearchDiscoveryPageClient() {
   return (
      <Suspense fallback={
-       <div className="min-h-screen flex items-center justify-center" style={{ background: '#dde3ee' }}>
+        <div className="min-h-screen flex items-center justify-center" style={{ background: 'hsl(var(--background))' }}>
          <div className="text-muted-foreground">Se încarcă căutarea...</div>
        </div>
      }>

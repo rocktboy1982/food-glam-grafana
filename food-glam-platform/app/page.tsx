@@ -217,7 +217,7 @@ export default function Home() {
         .toast-exit { animation: toastSlideOut 0.3s ease; }
       `}</style>
 
-      <main className="ff-body min-h-screen" style={{ background: '#0d0d0d', color: '#f0f0f0' }}>
+      <main className="ff-body min-h-screen" style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}>
 
 
 

@@ -116,14 +116,14 @@ export default function NewPostPage() {
     color: '#111',
   }
 
-  if (!hydrated) {
-    return <div style={{ background: '#dde3ee', minHeight: '100vh' }} />
-  }
+   if (!hydrated) {
+     return <div style={{ background: 'hsl(var(--background))', minHeight: '100vh' }} />
+   }
 
-  // Unauthenticated
-  if (!mockUser) {
-    return (
-      <main style={{ background: '#dde3ee', minHeight: '100vh', color: '#111' }} className="px-4 py-8">
+   // Unauthenticated
+   if (!mockUser) {
+     return (
+       <main style={{ background: 'hsl(var(--background))', minHeight: '100vh', color: 'hsl(var(--foreground))' }} className="px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <h1 className="ff-display text-2xl font-bold mb-4">Autentifică-te pentru a posta</h1>
           <p className="mb-6" style={{ color: '#666' }}>Trebuie să fii autentificat pentru a crea intrări în vlog.</p>
@@ -137,11 +137,11 @@ export default function NewPostPage() {
     )
   }
 
-  // Handle mismatch
-  const resolvedHandle = handle === 'me' ? mockUser.handle : handle
-  if (handle !== 'me' && handle !== mockUser.handle) {
-    return (
-      <main style={{ background: '#dde3ee', minHeight: '100vh', color: '#111' }} className="px-4 py-8">
+   // Handle mismatch
+   const resolvedHandle = handle === 'me' ? mockUser.handle : handle
+   if (handle !== 'me' && handle !== mockUser.handle) {
+     return (
+       <main style={{ background: 'hsl(var(--background))', minHeight: '100vh', color: 'hsl(var(--foreground))' }} className="px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <h1 className="ff-display text-2xl font-bold mb-4">Nu este pagina ta</h1>
           <p className="mb-6" style={{ color: '#666' }}>Poți edita doar propriile tale intrări de vlog.</p>
@@ -234,10 +234,10 @@ export default function NewPostPage() {
      }
    }
 
-  return (
-    <main style={{ background: '#dde3ee', minHeight: '100vh', color: '#111' }}>
-      {/* Header */}
-      <div className="sticky top-0 z-40 px-4 py-3 flex items-center gap-3"
+   return (
+     <main style={{ background: 'hsl(var(--background))', minHeight: '100vh', color: 'hsl(var(--foreground))' }}>
+       {/* Header */}
+       <div className="sticky top-0 z-40 px-4 py-3 flex items-center gap-3"
         style={{
           background: 'rgba(245,245,245,0.95)',
           backdropFilter: 'blur(12px)',

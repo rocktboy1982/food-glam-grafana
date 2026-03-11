@@ -40,7 +40,7 @@ export default function CookieConsent() {
       role="dialog"
       aria-label="Cookie consent"
       className="fixed bottom-16 md:bottom-0 left-0 right-0 z-[60]"
-      style={{ background: '#0a0a0a', borderTop: '1px solid rgba(255,255,255,0.1)' }}
+      style={{ background: 'hsl(var(--background))', borderTop: '1px solid hsl(var(--border))' }}
     >
       <div className="max-w-6xl mx-auto px-4 py-4 md:py-5">
         <div className="flex flex-col md:flex-row md:items-center gap-4">

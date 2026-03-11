@@ -64,7 +64,7 @@ const contentTypes = [
 
 export default function SubmitClient() {
   return (
-    <main className="min-h-screen container mx-auto px-4 py-12 max-w-3xl" style={{ background: '#dde3ee', color: '#111' }}>
+    <main className="min-h-screen container mx-auto px-4 py-12 max-w-3xl" style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}>
       <div className="mb-10">
         <h1 className="text-3xl font-bold tracking-tight mb-2">Creează ceva</h1>
         <p className="text-muted-foreground">Alege ce vrei să împărtășești cu comunitatea.</p>

@@ -109,7 +109,7 @@ export default function ShoppingListsClient() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#dde3ee' }}>
+      <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'hsl(var(--background))' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ width: 32, height: 32, border: '3px solid #ccc', borderTopColor: '#111', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
           <p style={{ fontSize: 13, color: '#888' }}>Loading lists…</p>
@@ -120,7 +120,7 @@ export default function ShoppingListsClient() {
   }
 
   return (
-    <div style={{ background: '#dde3ee', minHeight: '100vh', padding: '24px 16px' }}>
+    <div style={{ background: 'hsl(var(--background))', minHeight: '100vh', padding: '24px 16px' }}>
       <div style={{ maxWidth: 650, margin: '0 auto' }}>
 
         {/* Header */}

@@ -142,7 +142,7 @@ export default function RegionCookbookClient({ region }: { region: string }) {
   const hasActiveFilters = activeCountry || activeCourse !== 'all'
 
   return (
-    <main className="min-h-screen" style={{ background: '#dde3ee', color: '#111' }}>
+    <main className="min-h-screen" style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}>
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Breadcrumb */}
          <nav className="text-sm text-muted-foreground mb-6 flex items-center gap-2">

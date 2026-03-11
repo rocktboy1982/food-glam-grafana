@@ -118,7 +118,7 @@ export default async function CocktailsPage() {
   return (
     <main
       className="min-h-screen"
-      style={{ background: '#0a0a0a', color: '#f0f0f0', fontFamily: "'Inter', sans-serif" }}
+      style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))', fontFamily: "'Inter', sans-serif" }}
     >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap');

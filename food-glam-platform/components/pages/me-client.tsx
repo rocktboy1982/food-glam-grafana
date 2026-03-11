@@ -56,7 +56,7 @@ export default function MeClientPage() {
   };
 
   return (
-    <main className="min-h-screen" style={{ background: '#dde3ee', color: '#111' }}><div className="container mx-auto px-4 py-8 flex flex-col gap-8 max-w-xl">
+    <main className="min-h-screen" style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}><div className="container mx-auto px-4 py-8 flex flex-col gap-8 max-w-xl">
        <section className="text-center">
          <h1 className="text-3xl font-bold mb-2" style={{ fontFamily: "'Syne', sans-serif" }}>Profil</h1>
          <p className="mb-4 text-sm" style={{ color: '#777' }}>Gestionează-ți contul, modurile și setările.</p>

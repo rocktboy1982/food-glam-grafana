@@ -174,7 +174,7 @@ export default async function CocktailDetailPage({ params }: PageProps) {
   return (
     <div
       className="min-h-screen"
-      style={{ background: '#dde3ee', color: '#111', fontFamily: "'Inter', sans-serif" }}
+      style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))', fontFamily: "'Inter', sans-serif" }}
     >
       {/* ── Hero ── */}
       <div className="relative w-full" style={{ maxHeight: 480, overflow: 'hidden' }}>

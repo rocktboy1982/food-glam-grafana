@@ -143,10 +143,10 @@ export default function ChefPage() {
   }, [handle, hydrated])
 
   /* ── loading skeleton ── */
-  if (loading) {
-    return (
-      <div style={{ minHeight: '100vh', background: '#dde3ee', color: '#111' }}>
-        <div className="animate-pulse">
+   if (loading) {
+     return (
+       <div style={{ minHeight: '100vh', background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}>
+         <div className="animate-pulse">
           <div style={{ height: 220, background: '#e8e8e8' }} />
           <div className="px-4 pt-16 space-y-3">
             <div className="h-5 rounded" style={{ background: '#d0d0d0', width: '40%' }} />
@@ -157,11 +157,11 @@ export default function ChefPage() {
     )
   }
 
-  /* ── not found ── */
-  if (!profile) {
-    return (
-      <div style={{ minHeight: '100vh', background: '#dde3ee', color: '#111' }}
-        className="flex flex-col items-center justify-center gap-4">
+   /* ── not found ── */
+   if (!profile) {
+     return (
+       <div style={{ minHeight: '100vh', background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}
+         className="flex flex-col items-center justify-center gap-4">
         <p className="text-2xl">😕</p>
         <p className="text-lg font-semibold">Chef negăsit</p>
         <Link href="/" style={{ color: '#ff9500' }} className="text-sm">← Acasă</Link>
@@ -169,9 +169,9 @@ export default function ChefPage() {
     )
   }
 
-  return (
-    <div style={{ minHeight: '100vh', background: '#dde3ee', color: '#111', fontFamily: "'Inter', sans-serif" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap');.ff-display{font-family:'Syne',sans-serif;}`}</style>
+   return (
+     <div style={{ minHeight: '100vh', background: 'hsl(var(--background))', color: 'hsl(var(--foreground))', fontFamily: "'Inter', sans-serif" }}>
+       <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap');.ff-display{font-family:'Syne',sans-serif;}`}</style>
 
       {/* ── Banner ── */}
       <div className="relative" style={{ height: 220 }}>
@@ -196,16 +196,16 @@ export default function ChefPage() {
       <div className="px-4 relative max-w-5xl mx-auto" style={{ marginTop: -56 }}>
         {/* avatar + tier star */}
         <div className="relative inline-block mb-3">
-          <Image
-            src={profile.avatar_url}
-            alt={profile.display_name}
-            className="rounded-full object-cover border-4"
-            style={{ width: 88, height: 88, borderColor: '#dde3ee' }}
-          />
-          {profile.tier !== 'user' && (
-            <span
-              className="absolute bottom-0 right-0 flex items-center justify-center rounded-full"
-              style={{ width: 24, height: 24, background: '#dde3ee', border: '2px solid #dde3ee' }}
+           <Image
+             src={profile.avatar_url}
+             alt={profile.display_name}
+             className="rounded-full object-cover border-4"
+             style={{ width: 88, height: 88, borderColor: 'hsl(var(--background))' }}
+           />
+           {profile.tier !== 'user' && (
+             <span
+               className="absolute bottom-0 right-0 flex items-center justify-center rounded-full"
+               style={{ width: 24, height: 24, background: 'hsl(var(--background))', border: '2px solid hsl(var(--background))' }}
             >
               <TierStar tier={profile.tier} size={16} />
             </span>

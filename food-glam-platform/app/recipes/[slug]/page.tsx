@@ -525,7 +525,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
           strategy="afterInteractive"
         />
-        <main className="min-h-screen pb-24 md:pb-8" style={{ background: '#dde3ee', color: '#111' }}>
+        <main className="min-h-screen pb-24 md:pb-8" style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}>
           {/* Hero Section */}
          <div className="relative w-full h-[50vh] min-h-[320px] max-h-[480px] overflow-hidden">
            <Image src={heroImage} alt={mockRecipe.title} fill className="object-cover" sizes="100vw" />

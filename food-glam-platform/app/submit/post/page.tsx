@@ -30,11 +30,11 @@ function PostFormInner() {
   const type = params.get('type') ?? 'short'
   const meta = TYPE_META[type] ?? TYPE_META.short
 
-  return (
-    <main
-      className="min-h-screen"
-      style={{ background: '#dde3ee', color: '#111' }}
-    >
+   return (
+     <main
+       className="min-h-screen"
+       style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}
+     >
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap');.ff{font-family:'Syne',sans-serif;}`}</style>
 
       <div className="max-w-xl mx-auto px-4 py-10">
@@ -101,12 +101,12 @@ function PostFormInner() {
 }
 
 export default function SubmitPostPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#dde3ee' }}>
-        <div className="animate-spin w-8 h-8 border-2 border-stone-300 border-t-stone-800 rounded-full" />
-      </div>
-    }>
+   return (
+     <Suspense fallback={
+       <div className="min-h-screen flex items-center justify-center" style={{ background: 'hsl(var(--background))' }}>
+         <div className="animate-spin w-8 h-8 border-2 border-stone-300 border-t-stone-800 rounded-full" />
+       </div>
+     }>
       <PostFormInner />
     </Suspense>
   )

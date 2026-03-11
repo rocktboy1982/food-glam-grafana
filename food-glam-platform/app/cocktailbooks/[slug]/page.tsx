@@ -31,7 +31,7 @@ export default async function CocktailBookDetailPage({ params }: { params: Promi
   return (
     <main
       className="min-h-screen"
-      style={{ background: '#dde3ee', color: '#111', fontFamily: "'Inter', sans-serif" }}
+      style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))', fontFamily: "'Inter', sans-serif" }}
     >
       <div className="container mx-auto px-4 py-8">
         <nav className="text-sm mb-6" style={{ color: '#555' }}>

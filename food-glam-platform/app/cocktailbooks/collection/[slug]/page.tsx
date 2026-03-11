@@ -94,7 +94,7 @@ export default async function CollectionPage({ params }: PageProps) {
   return (
     <main
       className="min-h-screen"
-      style={{ background: '#dde3ee', color: '#111', fontFamily: "'Inter', sans-serif" }}
+      style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))', fontFamily: "'Inter', sans-serif" }}
     >
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap');.ff{font-family:'Syne',sans-serif;}`}</style>
 

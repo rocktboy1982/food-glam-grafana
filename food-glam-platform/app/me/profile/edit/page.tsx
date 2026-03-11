@@ -59,8 +59,8 @@ export default function EditProfilePage() {
 
   if (!mockUser) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4"
-        style={{ background: '#dde3ee', color: '#111' }}>
+       <div className="min-h-screen flex flex-col items-center justify-center gap-4"
+         style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}>
         <p className="text-lg font-semibold">Sign in to edit your profile</p>
         <Link href="/auth/signin?redirect=/me/profile/edit"
           className="px-6 py-2 rounded-full text-sm font-semibold text-white"
@@ -119,7 +119,7 @@ export default function EditProfilePage() {
   } as React.CSSProperties)
 
   return (
-    <div className="min-h-screen" style={{ background: '#dde3ee', color: '#111', fontFamily: "'Inter',sans-serif" }}>
+    <div className="min-h-screen" style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))', fontFamily: "'Inter',sans-serif" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap');.ff{font-family:'Syne',sans-serif;}`}</style>
 
       {/* Banner preview */}

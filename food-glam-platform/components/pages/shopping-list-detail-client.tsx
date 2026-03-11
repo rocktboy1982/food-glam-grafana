@@ -293,10 +293,10 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
 
   if (loading) {
     return (
-      <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#dde3ee' }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ width: 32, height: 32, border: '3px solid #ccc', borderTopColor: '#111', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
-           <p style={{ fontSize: 13, color: '#888' }}>Se încarcă lista…</p>
+      <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'hsl(var(--background))' }}>
+         <div style={{ textAlign: 'center' }}>
+           <div style={{ width: 32, height: 32, border: '3px solid #ccc', borderTopColor: '#111', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
+            <p style={{ fontSize: 13, color: '#888' }}>Se încarcă lista…</p>
         </div>
         <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       </div>
@@ -305,7 +305,7 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
 
   if (!meta) {
     return (
-      <div style={{ padding: '40px 20px', maxWidth: 600, margin: '0 auto', background: '#dde3ee', minHeight: '80vh' }}>
+      <div style={{ padding: '40px 20px', maxWidth: 600, margin: '0 auto', background: 'hsl(var(--background))', minHeight: '80vh' }}>
            <p style={{ color: '#888', fontSize: 14 }}>Lista nu a fost găsită.</p>
          <button
            onClick={() => router.push('/me/shopping-lists')}
@@ -330,7 +330,7 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
         @keyframes spin { to { transform: rotate(360deg) } }
       `}</style>
 
-      <div className="print-page" style={{ background: '#dde3ee', minHeight: '100vh', padding: '24px 16px' }}>
+      <div className="print-page" style={{ background: 'hsl(var(--background))', minHeight: '100vh', padding: '24px 16px' }}>
         <div style={{ maxWidth: 650, margin: '0 auto' }}>
 
           {/* Back link */}

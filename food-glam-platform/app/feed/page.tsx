@@ -5,7 +5,7 @@ import { MOCK_RECIPES, MOCK_TRENDING } from '@/lib/mock-data'
 
 export default function FeedPage() {
   return (
-    <main className="min-h-screen" style={{ background: '#dde3ee', color: '#111' }}>
+    <main className="min-h-screen" style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>

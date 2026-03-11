@@ -450,7 +450,7 @@ export default function RankingsPage() {
   return (
     <main
       className="min-h-screen"
-      style={{ background: '#dde3ee', color: '#111' }}
+      style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}
     >
       {/* ── Hero header ── */}
       <div
@@ -476,7 +476,7 @@ export default function RankingsPage() {
       {/* ── Tab bar ── */}
       <div
         className="sticky top-[105px] z-30 px-4 py-3 flex items-center justify-center gap-2 flex-wrap"
-        style={{ background: '#dde3ee', borderBottom: '1px solid rgba(0,0,0,0.08)' }}
+        style={{ background: 'hsl(var(--background))', borderBottom: '1px solid hsl(var(--border))' }}
       >
         {TABS.map(t => (
           <button

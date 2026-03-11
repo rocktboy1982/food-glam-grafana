@@ -190,16 +190,16 @@ export default function PreferredRecipesClient() {
 
   if (!hydrated) {
     return (
-      <main className="min-h-screen" style={{ background: '#dde3ee', color: '#111' }}><div className="container mx-auto px-4 py-8">
-        <div className="animate-pulse space-y-4">
-          {[1, 2, 3].map((i) => <div key={i} className="h-20 rounded-xl bg-muted" />)}
-        </div>
-      </div></main>
+      <main className="min-h-screen" style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}><div className="container mx-auto px-4 py-8">
+         <div className="animate-pulse space-y-4">
+           {[1, 2, 3].map((i) => <div key={i} className="h-20 rounded-xl bg-muted" />)}
+         </div>
+       </div></main>
     )
   }
 
   return (
-    <main className="min-h-screen" style={{ background: '#dde3ee', color: '#111' }}><div className="container mx-auto px-4 py-8 max-w-5xl">
+    <main className="min-h-screen" style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}><div className="container mx-auto px-4 py-8 max-w-5xl">
 
       {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
