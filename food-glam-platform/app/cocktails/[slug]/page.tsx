@@ -207,15 +207,15 @@ export default async function CocktailDetailPage({ params }: PageProps) {
           className="absolute top-4 left-4 flex items-center gap-2 text-xs"
           style={{ color: 'rgba(0,0,0,0.6)' }}
         >
-          <Link href="/cocktails" className="hover:text-violet-300 transition-colors">
-            Biblioteca de Cocktailuri
-          </Link>
+           <Link href="/cocktails" className="hover:text-red-300 transition-colors">
+             Biblioteca de Cocktailuri
+           </Link>
           <span>/</span>
           {spiritLabel && (
             <>
-              <Link href={`/cocktails?spirit=${spirit}`} className="hover:text-violet-300 transition-colors">
-                {spiritLabel}
-              </Link>
+               <Link href={`/cocktails?spirit=${spirit}`} className="hover:text-red-300 transition-colors">
+                 {spiritLabel}
+               </Link>
               <span>/</span>
             </>
           )}
@@ -228,14 +228,14 @@ export default async function CocktailDetailPage({ params }: PageProps) {
         {/* Title + badges */}
         <div className="mb-6">
           <div className="flex flex-wrap gap-2 mb-3">
-            <Pill
-              style={
-                isAlcoholic
-                  ? {
-                      background: 'rgba(124,58,237,0.3)',
-                      color: '#a78bfa',
-                      border: '1px solid rgba(124,58,237,0.5)',
-                    }
+             <Pill
+               style={
+                 isAlcoholic
+                    ? {
+                        background: 'rgba(139,26,43,0.3)',
+                        color: '#b8394e',
+                        border: '1px solid rgba(139,26,43,0.5)',
+                      }
                   : {
                       background: 'rgba(5,150,105,0.3)',
                       color: '#6ee7b7',
@@ -294,9 +294,9 @@ export default async function CocktailDetailPage({ params }: PageProps) {
                   className="rounded-xl p-4 text-center"
                   style={{ background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(0,0,0,0.08)' }}
                 >
-                  <p className="text-xl font-bold capitalize" style={{ color: '#7c3aed' }}>
-                    {stat.value}
-                  </p>
+                   <p className="text-xl font-bold capitalize" style={{ color: '#8B1A2B' }}>
+                     {stat.value}
+                   </p>
                   <p className="text-xs mt-0.5" style={{ color: '#888' }}>
                     {stat.label}
                   </p>
@@ -327,17 +327,17 @@ export default async function CocktailDetailPage({ params }: PageProps) {
 
             {/* Ingredients */}
             <section>
-              <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: '#111' }}>
-                <span className="w-1 h-5 rounded-full inline-block" style={{ background: '#7c3aed' }} />
-                Ingrediente
-              </h2>
+                <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: '#111' }}>
+                  <span className="w-1 h-5 rounded-full inline-block" style={{ background: '#8B1A2B' }} />
+                  Ingrediente
+                </h2>
               {ingredients.length > 0 ? (
                 <ul className="space-y-2">
                   {ingredients.map((ing, i) => (
-                    <li key={i} className="flex items-start gap-3 text-sm">
-                      <span className="mt-2 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: '#7c3aed' }} />
-                      <span style={{ color: '#333' }}>{ing}</span>
-                    </li>
+                      <li key={i} className="flex items-start gap-3 text-sm">
+                        <span className="mt-2 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: '#8B1A2B' }} />
+                        <span style={{ color: '#333' }}>{ing}</span>
+                      </li>
                   ))}
                 </ul>
               ) : (
@@ -347,22 +347,22 @@ export default async function CocktailDetailPage({ params }: PageProps) {
               )}
             </section>
 
-            {/* Method / Steps */}
-            <section>
-              <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: '#111' }}>
-                <span className="w-1 h-5 rounded-full inline-block" style={{ background: '#7c3aed' }} />
-                Metodă
-              </h2>
+             {/* Method / Steps */}
+              <section>
+                <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: '#111' }}>
+                  <span className="w-1 h-5 rounded-full inline-block" style={{ background: '#8B1A2B' }} />
+                  Metodă
+                </h2>
               {steps.length > 0 ? (
                 <ol className="space-y-5">
                   {steps.map((step, i) => (
                     <li key={i} className="flex gap-4">
-                      <span
-                        className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                        style={{ background: '#7c3aed' }}
-                      >
-                        {i + 1}
-                      </span>
+                        <span
+                          className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                          style={{ background: '#8B1A2B' }}
+                        >
+                          {i + 1}
+                        </span>
                       <p className="text-sm leading-relaxed pt-1.5" style={{ color: '#333' }}>
                         {step}
                       </p>
@@ -380,17 +380,17 @@ export default async function CocktailDetailPage({ params }: PageProps) {
             {cocktail.food_tags && cocktail.food_tags.length > 0 && (
               <div className="flex flex-wrap gap-1.5">
                 {cocktail.food_tags.map(tag => (
-                  <span
-                    key={tag}
-                    className="px-2.5 py-1 rounded-full text-[11px] font-medium capitalize"
-                    style={{
-                      background: 'rgba(124,58,237,0.08)',
-                      color: '#7c3aed',
-                      border: '1px solid rgba(124,58,237,0.15)',
-                    }}
-                  >
-                    {tag}
-                  </span>
+                    <span
+                      key={tag}
+                      className="px-2.5 py-1 rounded-full text-[11px] font-medium capitalize"
+                      style={{
+                        background: 'rgba(139,26,43,0.08)',
+                        color: '#8B1A2B',
+                        border: '1px solid rgba(139,26,43,0.15)',
+                      }}
+                    >
+                      {tag}
+                    </span>
                 ))}
               </div>
             )}
@@ -404,9 +404,9 @@ export default async function CocktailDetailPage({ params }: PageProps) {
                 className="rounded-2xl p-5 space-y-3"
                 style={{ background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(0,0,0,0.08)' }}
               >
-                <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#7c3aed' }}>
-                  Calitate
-                </h3>
+                  <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#8B1A2B' }}>
+                    Calitate
+                  </h3>
                 <StarDisplay score={cocktail.quality_score} />
               </div>
             )}
@@ -420,9 +420,9 @@ export default async function CocktailDetailPage({ params }: PageProps) {
                 className="rounded-2xl p-5 space-y-3"
                 style={{ background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(0,0,0,0.08)' }}
               >
-                <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#7c3aed' }}>
-                  Cocktail-uri similare
-                </h3>
+                  <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#8B1A2B' }}>
+                    Cocktail-uri similare
+                  </h3>
                 <div className="space-y-2">
                   {similar.slice(0, 4).map(c => (
                     <Link
@@ -450,17 +450,17 @@ export default async function CocktailDetailPage({ params }: PageProps) {
 
             {/* CTAs */}
             <div className="space-y-2">
-              <Link
-                href="/submit/cocktail"
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold transition-all"
-                style={{
-                  background: 'rgba(124,58,237,0.1)',
-                  color: '#7c3aed',
-                  border: '1px solid rgba(124,58,237,0.25)',
-                }}
-              >
-                🍹 Adaugă propriul cocktail
-              </Link>
+               <Link
+                 href="/submit/cocktail"
+                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold transition-all"
+                  style={{
+                    background: 'rgba(139,26,43,0.1)',
+                    color: '#8B1A2B',
+                    border: '1px solid rgba(139,26,43,0.25)',
+                  }}
+               >
+                 🍹 Adaugă propriul cocktail
+               </Link>
               <Link
                 href="/cocktails"
                 className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold transition-all"

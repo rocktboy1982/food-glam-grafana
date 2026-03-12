@@ -155,9 +155,9 @@ export default async function CocktailBooksPage() {
         <div className="relative h-full flex flex-col justify-between px-8 py-8 max-w-7xl mx-auto w-full">
           <div className="self-start">
             <p
-              className="text-xs font-bold px-2.5 py-1 rounded-full inline-block"
-              style={{ background: 'rgba(139,92,246,0.2)', color: '#a78bfa' }}
-            >
+               className="text-xs font-bold px-2.5 py-1 rounded-full inline-block"
+               style={{ background: 'rgba(139,26,43,0.2)', color: '#b8394e' }}
+             >
                {SPIRIT_GROUPS.length} familii de spirtoase · {COCKTAIL_COLLECTIONS.length} colecții
             </p>
           </div>
@@ -169,13 +169,13 @@ export default async function CocktailBooksPage() {
             <p className="text-lg mb-5" style={{ color: '#ccc' }}>
               Descoperă cocktailuri după spirit, stil și ocazie
             </p>
-            <Link
-              href="/submit/cocktail"
-              className="inline-flex items-center gap-2 font-semibold px-5 py-2.5 rounded-full text-sm transition-all duration-200"
-              style={{ background: '#7c3aed', color: '#fff' }}
-            >
-              🍹 Adaugă un Cocktail
-            </Link>
+             <Link
+               href="/submit/cocktail"
+               className="inline-flex items-center gap-2 font-semibold px-5 py-2.5 rounded-full text-sm transition-all duration-200"
+               style={{ background: '#8B1A2B', color: '#fff' }}
+             >
+               🍹 Adaugă un Cocktail
+             </Link>
           </div>
         </div>
       </div>
@@ -222,14 +222,14 @@ export default async function CocktailBooksPage() {
                     </h3>
                     <p style={{ color: '#888' }} className="text-xs line-clamp-1">{spirit.desc}</p>
                   </div>
-                  <span style={{ color: '#a78bfa' }} className="text-xs font-bold ml-auto flex-shrink-0">→</span>
-                </div>
+                   <span style={{ color: '#b8394e' }} className="text-xs font-bold ml-auto flex-shrink-0">→</span>
+                 </div>
 
-                {/* Hover border */}
-                <div
-                  className="absolute inset-0 rounded-[12px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
-                  style={{ border: '1px solid rgba(167,139,250,0.4)' }}
-                />
+                 {/* Hover border */}
+                 <div
+                   className="absolute inset-0 rounded-[12px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                   style={{ border: '1px solid rgba(139,26,43,0.4)' }}
+                 />
               </Link>
             ))}
           </div>
@@ -274,20 +274,20 @@ export default async function CocktailBooksPage() {
                      <p style={{ color: '#888' }} className="text-sm leading-relaxed">{col.desc}</p>
                    </div>
                    <div className="flex items-end justify-between gap-2 pt-2">
-                     <span
-                       className="text-xs font-semibold px-2.5 py-1 rounded-lg ml-auto flex-shrink-0"
-                       style={{ background: 'rgba(139,92,246,0.15)', color: '#7c3aed' }}
-                     >
-                       {col.count} cocktail-uri
-                     </span>
-                   </div>
-                 </div>
+                      <span
+                        className="text-xs font-semibold px-2.5 py-1 rounded-lg ml-auto flex-shrink-0"
+                        style={{ background: 'rgba(139,26,43,0.15)', color: '#8B1A2B' }}
+                      >
+                        {col.count} cocktail-uri
+                      </span>
+                    </div>
+                  </div>
 
-                 {/* Hover border */}
-                 <div
-                   className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
-                   style={{ border: '1px solid rgba(167,139,250,0.4)' }}
-                 />
+                  {/* Hover border */}
+                  <div
+                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                    style={{ border: '1px solid rgba(139,26,43,0.4)' }}
+                  />
                </Link>
              ))}
            </div>

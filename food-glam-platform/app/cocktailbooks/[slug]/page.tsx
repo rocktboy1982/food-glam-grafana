@@ -59,9 +59,9 @@ export default async function CocktailBookDetailPage({ params }: { params: Promi
               {owner.avatar_url ? (
                 <Image src={owner.avatar_url} alt={owner.display_name} className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-xs font-bold" style={{ color: '#7c3aed' }}>
-                  {owner.display_name[0]}
-                </div>
+               <div className="w-full h-full flex items-center justify-center text-xs font-bold" style={{ color: '#8B1A2B' }}>
+                   {owner.display_name[0]}
+                 </div>
               )}
             </div>
             <span className="text-sm" style={{ color: '#555' }}>By {owner.display_name}</span>

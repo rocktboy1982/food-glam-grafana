@@ -27,9 +27,9 @@ interface BudgetPrefs {
 
 const BUDGET_META: Record<BudgetTier, { label: string; color: string; bg: string; desc: string }> = {
    budget:  { label: '💚 Budget',  color: '#1b5e20', bg: '#e8f5e9', desc: 'Preț minim · Kaufland → Bringo → Glovo' },
-   normal:  { label: '💛 Normal',  color: '#5d4037', bg: '#fff8e1', desc: 'Preț + comoditate · Bringo → Carrefour → Freshful' },
-   premium: { label: '💜 Premium', color: '#4a148c', bg: '#f3e5f5', desc: 'Cea mai bună calitate · Freshful → Carrefour → Bringo' },
- }
+    normal:  { label: '💛 Normal',  color: '#5d4037', bg: '#fff8e1', desc: 'Preț + comoditate · Bringo → Carrefour → Freshful' },
+    premium: { label: '💎 Premium', color: '#8B1A2B', bg: '#fce8eb', desc: 'Cea mai bună calitate · Freshful → Carrefour → Bringo' },
+  }
 
 const BG = '#dde3ee'
 

@@ -208,24 +208,24 @@ export default function MeClientPage() {
            <button
              onClick={() => setTheme('dark')}
              className="flex-1 flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all"
-             style={{
-               borderColor: theme === 'dark' ? '#7c3aed' : 'rgba(0,0,0,0.08)',
-               background: theme === 'dark' ? 'rgba(124,58,237,0.08)' : '#f9f9f9',
-             }}
+              style={{
+                borderColor: theme === 'dark' ? '#8B1A2B' : 'rgba(0,0,0,0.08)',
+                background: theme === 'dark' ? 'rgba(139,26,43,0.08)' : '#f9f9f9',
+              }}
            >
              <span style={{ fontSize: 28 }}>🌙</span>
-             <span className="text-sm font-semibold" style={{ color: theme === 'dark' ? '#7c3aed' : '#666' }}>Întunecat</span>
+              <span className="text-sm font-semibold" style={{ color: theme === 'dark' ? '#8B1A2B' : '#666' }}>Întunecat</span>
            </button>
            <button
              onClick={() => setTheme('light')}
              className="flex-1 flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all"
-             style={{
-               borderColor: theme === 'light' ? '#7c3aed' : 'rgba(0,0,0,0.08)',
-               background: theme === 'light' ? 'rgba(124,58,237,0.08)' : '#f9f9f9',
-             }}
+              style={{
+                borderColor: theme === 'light' ? '#8B1A2B' : 'rgba(0,0,0,0.08)',
+                background: theme === 'light' ? 'rgba(139,26,43,0.08)' : '#f9f9f9',
+              }}
            >
              <span style={{ fontSize: 28 }}>☀️</span>
-             <span className="text-sm font-semibold" style={{ color: theme === 'light' ? '#7c3aed' : '#666' }}>Luminos</span>
+              <span className="text-sm font-semibold" style={{ color: theme === 'light' ? '#8B1A2B' : '#666' }}>Luminos</span>
            </button>
          </div>
          <p className="text-xs mt-3" style={{ color: '#999' }}>Preferința este salvată local în browser.</p>

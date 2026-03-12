@@ -217,7 +217,7 @@ export default function Home() {
         .toast-exit { animation: toastSlideOut 0.3s ease; }
       `}</style>
 
-      <main className="ff-body min-h-screen" style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}>
+      <main className="ff-body min-h-screen bg-[#f8f8f8] text-[#1a1a1a] dark:bg-[#0d0d0d] dark:text-[#f0f0f0]">
 
 
 
@@ -230,9 +230,8 @@ export default function Home() {
             {/* "Add story" button */}
             <div className="flex-shrink-0 flex flex-col items-center gap-1.5" style={{ scrollSnapAlign: 'start' }}>
               <Link href="/chefs/me/new-post">
-                <div className="w-[68px] h-[68px] rounded-full flex items-center justify-center relative"
-                  style={{ background: 'rgba(255,255,255,0.06)', border: '2px dashed rgba(255,255,255,0.2)' }}>
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                <div className="w-[68px] h-[68px] rounded-full flex items-center justify-center relative bg-gray-100 border-2 border-dashed border-gray-300 dark:bg-white/5 dark:border-white/20">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-gray-500 dark:text-gray-500"><path d="M12 5v14M5 12h14"/></svg>
                 </div>
               </Link>
               <span className="text-[10px] text-gray-500">Povestea ta</span>
@@ -247,23 +246,27 @@ export default function Home() {
               >
                 <div className="relative">
                    <Image
-                     src={chef.avatar}
-                     alt={chef.name}
-                     width={68}
-                     height={68}
-                     className="w-[68px] h-[68px] rounded-full object-cover"
-                     style={chef.hasStory && activeStory !== i
-                       ? { padding: '2px', background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', borderRadius: '50%' }
-                       : { border: '2px solid rgba(255,255,255,0.12)' }}
-                   />
+                      src={chef.avatar}
+                      alt={chef.name}
+                      width={68}
+                      height={68}
+                      className={`w-[68px] h-[68px] rounded-full object-cover ${
+                        chef.hasStory && activeStory !== i
+                          ? 'p-0.5'
+                          : 'border-2 border-gray-300 dark:border-white/12'
+                      }`}
+                      style={chef.hasStory && activeStory !== i
+                        ? { background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', borderRadius: '50%' }
+                        : {}}
+                    />
                   {chef.hasStory && activeStory !== i && (
                     <div className="absolute inset-0 rounded-full story-ring" style={{ border: '2px solid transparent' }} />
                   )}
-                  {activeStory === i && (
-                    <div className="absolute inset-0 rounded-full" style={{ border: '2px solid #888' }} />
-                  )}
+                   {activeStory === i && (
+                     <div className="absolute inset-0 rounded-full border-2 border-gray-500 dark:border-gray-500" />
+                   )}
                 </div>
-                <span className="text-[10px] max-w-[68px] truncate" style={{ color: activeStory === i ? '#888' : '#ccc' }}>
+                <span className={`text-[10px] max-w-[68px] truncate ${activeStory === i ? 'text-gray-500 dark:text-gray-500' : 'text-gray-400 dark:text-gray-400'}`}>
                   {chef.name.split(' ')[0]}
                 </span>
               </button>
@@ -284,7 +287,7 @@ export default function Home() {
             const postDesc = latestPost?.description ?? null
             const postSlug = latestPost?.slug ?? null
             return (
-              <div className="slide-up mt-4 rounded-2xl overflow-hidden" style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <div className="slide-up mt-4 rounded-2xl overflow-hidden bg-white border border-gray-200 dark:bg-[#1a1a1a] dark:border-white/10">
                 {/* Hero image */}
                  <div className="relative" style={{ height: 200 }}>
                    <Image src={img} alt={postTitle} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1024px) 90vw, 80vw" />
@@ -307,32 +310,31 @@ export default function Home() {
 
                 {/* Body */}
                 <div className="p-4">
-                  {/* Chef info row */}
-                   <div className="flex items-center gap-2.5 mb-3">
-                     <Image src={chef.avatar} alt={chef.name} width={36} height={36} className="w-9 h-9 rounded-full object-cover flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-white leading-tight truncate">{chef.name}</p>
-                      <p className="text-[11px] text-gray-400 truncate">{chef.handle} · {(chef.followers / 1000).toFixed(1)}k urmăritori</p>
-                    </div>
+                   {/* Chef info row */}
+                    <div className="flex items-center gap-2.5 mb-3">
+                      <Image src={chef.avatar} alt={chef.name} width={36} height={36} className="w-9 h-9 rounded-full object-cover flex-shrink-0" />
+                     <div className="flex-1 min-w-0">
+                       <p className="text-sm font-semibold text-gray-900 dark:text-white leading-tight truncate">{chef.name}</p>
+                       <p className="text-[11px] text-gray-600 dark:text-gray-400 truncate">{chef.handle} · {(chef.followers / 1000).toFixed(1)}k urmăritori</p>
+                     </div>
                     <Link
                       href={`/chefs/${handleKey}`}
                       onClick={() => setActiveStory(null)}
-                      className="text-xs font-semibold px-3 py-1.5 rounded-full flex-shrink-0"
-                      style={{ background: 'rgba(255,255,255,0.1)', color: '#ccc' }}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-full flex-shrink-0 bg-gray-100 text-gray-700 dark:bg-white/10 dark:text-gray-400"
                     >
                       Vezi profilul
                     </Link>
                   </div>
 
-                  {/* Bio snippet (only if no post desc) */}
-                  {!postDesc && profile?.bio && (
-                    <p className="text-xs text-gray-400 mb-3 line-clamp-2">{profile.bio}</p>
-                  )}
+                   {/* Bio snippet (only if no post desc) */}
+                   {!postDesc && profile?.bio && (
+                     <p className="text-xs text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">{profile.bio}</p>
+                   )}
 
-                  {/* Post description */}
-                  {postDesc && (
-                    <p className="text-xs text-gray-300 leading-relaxed mb-3 line-clamp-3">{postDesc}</p>
-                  )}
+                   {/* Post description */}
+                   {postDesc && (
+                     <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed mb-3 line-clamp-3">{postDesc}</p>
+                   )}
 
                   {/* CTA */}
                   {postSlug && (
@@ -357,17 +359,18 @@ export default function Home() {
             FEED TABS
         ════════════════════════════════════════════════════════ */}
         <div
-          className="sticky z-40 flex gap-1 px-4 pb-3"
-          style={{ top: 57, background: 'rgba(13,13,13,0.9)', backdropFilter: 'blur(12px)' }}
+          className="sticky z-40 flex gap-1 px-4 pb-3 bg-[#f8f8f8]/90 dark:bg-[#0d0d0d]/90 backdrop-blur-md"
+          style={{ top: 57 }}
         >
           {FEED_TABS.map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className="px-4 py-1.5 rounded-full text-sm font-semibold transition-all"
-              style={activeTab === tab
-                ? { background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }
-                : { background: 'rgba(255,255,255,0.07)', color: '#888' }}
+              className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
+                activeTab === tab
+                  ? 'bg-gradient-to-r from-[#ff4d6d] to-[#ff9500] text-white'
+                  : 'bg-gray-100 text-gray-500 dark:bg-white/[0.07] dark:text-gray-500'
+              }`}
             >
               {tab}
             </button>
@@ -378,15 +381,14 @@ export default function Home() {
             REGION CHIPS  (horizontal scroll)
         ════════════════════════════════════════════════════════ */}
         <section className="px-4 pb-8">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3 text-center" style={{ color: '#555' }}>Descoperă bucătării</p>
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3 text-center text-gray-500">Descoperă bucătării</p>
           <div className="flex gap-2 flex-wrap justify-center pb-1">
             {REGION_PILLS.map(id => {
               const r = REGION_META[id]
               if (!r) return null
               return (
                 <Link key={id} href={`/cookbooks/region/${id}`}
-                  className="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all"
-                  style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', color: '#ccc' }}>
+                  className="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all bg-gray-100 border border-gray-200 text-gray-700 dark:bg-white/[0.07] dark:border-white/10 dark:text-gray-400">
                   <span>{r.emoji}</span>
                   <span>{r.label}</span>
                 </Link>
@@ -416,7 +418,7 @@ export default function Home() {
             {loading && (
               <div className="grid grid-cols-2 gap-3">
                 {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className="rounded-2xl overflow-hidden animate-pulse" style={{ height: 360, background: '#1a1a1a' }} />
+                  <div key={i} className="rounded-2xl overflow-hidden animate-pulse bg-gray-200 dark:bg-[#1a1a1a]" style={{ height: 360 }} />
                 ))}
               </div>
             )}
@@ -430,8 +432,8 @@ export default function Home() {
                   return (
                     <div
                       key={recipe.id}
-                      className="feed-card rounded-2xl overflow-hidden slide-up flex flex-col"
-                      style={{ background: '#1a1a1a', animationDelay: `${i * 40}ms` }}
+                      className="feed-card rounded-2xl overflow-hidden slide-up flex flex-col bg-white dark:bg-[#1a1a1a]"
+                      style={{ animationDelay: `${i * 40}ms` }}
                     >
                       {/* image — fixed 280px, always equal */}
                     <div
@@ -473,36 +475,37 @@ export default function Home() {
                             </div>
                             <button
                               onClick={e => { e.stopPropagation(); toggleFollow(recipe.created_by.id) }}
-                              className="px-2.5 py-1 rounded-full text-xs font-semibold transition-all flex-shrink-0"
-                               style={followedChefs.has(recipe.created_by.id)
-                                 ? { background: 'rgba(255,255,255,0.15)', color: '#fff' }
-                                 : { background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}
-                             >
-                               {followedChefs.has(recipe.created_by.id) ? '✓' : '+ Urmărește'}
-                            </button>
+                              className={`px-2.5 py-1 rounded-full text-xs font-semibold transition-all flex-shrink-0 text-white ${
+                                followedChefs.has(recipe.created_by.id)
+                                  ? 'bg-gray-300 dark:bg-white/15'
+                                  : 'bg-gradient-to-r from-[#ff4d6d] to-[#ff9500]'
+                              }`}
+                              >
+                                {followedChefs.has(recipe.created_by.id) ? '✓' : '+ Urmărește'}
+                             </button>
                           </div>
                         </div>
                       </div>
                       {/* action row */}
                       <div className="flex items-center justify-between px-3 py-2.5">
                         <div className="flex items-center gap-3">
-                          <button onClick={() => toggleLike(recipe.id)} className="flex items-center gap-1.5 transition-transform active:scale-110" style={{ color: liked ? '#ff4d6d' : '#888' }}>
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill={liked ? '#ff4d6d' : 'none'} stroke={liked ? '#ff4d6d' : '#888'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                            <span className="text-xs font-semibold" style={{ color: liked ? '#ff4d6d' : '#888' }}>{count}</span>
+                          <button onClick={() => toggleLike(recipe.id)} className={`flex items-center gap-1.5 transition-transform active:scale-110 ${liked ? 'text-[#ff4d6d]' : 'text-gray-500 dark:text-gray-500'}`}>
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill={liked ? '#ff4d6d' : 'none'} stroke={liked ? '#ff4d6d' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            <span className={`text-xs font-semibold ${liked ? 'text-[#ff4d6d]' : 'text-gray-500 dark:text-gray-500'}`}>{count}</span>
                           </button>
-                          <button onClick={() => router.push(`/recipes/${recipe.slug}#comments`)} className="flex items-center gap-1.5" style={{ color: '#888' }}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                          <button onClick={() => router.push(`/recipes/${recipe.slug}#comments`)} className="flex items-center gap-1.5 text-gray-500 dark:text-gray-500">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                             <span className="text-xs font-semibold">{recipe.comments}</span>
                           </button>
-                          <button onClick={async () => { const url = `${window.location.origin}/recipes/${recipe.slug}`; if (navigator.share) await navigator.share({ title: recipe.title, url }); else await navigator.clipboard.writeText(url) }} style={{ color: '#888' }}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                          <button onClick={async () => { const url = `${window.location.origin}/recipes/${recipe.slug}`; if (navigator.share) await navigator.share({ title: recipe.title, url }); else await navigator.clipboard.writeText(url) }} className="text-gray-500 dark:text-gray-500">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                           </button>
-                          <button onClick={e => { e.stopPropagation(); router.push(`/recipes/${recipe.slug}/print`) }} style={{ color: '#888' }} title="Print recipe">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                          <button onClick={e => { e.stopPropagation(); router.push(`/recipes/${recipe.slug}/print`) }} className="text-gray-500 dark:text-gray-500" title="Print recipe">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
                           </button>
                         </div>
-                        <button onClick={() => toggleSave(recipe)} style={{ color: saved ? '#ff9500' : '#888' }} className="transition-transform active:scale-110">
-                          <svg width="17" height="17" viewBox="0 0 24 24" fill={saved ? '#ff9500' : 'none'} stroke={saved ? '#ff9500' : '#888'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                        <button onClick={() => toggleSave(recipe)} className={`transition-transform active:scale-110 ${saved ? 'text-[#ff9500]' : 'text-gray-500 dark:text-gray-500'}`}>
+                          <svg width="17" height="17" viewBox="0 0 24 24" fill={saved ? '#ff9500' : 'none'} stroke={saved ? '#ff9500' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
                         </button>
                       </div>
                       {recipe.dietTags.length > 0 && (
@@ -510,8 +513,7 @@ export default function Home() {
                           {recipe.dietTags.map(t => (
                             <Link key={t} href={`/search?diet_tags=${encodeURIComponent(t)}`}
                               onClick={e => e.stopPropagation()}
-                              className="text-[10px] px-2 py-0.5 rounded-full hover:opacity-80 transition-opacity"
-                              style={{ background: 'rgba(255,255,255,0.08)', color: '#aaa' }}>{t}</Link>
+                              className="text-[10px] px-2 py-0.5 rounded-full hover:opacity-80 transition-opacity bg-gray-100 text-gray-600 dark:bg-white/8 dark:text-gray-400">{t}</Link>
                           ))}
                         </div>
                       )}

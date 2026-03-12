@@ -104,12 +104,12 @@ export default function SimilarRecipesClient({ id }: { id: string }) {
 
             {/* Text */}
             <div className="flex-1 min-w-0 py-0.5">
-              <p
-                className="text-sm font-semibold leading-snug line-clamp-1 transition-colors group-hover:text-[#7c3aed]"
-                style={{ color: '#222' }}
-              >
-                {it.title || 'Fără titlu'}
-              </p>
+               <p
+                 className="text-sm font-semibold leading-snug line-clamp-1 transition-colors group-hover:text-[#8B1A2B]"
+                 style={{ color: '#222' }}
+               >
+                 {it.title || 'Fără titlu'}
+               </p>
               {excerpt && (
                 <p className="text-xs leading-relaxed line-clamp-2 mt-0.5" style={{ color: '#888' }}>
                   {excerpt}
@@ -120,12 +120,12 @@ export default function SimilarRecipesClient({ id }: { id: string }) {
             {/* Score badge */}
             {rank != null && (
               <div className="flex-shrink-0 flex flex-col items-center pt-1">
-                <span
-                  className="px-2 py-0.5 rounded-full text-[10px] font-bold"
-                  style={{ background: 'rgba(124,58,237,0.12)', color: '#7c3aed' }}
-                >
-                  {Math.round(rank * 100) / 100}
-                </span>
+                 <span
+                   className="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                   style={{ background: 'rgba(139,26,43,0.12)', color: '#8B1A2B' }}
+                 >
+                   {Math.round(rank * 100) / 100}
+                 </span>
               </div>
             )}
           </Link>

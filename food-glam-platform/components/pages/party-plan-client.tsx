@@ -598,7 +598,7 @@ export default function PartyPlanClient() {
       li.item { display: flex; align-items: flex-start; gap: 12px; padding: 7px 0; border-bottom: 1px solid #f2f2f2; }
       .check { width: 18px; height: 18px; border: 2px solid #bbb; border-radius: 4px; flex-shrink: 0; margin-top: 2px; }
       .name { font-weight: 600; font-size: 16px; }
-      .qty { color: #7c3aed; font-weight: 700; font-size: 15px; float: right; }
+      .qty { color: #8B1A2B; font-weight: 700; font-size: 15px; float: right; }
       .cocktail-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #f5f5f5; font-size: 14px; }
       .cocktail-rounds { color: #888; font-size: 13px; }
       @media print {
@@ -698,11 +698,11 @@ export default function PartyPlanClient() {
             <label className="block text-xs font-semibold mb-2" style={{ color: '#666' }}>
               Număr de oaspeți
             </label>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setState({ ...state, guestCount: Math.max(1, state.guestCount - 1) })}
-                className="w-10 h-10 rounded-lg flex items-center justify-center font-bold transition-colors"
-                style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.08)', color: '#7c3aed' }}
+             <div className="flex items-center gap-2">
+               <button
+                 onClick={() => setState({ ...state, guestCount: Math.max(1, state.guestCount - 1) })}
+                 className="w-10 h-10 rounded-lg flex items-center justify-center font-bold transition-colors"
+                 style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.08)', color: '#8B1A2B' }}
               >
                 −
               </button>
@@ -713,10 +713,10 @@ export default function PartyPlanClient() {
                 className="flex-1 px-4 py-2.5 rounded-xl border text-center"
                 style={{ background: '#fff', borderColor: 'rgba(0,0,0,0.08)', color: '#111' }}
               />
-              <button
+               <button
                 onClick={() => setState({ ...state, guestCount: state.guestCount + 1 })}
                 className="w-10 h-10 rounded-lg flex items-center justify-center font-bold transition-colors"
-                style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.08)', color: '#7c3aed' }}
+                style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.08)', color: '#8B1A2B' }}
               >
                 +
               </button>
@@ -733,9 +733,9 @@ export default function PartyPlanClient() {
                 onClick={() => setView('planner')}
                 className="flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all"
                 style={{
-                  background: view === 'planner' ? '#7c3aed' : '#fff',
+                  background: view === 'planner' ? '#8B1A2B' : '#fff',
                   color: view === 'planner' ? '#fff' : '#111',
-                  border: `1px solid ${view === 'planner' ? '#7c3aed' : 'rgba(0,0,0,0.08)'}`,
+                  border: `1px solid ${view === 'planner' ? '#8B1A2B' : 'rgba(0,0,0,0.08)'}`,
                 }}
               >
                 🍹 Cocktail-uri
@@ -744,9 +744,9 @@ export default function PartyPlanClient() {
                 onClick={() => setView('shopping')}
                 className="flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all"
                 style={{
-                  background: view === 'shopping' ? '#7c3aed' : '#fff',
+                  background: view === 'shopping' ? '#8B1A2B' : '#fff',
                   color: view === 'shopping' ? '#fff' : '#111',
-                  border: `1px solid ${view === 'shopping' ? '#7c3aed' : 'rgba(0,0,0,0.08)'}`,
+                  border: `1px solid ${view === 'shopping' ? '#8B1A2B' : 'rgba(0,0,0,0.08)'}`,
                 }}
               >
                 📋 Listă
@@ -875,20 +875,20 @@ export default function PartyPlanClient() {
 
                       {/* Rounds control */}
                       <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => updateRounds(item.id, item.rounds - 1)}
-                          className="w-8 h-8 rounded-lg flex items-center justify-center font-bold transition-colors"
-                          style={{ background: '#f0f0f0', color: '#7c3aed' }}
+                         <button
+                           onClick={() => updateRounds(item.id, item.rounds - 1)}
+                           className="w-8 h-8 rounded-lg flex items-center justify-center font-bold transition-colors"
+                           style={{ background: '#f0f0f0', color: '#8B1A2B' }}
                         >
                           −
                         </button>
                         <span className="w-8 text-center font-semibold text-sm" style={{ color: '#111' }}>
                           {item.rounds}
                         </span>
-                        <button
-                          onClick={() => updateRounds(item.id, item.rounds + 1)}
-                          className="w-8 h-8 rounded-lg flex items-center justify-center font-bold transition-colors"
-                          style={{ background: '#f0f0f0', color: '#7c3aed' }}
+                         <button
+                           onClick={() => updateRounds(item.id, item.rounds + 1)}
+                           className="w-8 h-8 rounded-lg flex items-center justify-center font-bold transition-colors"
+                           style={{ background: '#f0f0f0', color: '#8B1A2B' }}
                         >
                           +
                         </button>
@@ -938,7 +938,7 @@ export default function PartyPlanClient() {
                 <button
                   onClick={shareShoppingList}
                   className="flex-1 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all"
-                  style={{ background: '#a78bfa', color: '#fff' }}
+                  style={{ background: '#b8394e', color: '#fff' }}
                 >
                   📤 Partajează
                 </button>
@@ -996,7 +996,7 @@ export default function PartyPlanClient() {
                             <span style={{ color: '#333' }}>
                               {ing.name}
                             </span>
-                            <span className="font-semibold" style={{ color: '#7c3aed' }}>
+                            <span className="font-semibold" style={{ color: '#8B1A2B' }}>
                               {formatAmount(norm.amount)} {norm.unit}
                             </span>
                           </li>
@@ -1020,7 +1020,7 @@ export default function PartyPlanClient() {
                         <h3 className="font-semibold text-base flex items-center gap-2" style={{ color: '#111' }}>
                           🍹 {item.cocktail.title}
                         </h3>
-                        <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: 'rgba(124,58,237,0.1)', color: '#7c3aed' }}>
+                        <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: 'rgba(139,26,43,0.1)', color: '#8B1A2B' }}>
                           {item.rounds} runde · ~{totalServings} porții
                         </span>
                       </div>
@@ -1033,7 +1033,7 @@ export default function PartyPlanClient() {
                             return (
                               <li key={idx} className="flex items-center justify-between text-sm">
                                 <span style={{ color: '#333' }}>{parsed.name}</span>
-                                <span className="font-semibold" style={{ color: '#7c3aed' }}>
+                                <span className="font-semibold" style={{ color: '#8B1A2B' }}>
                                   {formatAmount(norm.amount)} {norm.unit}
                                 </span>
                               </li>

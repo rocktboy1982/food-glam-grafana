@@ -21,7 +21,7 @@ const TYPE_META: Record<string, { label: string; icon: string; desc: string; col
     label: 'Video Post',
     icon: '🎬',
     desc: 'Link a cooking video from YouTube, TikTok, or Facebook.',
-    color: '#8b5cf6',
+    color: '#8B1A2B',
   },
 }
 

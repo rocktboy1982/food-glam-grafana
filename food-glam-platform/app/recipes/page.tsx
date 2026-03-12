@@ -73,8 +73,8 @@ export default async function RecipesPage() {
 
   return (
     <main
-      className="min-h-screen"
-      style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))', fontFamily: "'Inter', sans-serif" }}
+      className="min-h-screen bg-[#f8f8f8] text-[#1a1a1a] dark:bg-[#0a0a0a] dark:text-[#f0f0f0]"
+      style={{ fontFamily: "'Inter', sans-serif" }}
     >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap');
@@ -115,9 +115,9 @@ export default async function RecipesPage() {
             <h1 className="ff-display text-5xl md:text-6xl font-extrabold tracking-tight mb-3 leading-tight text-white">
               Toate Rețetele
             </h1>
-            <p className="text-lg mb-6" style={{ color: '#ccc' }}>
-              Descoperă mii de rețete delicioase din întreaga lume
-            </p>
+             <p className="text-lg mb-6 text-gray-500 dark:text-[#ccc]">
+               Descoperă mii de rețete delicioase din întreaga lume
+             </p>
             <Link
               href="/submit/recipe"
               className="inline-flex items-center gap-2 font-semibold px-5 py-2.5 rounded-full text-sm transition-all duration-200"
@@ -135,21 +135,21 @@ export default async function RecipesPage() {
       <div className="px-6 md:px-8 py-12 max-w-7xl mx-auto space-y-12">
         {sortedCountries.length === 0 ? (
           <div className="text-center py-12">
-            <p style={{ color: '#888' }} className="text-lg">
-              Nu au fost găsite rețete. Încearcă mai târziu!
-            </p>
+             <p className="text-lg text-gray-500 dark:text-[#888]">
+               Nu au fost găsite rețete. Încearcă mai târziu!
+             </p>
           </div>
         ) : (
           sortedCountries.map((country) => (
             <section key={country}>
               {/* Country header */}
               <div className="mb-6">
-                <h2 className="ff-display text-2xl font-bold mb-1" style={{ color: '#fff' }}>
-                  {country.toUpperCase()}
-                </h2>
-                <p style={{ color: '#888' }} className="text-sm">
-                  {groupedByCountry[country].length} rețete
-                </p>
+                 <h2 className="ff-display text-2xl font-bold mb-1 text-gray-900 dark:text-white">
+                   {country.toUpperCase()}
+                 </h2>
+                 <p className="text-sm text-gray-500 dark:text-[#888]">
+                   {groupedByCountry[country].length} rețete
+                 </p>
               </div>
 
               {/* Recipe grid */}
@@ -162,12 +162,11 @@ export default async function RecipesPage() {
                   const totalTime = cookTime + prepTime
 
                   return (
-                    <Link
-                      key={recipe.id}
-                      href={`/recipes/${recipe.slug}`}
-                      className="recipe-card rounded-2xl overflow-hidden flex flex-col"
-                      style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)' }}
-                    >
+                     <Link
+                       key={recipe.id}
+                       href={`/recipes/${recipe.slug}`}
+                       className="recipe-card rounded-2xl overflow-hidden flex flex-col bg-white border border-gray-200 dark:bg-[#1a1a1a] dark:border-white/[0.08]"
+                     >
                       {/* Image */}
                       <div className="relative w-full" style={{ height: '240px' }}>
                         {recipe.hero_image_url ? (
@@ -179,12 +178,11 @@ export default async function RecipesPage() {
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                           />
                         ) : (
-                          <div
-                            className="w-full h-full flex items-center justify-center text-4xl"
-                            style={{ background: 'rgba(255,255,255,0.05)' }}
-                          >
-                            🍽️
-                          </div>
+                           <div
+                             className="w-full h-full flex items-center justify-center text-4xl bg-gray-100 dark:bg-white/[0.05]"
+                           >
+                             🍽️
+                           </div>
                         )}
                         <div
                           className="absolute inset-0"
@@ -221,18 +219,18 @@ export default async function RecipesPage() {
                       <div className="flex-1 flex flex-col justify-between p-3.5">
                         {/* Summary */}
                         {recipe.summary && (
-                          <p className="text-xs leading-relaxed line-clamp-2 mb-3" style={{ color: '#aaa' }}>
-                            {recipe.summary}
-                          </p>
+                           <p className="text-xs leading-relaxed line-clamp-2 mb-3 text-gray-500 dark:text-[#aaa]">
+                             {recipe.summary}
+                           </p>
                         )}
 
                         {/* Time info */}
-                        {totalTime > 0 && (
-                          <div className="flex items-center gap-2 text-xs" style={{ color: '#888' }}>
-                            <span>⏱️</span>
-                            <span>{totalTime} min</span>
-                          </div>
-                        )}
+                         {totalTime > 0 && (
+                           <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-[#888]">
+                             <span>⏱️</span>
+                             <span>{totalTime} min</span>
+                           </div>
+                         )}
                       </div>
                     </Link>
                   )

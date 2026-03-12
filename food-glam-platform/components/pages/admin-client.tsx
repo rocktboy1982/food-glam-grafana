@@ -679,7 +679,7 @@ export default function AdminClient() {
         .action-btn { padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid; transition: all 0.15s; white-space: nowrap; }
       `}</style>
 
-      <div className="ff-body min-h-screen" style={{ background: '#0d0d0d', color: '#f0f0f0' }}>
+      <div className="ff-body min-h-screen" style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}>
 
         {/* ── Top bar ── */}
         <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4"

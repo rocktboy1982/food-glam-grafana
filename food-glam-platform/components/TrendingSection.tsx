@@ -88,64 +88,59 @@ export default function TrendingSection() {
 
   return (
     <div
-      className="rounded-2xl overflow-hidden flex flex-col h-full"
-      style={{ background: '#111', border: '1px solid rgba(255,255,255,0.08)' }}
+      className="rounded-2xl overflow-hidden flex flex-col h-full bg-white border border-gray-200 dark:bg-[#111] dark:border-white/[0.08]"
     >
-      {/* ── Header ── */}
-      <div
-        className="flex items-center justify-between px-4 py-3"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
-      >
+       {/* ── Header ── */}
+       <div
+         className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-white/[0.07]"
+       >
         <div className="flex items-center gap-2">
           <span className="text-base">🔥</span>
-           <span
-             className="font-bold text-sm tracking-wide"
-             style={{ fontFamily: "'Syne', sans-serif", color: '#f0f0f0' }}
-           >
+            <span
+              className="font-bold text-sm tracking-wide text-gray-900 dark:text-[#f0f0f0]"
+              style={{ fontFamily: "'Syne', sans-serif" }}
+            >
              În tendințe acum
            </span>
-          {!loading && (
-            <span
-              className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
-              style={{ background: 'rgba(255,77,109,0.15)', color: '#ff4d6d' }}
-            >
-              {items.length}
-            </span>
-          )}
+           {!loading && (
+             <span
+               className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+               style={{ background: 'rgba(139,26,43,0.15)', color: '#8B1A2B' }}
+             >
+               {items.length}
+             </span>
+           )}
         </div>
-         <Link
-           href={tab === 'recipes' ? '/search?sort=trending' : '/search?mode=cocktails&sort=trending'}
-           className="text-[11px] font-semibold transition-opacity hover:opacity-100 opacity-70"
-           style={{ color: '#ff9500' }}
-         >
-           Vezi tot →
-         </Link>
+          <Link
+            href={tab === 'recipes' ? '/search?sort=trending' : '/search?mode=cocktails&sort=trending'}
+            className="text-[11px] font-semibold transition-opacity hover:opacity-100 opacity-70"
+            style={{ color: '#8B1A2B' }}
+          >
+            Vezi tot →
+          </Link>
       </div>
 
-      {/* ── Tab toggle ── */}
-      <div
-        className="flex px-3 pt-2.5 pb-1 gap-1.5"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-      >
-        <button
-          onClick={() => setTab('recipes')}
-          className="flex-1 py-1.5 rounded-lg text-[11px] font-semibold transition-all"
-          style={
-            tab === 'recipes'
-              ? { background: 'rgba(255,77,109,0.18)', color: '#ff4d6d' }
-              : { background: 'rgba(255,255,255,0.05)', color: '#666' }
-          }
-        >
-          🍽️ Rețete
-        </button>
+       {/* ── Tab toggle ── */}
+       <div
+         className="flex px-3 pt-2.5 pb-1 gap-1.5 border-b border-gray-100 dark:border-white/[0.05]"
+       >
+          <button
+            onClick={() => setTab('recipes')}
+            className={`flex-1 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${
+              tab === 'recipes'
+                ? "bg-[rgba(139,26,43,0.18)] text-[#8B1A2B]"
+                : "bg-gray-100 text-gray-500 dark:bg-white/[0.05] dark:text-gray-500"
+            }`}
+          >
+           🍽️ Rețete
+         </button>
         <button
           onClick={() => setTab('cocktails')}
-          className="flex-1 py-1.5 rounded-lg text-[11px] font-semibold transition-all"
-          style={
+          className={`flex-1 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${
             tab === 'cocktails'
-              ? { background: 'rgba(124,58,237,0.2)', color: '#a78bfa' }
-              : { background: 'rgba(255,255,255,0.05)', color: '#666' }
-          }
+              ? "bg-[rgba(139,26,43,0.2)] text-[#b8394e]"
+              : "bg-gray-100 text-gray-500 dark:bg-white/[0.05] dark:text-gray-500"
+          }`}
         >
           🍹 Cocktailuri
         </button>
@@ -154,18 +149,18 @@ export default function TrendingSection() {
       {/* ── Loading skeleton ── */}
       {loading && tab === 'recipes' && (
         <div className="p-3 space-y-3">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="rounded-2xl overflow-hidden animate-pulse" style={{ height: 130, background: '#1a1a1a' }} />
-          ))}
+           {Array.from({ length: 8 }).map((_, i) => (
+             <div key={i} className="rounded-2xl overflow-hidden animate-pulse bg-gray-200 dark:bg-[#1a1a1a]" style={{ height: 130 }} />
+           ))}
         </div>
       )}
 
        {/* ── Empty state ── */}
-       {!loading && items.length === 0 && (
-         <p className="px-4 py-10 text-sm text-center" style={{ color: '#444' }}>
-           Nimic în tendințe deocamdată
-         </p>
-       )}
+        {!loading && items.length === 0 && (
+          <p className="px-4 py-10 text-sm text-center text-gray-400 dark:text-[#444]">
+            Nimic în tendințe deocamdată
+          </p>
+        )}
 
       {/* ── List ── */}
       {(!loading || tab === 'cocktails') && items.length > 0 && (
@@ -174,7 +169,7 @@ export default function TrendingSection() {
             const href = item._type === 'cocktail'
               ? `/cocktails/${item.slug}`
               : `/recipes/${item.slug}`
-            const accentColor = item._type === 'cocktail' ? '#a78bfa' : '#ff4d6d'
+            const accentColor = item._type === 'cocktail' ? '#b8394e' : '#8B1A2B'
 
             return (
               <Link
@@ -192,11 +187,11 @@ export default function TrendingSection() {
                      className="object-cover group-hover:scale-105 transition-transform duration-500"
                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                    />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-3xl" style={{ background: '#1a1a1a' }}>
-                    {item._type === 'cocktail' ? '🍹' : '🍽️'}
-                  </div>
-                )}
+                 ) : (
+                   <div className="w-full h-full flex items-center justify-center text-3xl bg-gray-200 dark:bg-[#1a1a1a]">
+                     {item._type === 'cocktail' ? '🍹' : '🍽️'}
+                   </div>
+                 )}
 
                 {/* Gradient overlay */}
                 <div
@@ -210,14 +205,14 @@ export default function TrendingSection() {
                 </div>
 
                 {/* Type badge — top right (cocktails only) */}
-                {item._type === 'cocktail' && (
-                  <span
-                    className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full text-[9px] font-bold"
-                    style={{ background: 'rgba(124,58,237,0.75)', color: '#fff' }}
-                  >
-                    🍹 Cocktail
-                  </span>
-                )}
+                 {item._type === 'cocktail' && (
+                   <span
+                     className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full text-[9px] font-bold"
+                     style={{ background: 'rgba(139,26,43,0.75)', color: '#fff' }}
+                   >
+                     🍹 Cocktail
+                   </span>
+                 )}
 
                 {/* Info overlay — bottom */}
                 <div className="absolute bottom-0 left-0 right-0 px-3 py-2.5">
@@ -247,20 +242,19 @@ export default function TrendingSection() {
         </div>
       )}
 
-      {/* ── Footer ── */}
-      {(!loading || tab === 'cocktails') && items.length > 0 && (
-        <div
-          className="px-4 py-2.5"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
-        >
+       {/* ── Footer ── */}
+       {(!loading || tab === 'cocktails') && items.length > 0 && (
+         <div
+           className="px-4 py-2.5 border-t border-gray-100 dark:border-white/[0.05]"
+         >
           <Link
             href={tab === 'recipes' ? '/search?sort=trending' : '/search?mode=cocktails&sort=trending'}
              className="block text-center text-xs font-semibold py-1.5 rounded-xl transition-all"
-             style={
-               tab === 'cocktails'
-                 ? { background: 'rgba(124,58,237,0.1)', color: '#a78bfa', border: '1px solid rgba(124,58,237,0.2)' }
-                 : { background: 'rgba(255,77,109,0.08)', color: '#ff4d6d', border: '1px solid rgba(255,77,109,0.15)' }
-             }
+              style={
+                 tab === 'cocktails'
+                   ? { background: 'rgba(139,26,43,0.1)', color: '#b8394e', border: '1px solid rgba(139,26,43,0.2)' }
+                   : { background: 'rgba(139,26,43,0.08)', color: '#8B1A2B', border: '1px solid rgba(139,26,43,0.15)' }
+               }
            >
              {tab === 'recipes' ? 'Vezi toate rețetele în tendințe →' : 'Vezi toate cocktailurile în tendințe →'}
            </Link>

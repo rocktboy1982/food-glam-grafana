@@ -100,10 +100,10 @@ export default async function CollectionPage({ params }: PageProps) {
 
       {/* ── BREADCRUMB ── */}
       <div className="px-6 py-4 max-w-7xl mx-auto">
-        <div className="flex items-center gap-2 text-sm" style={{ color: '#666' }}>
-          <Link href="/cocktailbooks" className="hover:underline" style={{ color: '#7c3aed' }}>
-            Biblioteca de Cocktailuri
-          </Link>
+         <div className="flex items-center gap-2 text-sm" style={{ color: '#666' }}>
+           <Link href="/cocktailbooks" className="hover:underline" style={{ color: '#8B1A2B' }}>
+             Biblioteca de Cocktailuri
+           </Link>
           <span>/</span>
           <span style={{ color: '#111' }}>{collection.title}</span>
         </div>
@@ -129,9 +129,9 @@ export default async function CollectionPage({ params }: PageProps) {
             <p className="text-lg mb-4" style={{ color: '#ddd' }}>
               {collection.desc}
             </p>
-            <p className="text-sm font-semibold px-3 py-1.5 rounded-full inline-block" style={{ background: 'rgba(139,92,246,0.2)', color: '#a78bfa' }}>
-              {cocktailList.length} cocktail-uri
-            </p>
+             <p className="text-sm font-semibold px-3 py-1.5 rounded-full inline-block" style={{ background: 'rgba(139,26,43,0.2)', color: '#b8394e' }}>
+               {cocktailList.length} cocktail-uri
+             </p>
           </div>
         </div>
       </div>
@@ -198,18 +198,18 @@ export default async function CollectionPage({ params }: PageProps) {
 
                     {/* Category badge */}
                     <div className="absolute top-3 right-3">
-                      <span
-                        className="px-2.5 py-1 rounded-full text-xs font-bold"
-                        style={{
-                          background:
-                            category === 'alcoholic'
-                              ? 'rgba(167, 139, 250, 0.9)'
-                              : 'rgba(5, 150, 105, 0.9)',
-                          color: '#fff',
-                        }}
-                      >
-                         {category === 'alcoholic' ? '🥃' : '🍃'} {category === 'alcoholic' ? 'Cu alcool' : 'Fără alcool'}
-                      </span>
+                       <span
+                         className="px-2.5 py-1 rounded-full text-xs font-bold"
+                         style={{
+                           background:
+                             category === 'alcoholic'
+                               ? 'rgba(196, 30, 58, 0.9)'
+                               : 'rgba(5, 150, 105, 0.9)',
+                           color: '#fff',
+                         }}
+                       >
+                          {category === 'alcoholic' ? '🥃' : '🍃'} {category === 'alcoholic' ? 'Cu alcool' : 'Fără alcool'}
+                       </span>
                     </div>
 
                     {/* Title overlay */}

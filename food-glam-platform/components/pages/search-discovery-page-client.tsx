@@ -645,8 +645,8 @@ function SearchDiscoveryPageClientContent() {
            <div
              className="relative overflow-hidden rounded-2xl p-6 flex items-center gap-6"
              style={{
-               background: 'linear-gradient(135deg, rgba(124,58,237,0.12) 0%, rgba(139,92,246,0.08) 100%)',
-               border: '1px solid rgba(124,58,237,0.15)',
+background: 'linear-gradient(135deg, rgba(139,26,43,0.12) 0%, rgba(184,57,78,0.08) 100%)',
+                border: '1px solid rgba(139,26,43,0.15)',
              }}
            >
              <div className="flex-1">
@@ -659,10 +659,10 @@ function SearchDiscoveryPageClientContent() {
              </div>
              <a
                href="/cocktailbooks"
-               className="flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all"
-               style={{ background: '#7c3aed', color: '#fff' }}
-             >
-               Vezi Colecțiile →
+                className="flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all"
+                style={{ background: '#8B1A2B', color: '#fff' }}
+              >
+                Vezi Colecțiile →
              </a>
            </div>
          </div>
@@ -697,7 +697,7 @@ function SearchDiscoveryPageClientContent() {
             {/* ====== COCKTAIL SIDEBAR ====== */}
             {mode === 'cocktails' && (
               <div className="rounded-2xl border p-5 space-y-6 sticky top-4" style={{ background: 'rgba(255,255,255,0.65)', borderColor: 'rgba(0,0,0,0.1)' }}>
-                 <h2 className="text-sm font-semibold uppercase tracking-wider" style={{ color: '#7c3aed' }}>Filtre</h2>
+                  <h2 className="text-sm font-semibold uppercase tracking-wider" style={{ color: '#8B1A2B' }}>Filtre</h2>
 
                 {/* Category */}
                 <div>
@@ -709,9 +709,9 @@ function SearchDiscoveryPageClientContent() {
                         onClick={() => handleCocktailCategoryChange(val)}
                         className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left"
                         style={cocktailCategory === val
-                          ? { background: '#7c3aed', color: '#fff' }
-                          : { background: 'rgba(0,0,0,0.06)', color: '#444' }
-                        }
+                           ? { background: '#8B1A2B', color: '#fff' }
+                           : { background: 'rgba(0,0,0,0.06)', color: '#444' }
+                         }
                       >
                         <span>{emoji}</span> {label}
                       </button>
@@ -729,10 +729,10 @@ function SearchDiscoveryPageClientContent() {
                           key={sp.value}
                           onClick={() => handleCocktailSpiritChange(sp.value)}
                           className="px-2.5 py-1 rounded-full text-xs font-medium transition-all"
-                          style={cocktailSpirit === sp.value
-                            ? { background: '#7c3aed', color: '#fff' }
-                            : { background: 'rgba(0,0,0,0.06)', color: '#444' }
-                          }
+                           style={cocktailSpirit === sp.value
+                             ? { background: '#8B1A2B', color: '#fff' }
+                             : { background: 'rgba(0,0,0,0.06)', color: '#444' }
+                           }
                         >
                           {sp.label}
                         </button>
@@ -1017,10 +1017,10 @@ function SearchDiscoveryPageClientContent() {
                         {/* Category badge */}
                         <span
                           className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-xs font-bold shadow"
-                          style={c.category === 'alcoholic'
-                            ? { background: '#7c3aed', color: '#fff' }
-                            : { background: '#059669', color: '#fff' }
-                          }
+                           style={c.category === 'alcoholic'
+                             ? { background: '#8B1A2B', color: '#fff' }
+                             : { background: '#059669', color: '#fff' }
+                           }
                         >
                            {c.category === 'alcoholic' ? '🥃 Alcoolice' : '🍃 Non-alc'}
                         </span>
@@ -1037,7 +1037,7 @@ function SearchDiscoveryPageClientContent() {
                         <p className="text-sm mb-3 line-clamp-2 flex-1" style={{ color: '#555' }}>{c.summary}</p>
                         {/* Tags */}
                         <div className="flex flex-wrap gap-1.5 mb-3">
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium" style={{ background: 'rgba(124,58,237,0.12)', color: '#7c3aed' }}>
+                           <span className="px-2 py-0.5 rounded-full text-[10px] font-medium" style={{ background: 'rgba(139,26,43,0.12)', color: '#8B1A2B' }}>
                             {c.spiritLabel}
                           </span>
                           <span className="px-2 py-0.5 rounded-full text-[10px] font-medium" style={{ background: 'rgba(0,0,0,0.07)', color: '#555' }}>
@@ -1049,7 +1049,7 @@ function SearchDiscoveryPageClientContent() {
                         </div>
                         {/* Actions */}
                         <div className="flex items-center gap-2 pt-2 border-t" style={{ borderColor: 'rgba(0,0,0,0.08)' }}>
-                          <span className="text-xs" style={{ color: '#7c3aed' }}>♥ {c.votes}</span>
+                          <span className="text-xs" style={{ color: '#8B1A2B' }}>♥ {c.votes}</span>
                           <span className="text-xs" style={{ color: '#888' }}>★ {c.quality_score.toFixed(1)}</span>
                            <span className="text-xs ml-auto" style={{ color: '#888' }}>Servește {c.serves}</span>
                         </div>

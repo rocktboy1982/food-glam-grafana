@@ -56,15 +56,15 @@ export default function CookieConsent() {
                  <p className="text-xs leading-relaxed" style={{ color: '#888' }}>
                    Folosim cookie-uri esențiale pentru funcționarea site-ului. De asemenea, dorim să setăm cookie-uri opționale de analiză pentru a înțelege cum utilizați site-ul.
                   {' '}
-                  {!expanded && (
-                    <button
-                      onClick={() => setExpanded(true)}
-                       className="underline transition-opacity hover:opacity-100 opacity-70"
-                       style={{ color: '#ff9500' }}
-                     >
-                       Află mai multe
-                     </button>
-                  )}
+                   {!expanded && (
+                     <button
+                       onClick={() => setExpanded(true)}
+                        className="underline transition-opacity hover:opacity-100 opacity-70"
+                        style={{ color: '#8B1A2B' }}
+                      >
+                        Află mai multe
+                      </button>
+                   )}
                 </p>
 
                 {/* Expanded detail */}
@@ -77,19 +77,19 @@ export default function CookieConsent() {
                          {' '}— necesare pentru funcționarea site-ului (sesiune, preferințe). Nu pot fi dezactivate.
                       </div>
                     </div>
-                    <div className="flex items-start gap-2">
-                      <span style={{ color: '#ff9500' }}>○</span>
-                      <div>
-                       <span className="font-semibold" style={{ color: '#ccc' }}>Cookie-uri de analiză</span>
+                     <div className="flex items-start gap-2">
+                       <span style={{ color: '#8B1A2B' }}>○</span>
+                       <div>
+                        <span className="font-semibold" style={{ color: '#ccc' }}>Cookie-uri de analiză</span>
                          {' '}— ne ajută să înțelegem care pagini sunt populare și cum navigheaza vizitatorii. Nu se vinde nicio informație personală.
                       </div>
                     </div>
                     <p className="pt-1">
                        Refuzarea cookie-urilor de analiză nu va afecta experiența ta pe acest site.
                        Consultă{' '}
-                       <Link href="/privacy" className="underline" style={{ color: '#ff9500' }}>
-                         Politica de confidențialitate
-                       </Link>{' '}
+                        <Link href="/privacy" className="underline" style={{ color: '#8B1A2B' }}>
+                          Politica de confidențialitate
+                        </Link>{' '}
                        pentru mai multe informații.
                      </p>
                   </div>
@@ -111,17 +111,17 @@ export default function CookieConsent() {
              >
                Refuză opționalele
              </button>
-             <button
-               onClick={() => decide('accepted')}
-               className="px-5 py-2 rounded-full text-sm font-semibold transition-all"
-               style={{
-                 background: 'linear-gradient(135deg,#ff4d6d,#ff9500)',
-                 color: '#fff',
-               }}
-             >
-               Acceptă tot
-             </button>
-          </div>
+              <button
+                onClick={() => decide('accepted')}
+                className="px-5 py-2 rounded-full text-sm font-semibold transition-all"
+                style={{
+                  background: 'linear-gradient(135deg, #8B1A2B, #b8394e)',
+                  color: '#fff',
+                }}
+              >
+                Acceptă tot
+              </button>
+           </div>
 
         </div>
       </div>

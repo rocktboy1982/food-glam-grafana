@@ -209,7 +209,7 @@ function SubmitCocktailPageContent() {
   if (showPreview) {
     const spirit = SPIRITS.find(s => s.value === form.spirit)
     return (
-      <div className="min-h-screen" style={{ background: '#dde3ee', color: '#111' }}>
+<div className="min-h-screen" style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}>
         <div className="max-w-3xl mx-auto px-4 py-10">
            <div className="flex items-center justify-between mb-8">
              <h1 className="text-2xl font-bold">Previzualizare</h1>
@@ -222,9 +222,9 @@ function SubmitCocktailPageContent() {
              <h2 className="text-3xl font-bold tracking-tight">{form.title || 'Cocktail fără titlu'}</h2>
              {form.summary && <p className="text-muted-foreground leading-relaxed">{form.summary}</p>}
              <div className="flex flex-wrap gap-2">
-               <span className="px-3 py-1 rounded-full text-xs font-medium" style={{ background: 'rgba(124,58,237,0.15)', color: '#6d28d9', border: '1px solid rgba(124,58,237,0.3)' }}>
-                 {form.category === 'alcoholic' ? '🥃 Alcoholic' : '🍃 Non-Alcoholic'}
-               </span>
+                <span className="px-3 py-1 rounded-full text-xs font-medium" style={{ background: 'rgba(139,26,43,0.15)', color: '#8B1A2B', border: '1px solid rgba(139,26,43,0.3)' }}>
+                  {form.category === 'alcoholic' ? '🥃 Alcoholic' : '🍃 Non-Alcoholic'}
+                </span>
                {spirit && (
                  <span className="px-3 py-1 rounded-full text-xs font-medium" style={{ background: 'rgba(0,0,0,0.05)', color: '#444', border: '1px solid rgba(0,0,0,0.1)' }}>
                    {spirit.emoji} {spirit.label}
@@ -260,7 +260,7 @@ function SubmitCocktailPageContent() {
               <ol className="space-y-4">
                 {form.steps.filter(s => s.trim()).map((step, i) => (
                   <li key={i} className="flex gap-3 text-sm text-foreground">
-                     <span className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: '#7c3aed', color: 'white' }}>{i + 1}</span>
+                      <span className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: '#8B1A2B', color: 'white' }}>{i + 1}</span>
                     <p className="pt-0.5 leading-relaxed">{step}</p>
                   </li>
                 ))}
@@ -363,7 +363,7 @@ function SubmitCocktailPageContent() {
                     }}
                     className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all border"
                     style={form.category === cat
-                      ? { background: cat === 'alcoholic' ? 'rgba(124,58,237,0.3)' : 'rgba(5,150,105,0.3)', borderColor: cat === 'alcoholic' ? '#7c3aed' : '#059669', color: cat === 'alcoholic' ? '#a78bfa' : '#6ee7b7' }
+                      ? { background: cat === 'alcoholic' ? 'rgba(139,26,43,0.3)' : 'rgba(5,150,105,0.3)', borderColor: cat === 'alcoholic' ? '#8B1A2B' : '#059669', color: cat === 'alcoholic' ? '#b8394e' : '#6ee7b7' }
                       : { background: 'transparent', borderColor: 'rgba(0,0,0,0.1)', color: '#888' }
                     }
                   >
@@ -382,11 +382,11 @@ function SubmitCocktailPageContent() {
                     key={sp.value}
                     type="button"
                     onClick={() => set('spirit', sp.value)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition-all"
-                    style={form.spirit === sp.value
-                      ? { background: 'rgba(124,58,237,0.3)', borderColor: '#7c3aed', color: '#a78bfa' }
-                      : { background: 'transparent', borderColor: 'rgba(0,0,0,0.1)', color: '#888' }
-                    }
+                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition-all"
+                     style={form.spirit === sp.value
+                       ? { background: 'rgba(139,26,43,0.3)', borderColor: '#8B1A2B', color: '#b8394e' }
+                       : { background: 'transparent', borderColor: 'rgba(0,0,0,0.1)', color: '#888' }
+                     }
                   >
                     <span>{sp.emoji}</span> {sp.label}
                   </button>
@@ -454,11 +454,11 @@ function SubmitCocktailPageContent() {
                   key={opt.value}
                   type="button"
                   onClick={() => set('difficulty', opt.value)}
-                  className="flex-1 py-2.5 px-3 rounded-xl text-sm border transition-all text-left"
-                  style={form.difficulty === opt.value
-                    ? { background: 'rgba(124,58,237,0.25)', borderColor: '#7c3aed', color: '#a78bfa' }
-                    : { background: 'transparent', borderColor: 'rgba(0,0,0,0.1)', color: '#888' }
-                  }
+                   className="flex-1 py-2.5 px-3 rounded-xl text-sm border transition-all text-left"
+                   style={form.difficulty === opt.value
+                      ? { background: 'rgba(139,26,43,0.25)', borderColor: '#8B1A2B', color: '#b8394e' }
+                     : { background: 'transparent', borderColor: 'rgba(0,0,0,0.1)', color: '#888' }
+                   }
                 >
                   <p className="font-semibold">{opt.label}</p>
                   <p className="text-[10px] mt-0.5 opacity-70">{opt.desc}</p>
@@ -504,11 +504,11 @@ function SubmitCocktailPageContent() {
                     type="button"
                     onClick={() => !atLimit && toggleTag(tag)}
                     disabled={atLimit}
-                    className="px-2.5 py-1 rounded-full text-xs font-medium border capitalize transition-all disabled:opacity-30"
-                    style={active
-                      ? { background: 'rgba(124,58,237,0.3)', borderColor: '#7c3aed', color: '#a78bfa' }
-                      : { background: 'transparent', borderColor: 'rgba(0,0,0,0.1)', color: '#888' }
-                    }
+                     className="px-2.5 py-1 rounded-full text-xs font-medium border capitalize transition-all disabled:opacity-30"
+                     style={active
+                       ? { background: 'rgba(139,26,43,0.3)', borderColor: '#8B1A2B', color: '#b8394e' }
+                       : { background: 'transparent', borderColor: 'rgba(0,0,0,0.1)', color: '#888' }
+                     }
                   >
                     {active && '✓ '}{tag}
                   </button>
@@ -586,9 +586,9 @@ function SubmitCocktailPageContent() {
             <div className="space-y-3">
               {form.steps.map((step, idx) => (
                 <div key={idx} className="flex items-start gap-2">
-                  <span className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold mt-2" style={{ background: '#7c3aed' }}>
-                    {idx + 1}
-                  </span>
+                    <span className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold mt-2" style={{ background: '#8B1A2B' }}>
+                     {idx + 1}
+                   </span>
                   <textarea
                     value={step}
                     onChange={e => updateStep(idx, e.target.value)}

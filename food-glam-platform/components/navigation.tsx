@@ -130,10 +130,10 @@ export function Navigation() {
       {/* ════════════════════════════════════════════════════════════════════
           DESKTOP HEADER — full-black, two-row
       ═══════════════════════════════════════════════════════════════════════ */}
-      <header
-        className="hidden md:block sticky top-0 z-50"
-        style={{ background: theme === 'dark' ? '#000' : '#6b6560', borderBottom: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.1)' }}
-      >
+       <header
+         className="hidden md:block sticky top-0 z-50"
+         style={{ background: theme === 'dark' ? '#000' : '#8B1A2B', borderBottom: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.15)' }}
+       >
         {/* ── Row 1: logo + search + auth ─────────────────────────────── */}
         <div className="flex items-center gap-4 px-6 py-3">
           {/* Logo */}
@@ -142,23 +142,23 @@ export function Navigation() {
           </Link>
 
           {/* Search bar — expands to fill available space */}
-          <form onSubmit={handleSearch} className="flex-1 max-w-xl mx-auto">
-            <div
-              className="flex items-center gap-2 px-4 py-2 rounded-full"
-              style={{ background: theme === 'dark' ? '#111' : 'rgba(255,255,255,0.25)', border: theme === 'dark' ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(255,255,255,0.3)' }}
-            >
+           <form onSubmit={handleSearch} className="flex-1 max-w-xl mx-auto">
+             <div
+               className="flex items-center gap-2 px-4 py-2 rounded-full"
+style={{ background: theme === 'dark' ? '#111' : 'rgba(255,255,255,0.2)', border: theme === 'dark' ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(255,255,255,0.25)' }}
+              >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2">
                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
               </svg>
-              <input
-                ref={searchRef}
-                type="text"
-                value={searchVal}
-                onChange={e => setSearchVal(e.target.value)}
-                placeholder="Caută preparate, bucătari, bucătării..."
-                className="flex-1 bg-transparent text-sm outline-none"
-                style={{ color: '#f0f0f0' }}
-              />
+               <input
+                 ref={searchRef}
+                 type="text"
+                 value={searchVal}
+                 onChange={e => setSearchVal(e.target.value)}
+                 placeholder="Caută preparate, bucătari, bucătării..."
+                 className="flex-1 bg-transparent text-sm outline-none"
+                 style={{ color: theme === 'dark' ? '#f0f0f0' : '#fff' }}
+               />
               {searchVal && (
                 <button
                   type="button"
@@ -183,11 +183,11 @@ export function Navigation() {
             </button>
             {hydrated && user ? (
               <>
-                <Link
-                  href="/me"
-                  className="flex items-center gap-2 text-sm font-medium"
-                  style={{ color: '#ccc' }}
-                >
+                 <Link
+                   href="/me"
+                   className="flex items-center gap-2 text-sm font-medium"
+                   style={{ color: theme === 'dark' ? '#ccc' : '#fff' }}
+                 >
                   {user.avatar_url ? (
                     <Image src={user.avatar_url} alt="" className="w-7 h-7 rounded-full object-cover" />
                   ) : (
@@ -201,12 +201,12 @@ export function Navigation() {
                   <span className="hidden lg:inline">{user.display_name ?? 'User'}</span>
                 </Link>
                  <button
-                   onClick={signOut}
-                   className="text-xs px-3 py-1.5 rounded-full transition-all"
-                   style={{ background: 'rgba(255,255,255,0.07)', color: '#888', border: '1px solid rgba(255,255,255,0.1)' }}
-                 >
-                   Deconectare
-                 </button>
+                    onClick={signOut}
+                    className="text-xs px-3 py-1.5 rounded-full transition-all"
+                    style={{ background: theme === 'dark' ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.15)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }}
+                  >
+                    Deconectare
+                  </button>
               </>
             ) : (
               hydrated && (
@@ -234,10 +234,12 @@ export function Navigation() {
                 key={item.href}
                 href={item.href}
                 className="px-3 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap"
-                style={active
-                  ? { background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }
-                  : { color: '#999', background: 'transparent' }
-                }
+                 style={active
+                   ? (theme === 'dark'
+                       ? { background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }
+                       : { background: '#fff', color: '#8B1A2B' })
+                   : { color: theme === 'dark' ? '#999' : 'rgba(255,255,255,0.75)', background: 'transparent' }
+                 }
               >
                 {item.label}
               </Link>
@@ -247,74 +249,76 @@ export function Navigation() {
           {/* spacer */}
           <div className="flex-1" />
 
-           {/* secondary links */}
-           <Link href="/search" className="text-xs px-2 py-1" style={{ color: '#555' }}>Toate rețetele</Link>
-           <Link href="/rankings" className="text-xs px-2 py-1" style={{ color: '#555' }}>Clasament</Link>
+            {/* secondary links */}
+            <Link href="/search" className="text-xs px-2 py-1" style={{ color: theme === 'dark' ? '#555' : 'rgba(255,255,255,0.6)' }}>Toate rețetele</Link>
+            <Link href="/rankings" className="text-xs px-2 py-1" style={{ color: theme === 'dark' ? '#555' : 'rgba(255,255,255,0.6)' }}>Clasament</Link>
         </div>
       </header>
 
       {/* ════════════════════════════════════════════════════════════════════
           MOBILE HEADER — logo + hamburger
       ═══════════════════════════════════════════════════════════════════════ */}
-      <header
-        className="md:hidden sticky top-0 z-50 flex items-center justify-between px-4 py-3"
-        style={{
-          background: theme === 'dark' ? 'rgba(0,0,0,0.95)' : 'rgba(107,101,96,0.97)',
-          backdropFilter: 'blur(20px)',
-          borderBottom: theme === 'dark' ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,0.1)',
-        }}
-      >
+       <header
+         className="md:hidden sticky top-0 z-50 flex items-center justify-between px-4 py-3"
+         style={{
+           background: theme === 'dark' ? 'rgba(0,0,0,0.95)' : 'rgba(139,26,43,0.97)',
+            backdropFilter: 'blur(20px)',
+            borderBottom: theme === 'dark' ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(255,255,255,0.15)',
+         }}
+       >
         <Link href="/" className="flex items-center gap-2">
           <Image src="/logo.svg" alt="MareChef.ro" width={28} height={28} className="h-7 w-auto" />
         </Link>
 
-        {/* inline search on mobile */}
-        <form onSubmit={handleSearch} className="flex-1 mx-3">
-          <div
-            className="flex items-center gap-2 px-3 py-1.5 rounded-full"
-            style={{ background: theme === 'dark' ? '#111' : 'rgba(255,255,255,0.25)', border: theme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.3)' }}
-          >
+         {/* inline search on mobile */}
+         <form onSubmit={handleSearch} className="flex-1 mx-3">
+           <div
+             className="flex items-center gap-2 px-3 py-1.5 rounded-full"
+             style={{ background: theme === 'dark' ? '#111' : 'rgba(255,255,255,0.2)', border: theme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.25)' }}
+           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2">
               <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
             </svg>
-             <input
-               type="text"
-               value={searchVal}
-               onChange={e => setSearchVal(e.target.value)}
-               placeholder="Caută..."
-               className="flex-1 bg-transparent text-sm outline-none min-w-0"
-               style={{ color: '#f0f0f0' }}
-             />
+              <input
+                type="text"
+                value={searchVal}
+                onChange={e => setSearchVal(e.target.value)}
+                placeholder="Caută..."
+                className="flex-1 bg-transparent text-sm outline-none min-w-0"
+                style={{ color: theme === 'dark' ? '#f0f0f0' : '#fff' }}
+              />
           </div>
         </form>
 
-        {/* hamburger */}
-        <button
-          onClick={() => setMobileOpen(v => !v)}
-          className="flex flex-col gap-1.5 p-2"
-           aria-label="Meniu"
-        >
-          <span className="block w-5 h-0.5 rounded transition-all" style={{ background: mobileOpen ? '#ff4d6d' : '#ccc' }} />
-          <span className="block w-5 h-0.5 rounded transition-all" style={{ background: mobileOpen ? '#ff9500' : '#ccc', opacity: mobileOpen ? 0 : 1 }} />
-          <span className="block w-5 h-0.5 rounded transition-all" style={{ background: mobileOpen ? '#ff4d6d' : '#ccc' }} />
-        </button>
+         {/* hamburger */}
+         <button
+           onClick={() => setMobileOpen(v => !v)}
+           className="flex flex-col gap-1.5 p-2"
+            aria-label="Meniu"
+         >
+           <span className="block w-5 h-0.5 rounded transition-all" style={{ background: mobileOpen ? '#ff4d6d' : (theme === 'dark' ? '#ccc' : '#fff') }} />
+           <span className="block w-5 h-0.5 rounded transition-all" style={{ background: mobileOpen ? '#ff9500' : (theme === 'dark' ? '#ccc' : '#fff'), opacity: mobileOpen ? 0 : 1 }} />
+           <span className="block w-5 h-0.5 rounded transition-all" style={{ background: mobileOpen ? '#ff4d6d' : (theme === 'dark' ? '#ccc' : '#fff') }} />
+         </button>
       </header>
 
       {/* ── Mobile slide-down menu ───────────────────────────────────────── */}
-      {mobileOpen && (
-        <div
-          className="md:hidden fixed top-[57px] left-0 right-0 z-40 py-4"
-          style={{ background: theme === 'dark' ? '#000' : '#6b6560', borderBottom: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.1)' }}
-        >
+       {mobileOpen && (
+         <div
+           className="md:hidden fixed top-[57px] left-0 right-0 z-40 py-4"
+style={{ background: theme === 'dark' ? '#000' : '#8B1A2B', borderBottom: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.15)' }}
+          >
           {NAV_ITEMS.map(item => (
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-center gap-3 px-5 py-3 text-sm font-medium transition-colors"
-              style={isActive(item.href)
-                ? { color: '#ff9500', background: 'rgba(255,149,0,0.06)' }
-                : { color: '#ccc' }
-              }
+               className="flex items-center gap-3 px-5 py-3 text-sm font-medium transition-colors"
+               style={isActive(item.href)
+                 ? (theme === 'dark'
+                     ? { color: '#ff9500', background: 'rgba(255,149,0,0.06)' }
+                     : { color: '#fff', background: 'rgba(255,255,255,0.15)' })
+                 : { color: theme === 'dark' ? '#ccc' : 'rgba(255,255,255,0.8)' }
+               }
             >
               <span className="text-base">{item.icon}</span>
               {item.label}
@@ -352,14 +356,14 @@ export function Navigation() {
       {/* ════════════════════════════════════════════════════════════════════
           MOBILE BOTTOM TAB BAR
       ═══════════════════════════════════════════════════════════════════════ */}
-      <nav
-        className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-1 py-2"
-        style={{
-          background: theme === 'dark' ? 'rgba(0,0,0,0.97)' : 'rgba(107,101,96,0.97)',
-          backdropFilter: 'blur(20px)',
-          borderTop: theme === 'dark' ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,0.1)',
-        }}
-      >
+       <nav
+         className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-1 py-2"
+         style={{
+           background: theme === 'dark' ? 'rgba(0,0,0,0.97)' : 'rgba(139,26,43,0.97)',
+            backdropFilter: 'blur(20px)',
+            borderTop: theme === 'dark' ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(255,255,255,0.15)',
+         }}
+       >
         {MOBILE_TABS.map(item => {
           const active = isActive(item.href)
           return (
@@ -368,13 +372,13 @@ export function Navigation() {
               href={item.href}
               className="flex flex-col items-center gap-0.5 px-3 py-1"
             >
-              <span className="text-lg" style={{ opacity: active ? 1 : 0.5 }}>{item.icon}</span>
-              <span
-                className="text-[9px] tracking-wide"
-                style={{ color: active ? '#ff9500' : '#666' }}
-              >
-                {item.label}
-              </span>
+               <span className="text-lg" style={{ opacity: active ? 1 : 0.5 }}>{item.icon}</span>
+               <span
+                 className="text-[9px] tracking-wide"
+                 style={{ color: active ? (theme === 'dark' ? '#ff9500' : '#fff') : (theme === 'dark' ? '#666' : 'rgba(255,255,255,0.6)') }}
+               >
+                 {item.label}
+               </span>
             </Link>
           )
         })}
