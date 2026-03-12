@@ -218,7 +218,7 @@ export default function Home() {
         .toast-exit { animation: toastSlideOut 0.3s ease; }
       `}</style>
 
-      <main className="ff-body min-h-screen bg-[#f8f8f8] text-[#1a1a1a]">
+      <main className="ff-body min-h-screen bg-[#f8f8f8] text-[#1a1a1a] dark:bg-[#0d0d0d] dark:text-[#f0f0f0]">
 
 
 
@@ -289,7 +289,7 @@ export default function Home() {
             const postDesc = latestPost?.description ?? null
             const postSlug = latestPost?.slug ?? null
             return (
-                <div className="slide-up mt-4 rounded-2xl overflow-hidden bg-white border border-gray-200">
+              <div className="slide-up mt-4 rounded-2xl overflow-hidden bg-white border border-gray-200 dark:bg-[#1a1a1a] dark:border-white/10">
                 {/* Hero image */}
                  <div className="relative" style={{ height: 200 }}>
                    <FallbackImage src={img} alt={postTitle} fill className="object-cover" fallbackEmoji="🍽️" sizes="(max-width: 768px) 100vw, (max-width: 1024px) 90vw, 80vw" />
@@ -361,7 +361,7 @@ export default function Home() {
             FEED TABS
         ════════════════════════════════════════════════════════ */}
         <div
-          className="sticky z-40 flex gap-1 px-4 pb-3 bg-[#f8f8f8]/90 backdrop-blur-md"
+          className="sticky z-40 flex gap-1 px-4 pb-3 bg-[#f8f8f8]/90 dark:bg-[#0d0d0d]/90 backdrop-blur-md"
           style={{ top: 57 }}
         >
           {FEED_TABS.map(tab => (
@@ -418,11 +418,11 @@ export default function Home() {
           {/* COL 2–3: Feed — strict 2-col grid, equal-height tiles */}
           <div className="lg:col-span-2 flex flex-col">
             {loading && (
-                    <div className="grid grid-cols-2 gap-3">
-                 {Array.from({ length: 8 }).map((_, i) => (
-                   <div key={i} className="rounded-2xl overflow-hidden animate-pulse bg-gray-200" style={{ height: 360 }} />
-                 ))}
-               </div>
+              <div className="grid grid-cols-2 gap-3">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="rounded-2xl overflow-hidden animate-pulse bg-gray-200 dark:bg-[#1a1a1a]" style={{ height: 360 }} />
+                ))}
+              </div>
             )}
             {!loading && (
               <div className="grid grid-cols-2 gap-3">
@@ -434,7 +434,7 @@ export default function Home() {
                   return (
                     <div
                       key={recipe.id}
-                      className="feed-card rounded-2xl overflow-hidden slide-up flex flex-col bg-white"
+                      className="feed-card rounded-2xl overflow-hidden slide-up flex flex-col bg-white dark:bg-[#1a1a1a]"
                       style={{ animationDelay: `${i * 40}ms` }}
                     >
                       {/* image — fixed 280px, always equal */}

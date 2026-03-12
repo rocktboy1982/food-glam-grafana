@@ -933,7 +933,7 @@ function SubmitRecipePageContent() {
           <div className="flex items-center gap-2 mb-1">
             <span className="w-5 flex-shrink-0" />
             <span className="w-16 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60 text-center">Cant.</span>
-            <span className="w-24 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60 text-center">Unitate</span>
+            <span className="w-32 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60 text-center">Unitate</span>
             <span className="flex-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60">Ingredient</span>
           </div>
           <div className="space-y-2">
@@ -952,7 +952,7 @@ function SubmitRecipePageContent() {
                 <select
                   value={ing.unit}
                   onChange={e => updateIngredient(idx, 'unit', e.target.value)}
-                  className={`w-24 flex-shrink-0 rounded-lg border border-border bg-background px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40 focus:border-ring ${ing.unit ? 'text-foreground' : 'text-muted-foreground'}`}
+                  className={`w-32 flex-shrink-0 rounded-lg border border-border bg-background px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40 focus:border-ring ${ing.unit ? 'text-foreground' : 'text-muted-foreground'}`}
                 >
                   {UNITS.map(u => (
                     <option key={u} value={u}>{u === '' ? '— unitate —' : u}</option>

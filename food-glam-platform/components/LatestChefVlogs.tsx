@@ -44,18 +44,18 @@ const SORTED_POSTS = [...MOCK_CHEF_POSTS]
 export default function LatestChefVlogs() {
   return (
     <div
-      className="rounded-2xl overflow-hidden flex flex-col h-full bg-white border border-gray-200"
+      className="rounded-2xl overflow-hidden flex flex-col h-full bg-white border border-gray-200 dark:bg-[#111] dark:border-white/[0.08]"
     >
        {/* ── Header ── */}
-        <div
-          className="flex items-center justify-between px-4 py-3 border-b border-gray-100"
-        >
+       <div
+         className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-white/[0.07]"
+       >
         <div className="flex items-center gap-2">
           <span className="text-base">👨‍🍳</span>
-             <span
-               className="font-bold text-sm tracking-wide text-gray-900"
-               style={{ fontFamily: "'Syne', sans-serif" }}
-             >
+            <span
+              className="font-bold text-sm tracking-wide text-gray-900 dark:text-[#f0f0f0]"
+              style={{ fontFamily: "'Syne', sans-serif" }}
+            >
              Vloguri Chef
            </span>
            <span
@@ -65,21 +65,21 @@ export default function LatestChefVlogs() {
              {SORTED_POSTS.length}
            </span>
         </div>
-          <span className="text-[11px] text-gray-400">
-             Postări recente
-           </span>
+         <span className="text-[11px] text-gray-400 dark:text-[#444]">
+            Postări recente
+          </span>
        </div>
 
        {/* ── List ── */}
       <div className="flex-1 overflow-y-auto">
         {SORTED_POSTS.map(({ post, chef }, i) => (
-            <Link
-              key={post.id}
-              href={`/chefs/${post.chef_handle}`}
-              className={`group flex items-start gap-3 px-3 py-3.5 transition-colors hover:bg-gray-50 ${
-                i < SORTED_POSTS.length - 1 ? 'border-b border-gray-100' : ''
-              }`}
-            >
+           <Link
+             key={post.id}
+             href={`/chefs/${post.chef_handle}`}
+             className={`group flex items-start gap-3 px-3 py-3.5 transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.03] ${
+               i < SORTED_POSTS.length - 1 ? 'border-b border-gray-100 dark:border-white/[0.04]' : ''
+             }`}
+           >
              {/* Chef avatar */}
              <div
                className="flex-shrink-0 rounded-xl overflow-hidden"
@@ -94,38 +94,38 @@ export default function LatestChefVlogs() {
                     fallbackEmoji="👨‍🍳"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                 ) : (
-                   <div
-                     className="w-full h-full flex items-center justify-center text-xl bg-gray-200"
-                   >
-                    👨‍🍳
-                  </div>
-                )}
+                ) : (
+                  <div
+                    className="w-full h-full flex items-center justify-center text-xl bg-gray-200 dark:bg-[#1a1a1a]"
+                  >
+                   👨‍🍳
+                 </div>
+               )}
              </div>
 
             {/* Info */}
             <div className="flex-1 min-w-0">
               {/* Chef name + tier */}
-               <div className="flex items-center gap-1 mb-0.5">
-                  <span
-                    className="text-[11px] font-semibold truncate text-gray-500"
-                  >
-                   {chef?.display_name}
-                 </span>
+              <div className="flex items-center gap-1 mb-0.5">
+                 <span
+                   className="text-[11px] font-semibold truncate text-gray-500 dark:text-[#888]"
+                 >
+                  {chef?.display_name}
+                </span>
                 {chef && <TierStar tier={chef.tier} size={10} />}
               </div>
                 {/* Post title */}
-                 <p
-                   className="text-sm font-semibold leading-snug line-clamp-2 group-hover:text-gray-900 transition-colors mb-1 text-gray-800"
-                 >
+                <p
+                  className="text-sm font-semibold leading-snug line-clamp-2 group-hover:text-gray-900 dark:group-hover:text-white transition-colors mb-1 text-gray-800 dark:text-[#ddd]"
+                >
                  {sanitizeText(post.title)}
                </p>
                {/* Description snippet */}
-                 {post.description && (
-                   <p className="text-[11px] leading-relaxed line-clamp-2 text-gray-400">
-                     {sanitizeText(post.description)}
-                   </p>
-                 )}
+                {post.description && (
+                  <p className="text-[11px] leading-relaxed line-clamp-2 text-gray-400 dark:text-[#555]">
+                    {sanitizeText(post.description)}
+                  </p>
+                )}
               {/* Meta row */}
               <div className="flex items-center gap-2 mt-1">
                <span
@@ -134,25 +134,25 @@ export default function LatestChefVlogs() {
                  >
                    ♥ {post.votes}
                  </span>
-                  <span className="text-[10px] text-gray-400">
-                    {relativeDate(post.created_at)}
-                  </span>
+                 <span className="text-[10px] text-gray-400 dark:text-[#444]">
+                   {relativeDate(post.created_at)}
+                 </span>
               </div>
             </div>
 
              {/* Arrow hint */}
-              <span
-                className="flex-shrink-0 text-xs opacity-0 group-hover:opacity-100 transition-opacity text-gray-400"
-              >
+             <span
+               className="flex-shrink-0 text-xs opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 dark:text-[#555]"
+             >
               →
             </span>
           </Link>
         ))}
       </div>
         {/* ── Footer ── */}
-         <div
-          className="px-4 py-2.5 border-t border-gray-100"
-         >
+        <div
+         className="px-4 py-2.5 border-t border-gray-100 dark:border-white/[0.05]"
+        >
           <Link
             href="/chefs"
             className="block text-center text-xs font-semibold py-1.5 rounded-xl transition-all"
