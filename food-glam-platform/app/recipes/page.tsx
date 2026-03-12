@@ -74,7 +74,7 @@ export default async function RecipesPage() {
 
   return (
     <main
-      className="min-h-screen bg-[#f8f8f8] text-[#1a1a1a] dark:bg-[#0a0a0a] dark:text-[#f0f0f0]"
+      className="min-h-screen bg-[#f8f8f8] text-[#1a1a1a]"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       <style>{`
@@ -116,7 +116,7 @@ export default async function RecipesPage() {
             <h1 className="ff-display text-5xl md:text-6xl font-extrabold tracking-tight mb-3 leading-tight text-white">
               Toate Rețetele
             </h1>
-             <p className="text-lg mb-6 text-gray-500 dark:text-[#ccc]">
+             <p className="text-lg mb-6 text-white/70">
                Descoperă mii de rețete delicioase din întreaga lume
              </p>
             <Link
@@ -135,23 +135,23 @@ export default async function RecipesPage() {
       {/* ── MAIN CONTENT ── */}
       <div className="px-6 md:px-8 py-12 max-w-7xl mx-auto space-y-12">
         {sortedCountries.length === 0 ? (
-          <div className="text-center py-12">
-             <p className="text-lg text-gray-500 dark:text-[#888]">
-               Nu au fost găsite rețete. Încearcă mai târziu!
-             </p>
-          </div>
+           <div className="text-center py-12">
+              <p className="text-lg text-gray-500">
+                Nu au fost găsite rețete. Încearcă mai târziu!
+              </p>
+           </div>
         ) : (
           sortedCountries.map((country) => (
             <section key={country}>
               {/* Country header */}
-              <div className="mb-6">
-                 <h2 className="ff-display text-2xl font-bold mb-1 text-gray-900 dark:text-white">
-                   {country.toUpperCase()}
-                 </h2>
-                 <p className="text-sm text-gray-500 dark:text-[#888]">
-                   {groupedByCountry[country].length} rețete
-                 </p>
-              </div>
+               <div className="mb-6">
+                  <h2 className="ff-display text-2xl font-bold mb-1 text-gray-900">
+                    {country.toUpperCase()}
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    {groupedByCountry[country].length} rețete
+                  </p>
+               </div>
 
               {/* Recipe grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -163,11 +163,11 @@ export default async function RecipesPage() {
                   const totalTime = cookTime + prepTime
 
                   return (
-                     <Link
-                       key={recipe.id}
-                       href={`/recipes/${recipe.slug}`}
-                       className="recipe-card rounded-2xl overflow-hidden flex flex-col bg-white border border-gray-200 dark:bg-[#1a1a1a] dark:border-white/[0.08]"
-                     >
+                      <Link
+                        key={recipe.id}
+                        href={`/recipes/${recipe.slug}`}
+                        className="recipe-card rounded-2xl overflow-hidden flex flex-col bg-white border border-gray-200"
+                      >
                        {/* Image */}
                        <div className="relative w-full" style={{ height: '240px' }}>
                          <FallbackImage
@@ -212,19 +212,19 @@ export default async function RecipesPage() {
                       {/* Info section */}
                       <div className="flex-1 flex flex-col justify-between p-3.5">
                         {/* Summary */}
-                        {recipe.summary && (
-                           <p className="text-xs leading-relaxed line-clamp-2 mb-3 text-gray-500 dark:text-[#aaa]">
-                             {recipe.summary}
-                           </p>
-                        )}
+                         {recipe.summary && (
+                            <p className="text-xs leading-relaxed line-clamp-2 mb-3 text-gray-500">
+                              {recipe.summary}
+                            </p>
+                         )}
 
                         {/* Time info */}
-                         {totalTime > 0 && (
-                           <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-[#888]">
-                             <span>⏱️</span>
-                             <span>{totalTime} min</span>
-                           </div>
-                         )}
+                          {totalTime > 0 && (
+                            <div className="flex items-center gap-2 text-xs text-gray-500">
+                              <span>⏱️</span>
+                              <span>{totalTime} min</span>
+                            </div>
+                          )}
                       </div>
                     </Link>
                   )

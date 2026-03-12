@@ -1,6 +1,6 @@
 "use client"
 
-import Image from 'next/image'
+import FallbackImage from '@/components/FallbackImage'
 import React, { useState, useMemo, useCallback, useEffect } from "react"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -384,7 +384,7 @@ export default function PartyPlanClient() {
   })
 
   const [view, setView] = useState<View>('planner')
-  const [shopGrouping, setShopGrouping] = useState<'ingredients' | 'cocktail'>('ingredients')
+  const [shopGrouping, setShopGrouping] = useState<'foodgroups' | 'product' | 'cocktail'>('foodgroups')
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<CocktailData[]>([])
   const [searchLoading, setSearchLoading] = useState(false)
@@ -538,21 +538,50 @@ export default function PartyPlanClient() {
       '',
     ]
 
-    Object.entries(ingredientsByCategory).forEach(([category, items]) => {
-      lines.push(`${getCategoryEmoji(category)} ${getCategoryLabel(category)}`)
-      items.forEach((ing) => {
-        const raw = ing.amount * state.guestCount
-        const norm = normalizeToShoppingUnit(raw, ing.unit)
-        lines.push(`  • ${formatAmount(norm.amount)} ${norm.unit} ${ing.name}`)
+    if (shopGrouping === 'foodgroups') {
+      Object.entries(ingredientsByCategory).forEach(([category, items]) => {
+        lines.push(`${getCategoryEmoji(category)} ${getCategoryLabel(category)}`)
+        items.forEach((ing) => {
+          const raw = ing.amount * state.guestCount
+          const norm = normalizeToShoppingUnit(raw, ing.unit)
+          lines.push(`  • ${formatAmount(norm.amount)} ${norm.unit} ${ing.name}`)
+        })
+        lines.push('')
       })
+    } else if (shopGrouping === 'product') {
+      lines.push('🏷️ Toate produsele')
+      aggregatedIngredients
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name, 'ro'))
+        .forEach((ing) => {
+          const raw = ing.amount * state.guestCount
+          const norm = normalizeToShoppingUnit(raw, ing.unit)
+          lines.push(`  • ${formatAmount(norm.amount)} ${norm.unit} ${ing.name}`)
+        })
       lines.push('')
-    })
+    } else {
+      // cocktail mode
+      state.cocktails.forEach((item) => {
+        const serves = getServes(item.cocktail)
+        const multiplier = (item.rounds * state.guestCount) / serves
+        const totalServings = Math.ceil(item.rounds * state.guestCount / serves)
+        lines.push(`🍹 ${item.cocktail.title} (${item.rounds} runde · ~${totalServings} porții)`)
+        const ingredients = getIngredients(item.cocktail)
+        ingredients.forEach((ingStr) => {
+          const parsed = parseIngredient(ingStr)
+          const scaledAmount = parsed.amount * multiplier
+          const norm = normalizeToShoppingUnit(scaledAmount, parsed.unit)
+          lines.push(`  • ${formatAmount(norm.amount)} ${norm.unit} ${parsed.name}`)
+        })
+        lines.push('')
+      })
+    }
 
     const text = lines.join('\n')
     navigator.clipboard.writeText(text).then(() => {
       alert('Lista de cumpărături a fost copiată!')
     })
-  }, [state, ingredientsByCategory])
+  }, [state, ingredientsByCategory, aggregatedIngredients, shopGrouping])
 
   // Share shopping list
   const shareShoppingList = useCallback(() => {
@@ -563,15 +592,44 @@ export default function PartyPlanClient() {
       '',
     ]
 
-    Object.entries(ingredientsByCategory).forEach(([category, items]) => {
-      lines.push(`${getCategoryEmoji(category)} ${getCategoryLabel(category)}`)
-      items.forEach((ing) => {
-        const raw = ing.amount * state.guestCount
-        const norm = normalizeToShoppingUnit(raw, ing.unit)
-        lines.push(`  • ${formatAmount(norm.amount)} ${norm.unit} ${ing.name}`)
+    if (shopGrouping === 'foodgroups') {
+      Object.entries(ingredientsByCategory).forEach(([category, items]) => {
+        lines.push(`${getCategoryEmoji(category)} ${getCategoryLabel(category)}`)
+        items.forEach((ing) => {
+          const raw = ing.amount * state.guestCount
+          const norm = normalizeToShoppingUnit(raw, ing.unit)
+          lines.push(`  • ${formatAmount(norm.amount)} ${norm.unit} ${ing.name}`)
+        })
+        lines.push('')
       })
+    } else if (shopGrouping === 'product') {
+      lines.push('🏷️ Toate produsele')
+      aggregatedIngredients
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name, 'ro'))
+        .forEach((ing) => {
+          const raw = ing.amount * state.guestCount
+          const norm = normalizeToShoppingUnit(raw, ing.unit)
+          lines.push(`  • ${formatAmount(norm.amount)} ${norm.unit} ${ing.name}`)
+        })
       lines.push('')
-    })
+    } else {
+      // cocktail mode
+      state.cocktails.forEach((item) => {
+        const serves = getServes(item.cocktail)
+        const multiplier = (item.rounds * state.guestCount) / serves
+        const totalServings = Math.ceil(item.rounds * state.guestCount / serves)
+        lines.push(`🍹 ${item.cocktail.title} (${item.rounds} runde · ~${totalServings} porții)`)
+        const ingredients = getIngredients(item.cocktail)
+        ingredients.forEach((ingStr) => {
+          const parsed = parseIngredient(ingStr)
+          const scaledAmount = parsed.amount * multiplier
+          const norm = normalizeToShoppingUnit(scaledAmount, parsed.unit)
+          lines.push(`  • ${formatAmount(norm.amount)} ${norm.unit} ${parsed.name}`)
+        })
+        lines.push('')
+      })
+    }
 
     const text = lines.join('\n')
 
@@ -583,7 +641,7 @@ export default function PartyPlanClient() {
     } else {
       copyShoppingList()
     }
-  }, [state, ingredientsByCategory, copyShoppingList])
+  }, [state, ingredientsByCategory, aggregatedIngredients, shopGrouping, copyShoppingList])
 
   // Print shopping list
   const printShoppingList = useCallback(() => {
@@ -614,9 +672,14 @@ export default function PartyPlanClient() {
     </style></head><body>`
 
     html += `<h1>🎉 ${state.partyName}</h1>`
-    html += `<p class="meta">👥 ${state.guestCount} oaspeți · 🍹 ${state.cocktails.length} cocktail-uri · ${shopGrouping === 'ingredients' ? 'După ingrediente' : 'După cocktail'}</p>`
+    const modeLabel = shopGrouping === 'foodgroups' 
+      ? 'Grupe de alimente' 
+      : shopGrouping === 'product' 
+        ? 'Pe produs' 
+        : 'Pe rețete'
+    html += `<p class="meta">👥 ${state.guestCount} oaspeți · 🍹 ${state.cocktails.length} cocktail-uri · ${modeLabel}</p>`
 
-    if (shopGrouping === 'ingredients') {
+    if (shopGrouping === 'foodgroups') {
       // Aggregated by ingredient category
       Object.entries(ingredientsByCategory).forEach(([category, items]) => {
         html += `<h2>${getCategoryEmoji(category)} ${getCategoryLabel(category)}</h2><ul>`
@@ -627,6 +690,18 @@ export default function PartyPlanClient() {
         })
         html += `</ul>`
       })
+    } else if (shopGrouping === 'product') {
+      // Flat alphabetical list of all ingredients
+      html += `<h2>🏷️ Toate produsele</h2><ul>`
+      aggregatedIngredients
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name, 'ro'))
+        .forEach((ing) => {
+          const raw = ing.amount * state.guestCount
+          const norm = normalizeToShoppingUnit(raw, ing.unit)
+          html += `<li class="item"><div class="check"></div><div class="name">${ing.name} <span style="color:#999;font-size:12px">(${getCategoryLabel(ing.category)})</span></div><div class="qty">${formatAmount(norm.amount)} ${norm.unit}</div></li>`
+        })
+      html += `</ul>`
     } else {
       // Grouped by cocktail — each cocktail with its scaled ingredients
       state.cocktails.forEach((item) => {
@@ -654,7 +729,7 @@ export default function PartyPlanClient() {
       printWin.focus()
       printWin.print()
     }
-  }, [state, ingredientsByCategory, shopGrouping])
+  }, [state, ingredientsByCategory, aggregatedIngredients, shopGrouping])
 
   return (
     <main
@@ -669,91 +744,85 @@ export default function PartyPlanClient() {
       {/* ── HEADER ── */}
       <div className="px-6 md:px-8 py-8 max-w-6xl mx-auto">
         <div className="mb-8">
-          <h1 className="ff text-4xl md:text-5xl font-bold mb-2" style={{ color: '#111' }}>
-            🎉 Planificator de Petrecere
-          </h1>
-          <p style={{ color: '#555' }} className="text-base">
-            Adaugă cocktail-uri și generează lista de cumpărături
-          </p>
+            <h1 className="ff text-4xl md:text-5xl font-bold mb-2 text-[#1a1a1a]">
+              🎉 Planificator de Petrecere
+            </h1>
+            <p className="text-base text-gray-500">
+              Adaugă cocktail-uri și generează lista de cumpărături
+            </p>
         </div>
 
-        {/* Event details */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          {/* Party name */}
-          <div>
-            <label className="block text-xs font-semibold mb-2" style={{ color: '#666' }}>
-              Nume eveniment
-            </label>
-            <input
-              type="text"
-              value={state.partyName}
-              onChange={(e) => setState({ ...state, partyName: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-xl border"
-              style={{ background: '#fff', borderColor: 'rgba(0,0,0,0.08)', color: '#111' }}
-            />
-          </div>
-
-          {/* Guest count */}
-          <div>
-            <label className="block text-xs font-semibold mb-2" style={{ color: '#666' }}>
-              Număr de oaspeți
-            </label>
-             <div className="flex items-center gap-2">
-               <button
-                 onClick={() => setState({ ...state, guestCount: Math.max(1, state.guestCount - 1) })}
-                 className="w-10 h-10 rounded-lg flex items-center justify-center font-bold transition-colors"
-                 style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.08)', color: '#8B1A2B' }}
-              >
-                −
-              </button>
+         {/* Event details */}
+         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+           {/* Party name */}
+           <div>
+              <label className="block text-xs font-semibold mb-2 text-gray-600">
+                Nume eveniment
+              </label>
               <input
-                type="number"
-                value={state.guestCount}
-                onChange={(e) => setState({ ...state, guestCount: Math.max(1, parseInt(e.target.value) || 1) })}
-                className="flex-1 px-4 py-2.5 rounded-xl border text-center"
-                style={{ background: '#fff', borderColor: 'rgba(0,0,0,0.08)', color: '#111' }}
+                type="text"
+                value={state.partyName}
+                onChange={(e) => setState({ ...state, partyName: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border bg-white border-gray-200 text-[#1a1a1a]"
               />
-               <button
-                onClick={() => setState({ ...state, guestCount: state.guestCount + 1 })}
-                className="w-10 h-10 rounded-lg flex items-center justify-center font-bold transition-colors"
-                style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.08)', color: '#8B1A2B' }}
-              >
-                +
-              </button>
-            </div>
-          </div>
+           </div>
 
-          {/* View toggle */}
-          <div>
-            <label className="block text-xs font-semibold mb-2" style={{ color: '#666' }}>
-              Vizualizare
-            </label>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setView('planner')}
-                className="flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all"
-                style={{
-                  background: view === 'planner' ? '#8B1A2B' : '#fff',
-                  color: view === 'planner' ? '#fff' : '#111',
-                  border: `1px solid ${view === 'planner' ? '#8B1A2B' : 'rgba(0,0,0,0.08)'}`,
-                }}
-              >
-                🍹 Cocktail-uri
-              </button>
-              <button
-                onClick={() => setView('shopping')}
-                className="flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all"
-                style={{
-                  background: view === 'shopping' ? '#8B1A2B' : '#fff',
-                  color: view === 'shopping' ? '#fff' : '#111',
-                  border: `1px solid ${view === 'shopping' ? '#8B1A2B' : 'rgba(0,0,0,0.08)'}`,
-                }}
-              >
-                📋 Listă
-              </button>
-            </div>
-          </div>
-        </div>
+           {/* Guest count */}
+           <div>
+              <label className="block text-xs font-semibold mb-2 text-gray-600">
+                Număr de oaspeți
+              </label>
+               <div className="flex items-center gap-2">
+                 <button
+                   onClick={() => setState({ ...state, guestCount: Math.max(1, state.guestCount - 1) })}
+                   className="w-10 h-10 rounded-lg flex items-center justify-center font-bold transition-colors bg-white border border-gray-200 text-[#8B1A2B]"
+                >
+                  −
+                </button>
+                <input
+                  type="number"
+                  value={state.guestCount}
+                  onChange={(e) => setState({ ...state, guestCount: Math.max(1, parseInt(e.target.value) || 1) })}
+                  className="flex-1 px-4 py-2.5 rounded-xl border text-center bg-white border-gray-200 text-[#1a1a1a]"
+                />
+                 <button
+                  onClick={() => setState({ ...state, guestCount: state.guestCount + 1 })}
+                  className="w-10 h-10 rounded-lg flex items-center justify-center font-bold transition-colors bg-white border border-gray-200 text-[#8B1A2B]"
+                >
+                  +
+                </button>
+              </div>
+           </div>
+
+           {/* View toggle */}
+           <div>
+              <label className="block text-xs font-semibold mb-2 text-gray-600">
+                Vizualizare
+              </label>
+               <div className="flex gap-2">
+                 <button
+                   onClick={() => setView('planner')}
+                   className={`flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all ${
+                     view === 'planner'
+                       ? 'bg-[#8B1A2B] text-white border border-[#8B1A2B]'
+                       : 'bg-white text-[#1a1a1a] border border-gray-200'
+                   }`}
+                 >
+                   🍹 Cocktail-uri
+                 </button>
+                 <button
+                   onClick={() => setView('shopping')}
+                   className={`flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all ${
+                     view === 'shopping'
+                       ? 'bg-[#8B1A2B] text-white border border-[#8B1A2B]'
+                       : 'bg-white text-[#1a1a1a] border border-gray-200'
+                   }`}
+                 >
+                   📋 Listă
+                 </button>
+               </div>
+           </div>
+         </div>
       </div>
 
       {/* ── CONTENT ── */}
@@ -761,293 +830,317 @@ export default function PartyPlanClient() {
         {view === 'planner' ? (
           // ── PLANNER VIEW ──
           <div className="space-y-6">
-            {/* Search */}
-            <div>
-              <input
-                type="text"
-                placeholder="Caută cocktail-uri..."
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border text-base"
-                style={{ background: '#fff', borderColor: 'rgba(0,0,0,0.08)', color: '#111' }}
-              />
-            </div>
+             {/* Search */}
+             <div>
+                <input
+                  type="text"
+                  placeholder="Caută cocktail-uri..."
+                  value={searchQuery}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border text-base bg-white border-gray-200 text-[#1a1a1a]"
+                />
+             </div>
 
-            {/* Search results */}
-            {searchQuery && (
-              <div>
-                <p className="text-sm font-semibold mb-3" style={{ color: '#666' }}>
-                  {searchLoading ? 'Se caută...' : `${searchResults.length} rezultate`}
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {searchResults.map((cocktail) => (
-                    <button
-                      key={cocktail.id}
-                      onClick={() => addCocktail(cocktail)}
-                      className="group rounded-xl overflow-hidden transition-all hover:shadow-lg"
-                      style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.08)' }}
-                    >
-                      <div className="relative w-full" style={{ height: '120px' }}>
-                        {cocktail.hero_image_url ? (
-                          <Image
-                            src={cocktail.hero_image_url}
+             {/* Search results */}
+             {searchQuery && (
+               <div>
+                  <p className="text-sm font-semibold mb-3 text-gray-600">
+                    {searchLoading ? 'Se caută...' : `${searchResults.length} rezultate`}
+                  </p>
+                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                   {searchResults.map((cocktail) => (
+                      <button
+                        key={cocktail.id}
+                        onClick={() => addCocktail(cocktail)}
+                        className="group rounded-xl overflow-hidden transition-all hover:shadow-lg bg-white border border-gray-200"
+                      >
+                        <div className="relative w-full" style={{ height: '120px' }}>
+                          <FallbackImage
+                            src={cocktail.hero_image_url || ''}
                             alt={cocktail.title}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform"
                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                            fallbackEmoji="🍹"
                           />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-3xl" style={{ background: '#f0f0f0' }}>
-                            🍹
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-2.5">
-                        <p className="text-xs font-semibold line-clamp-2" style={{ color: '#111' }}>
-                          {cocktail.title}
-                        </p>
-                        {getSpirit(cocktail) && (
-                          <p className="text-[10px] mt-1" style={{ color: '#888' }}>
-                            {getSpirit(cocktail)}
+                        </div>
+                        <div className="p-2.5">
+                          <p className="text-xs font-semibold line-clamp-2 text-[#1a1a1a]">
+                            {cocktail.title}
                           </p>
-                        )}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+                          {getSpirit(cocktail) && (
+                            <p className="text-[10px] mt-1 text-gray-400">
+                              {getSpirit(cocktail)}
+                            </p>
+                          )}
+                        </div>
+                     </button>
+                   ))}
+                 </div>
+               </div>
+             )}
 
-            {/* Selected cocktails */}
-            {state.cocktails.length > 0 && (
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-sm font-semibold" style={{ color: '#666' }}>
-                    {state.cocktails.length} cocktail-uri · {state.cocktails.reduce((sum, item) => sum + item.rounds, 0)} runde
-                  </p>
-                  <button
-                    onClick={clearPlan}
-                    className="text-xs px-3 py-1.5 rounded-lg transition-colors"
-                    style={{ background: 'rgba(239,68,68,0.1)', color: '#dc2626', border: '1px solid rgba(239,68,68,0.2)' }}
-                  >
-                    Golește planul
-                  </button>
-                </div>
+             {/* Selected cocktails */}
+             {state.cocktails.length > 0 && (
+               <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-sm font-semibold text-gray-600">
+                      {state.cocktails.length} cocktail-uri · {state.cocktails.reduce((sum, item) => sum + item.rounds, 0)} runde
+                    </p>
+                   <button
+                     onClick={clearPlan}
+                     className="text-xs px-3 py-1.5 rounded-lg transition-colors"
+                     style={{ background: 'rgba(239,68,68,0.1)', color: '#dc2626', border: '1px solid rgba(239,68,68,0.2)' }}
+                   >
+                     Golește planul
+                   </button>
+                 </div>
 
-                <div className="space-y-3">
-                  {state.cocktails.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center gap-4 p-4 rounded-xl"
-                      style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.08)' }}
-                    >
-                      {/* Image */}
-                      <div className="relative flex-shrink-0" style={{ width: '80px', height: '80px' }}>
-                        {item.cocktail.hero_image_url ? (
-                          <Image
-                            src={item.cocktail.hero_image_url}
+                 <div className="space-y-3">
+                   {state.cocktails.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center gap-4 p-4 rounded-xl bg-white border border-gray-200"
+                      >
+                        {/* Image */}
+                        <div className="relative flex-shrink-0" style={{ width: '80px', height: '80px' }}>
+                          <FallbackImage
+                            src={item.cocktail.hero_image_url || ''}
                             alt={item.cocktail.title}
                             fill
                             className="object-cover rounded-lg"
                             sizes="80px"
+                            fallbackEmoji="🍹"
                           />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-3xl rounded-lg" style={{ background: '#f0f0f0' }}>
-                            🍹
-                          </div>
-                        )}
-                      </div>
+                        </div>
 
-                      {/* Info */}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-sm mb-1" style={{ color: '#111' }}>
-                          {item.cocktail.title}
-                        </h3>
-                        {getSpirit(item.cocktail) && (
-                          <p className="text-xs mb-2" style={{ color: '#888' }}>
-                            {getSpirit(item.cocktail)}
+                        {/* Info */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-sm mb-1 text-[#1a1a1a]">
+                            {item.cocktail.title}
+                          </h3>
+                          {getSpirit(item.cocktail) && (
+                            <p className="text-xs mb-2 text-gray-400">
+                              {getSpirit(item.cocktail)}
+                            </p>
+                          )}
+                          <p className="text-xs text-gray-600">
+                            {item.rounds} runde · {Math.round((item.rounds * state.guestCount) / getServes(item.cocktail))} porții
                           </p>
-                        )}
-                        <p className="text-xs" style={{ color: '#666' }}>
-                          {item.rounds} runde · {Math.round((item.rounds * state.guestCount) / getServes(item.cocktail))} porții
-                        </p>
-                      </div>
+                        </div>
 
-                      {/* Rounds control */}
-                      <div className="flex items-center gap-2">
-                         <button
-                           onClick={() => updateRounds(item.id, item.rounds - 1)}
-                           className="w-8 h-8 rounded-lg flex items-center justify-center font-bold transition-colors"
-                           style={{ background: '#f0f0f0', color: '#8B1A2B' }}
-                        >
-                          −
-                        </button>
-                        <span className="w-8 text-center font-semibold text-sm" style={{ color: '#111' }}>
-                          {item.rounds}
-                        </span>
-                         <button
-                           onClick={() => updateRounds(item.id, item.rounds + 1)}
-                           className="w-8 h-8 rounded-lg flex items-center justify-center font-bold transition-colors"
-                           style={{ background: '#f0f0f0', color: '#8B1A2B' }}
-                        >
-                          +
-                        </button>
-                      </div>
+                        {/* Rounds control */}
+                        <div className="flex items-center gap-2">
+                           <button
+                             onClick={() => updateRounds(item.id, item.rounds - 1)}
+                             className="w-8 h-8 rounded-lg flex items-center justify-center font-bold transition-colors bg-gray-100 text-[#8B1A2B]"
+                          >
+                            −
+                          </button>
+                          <span className="w-8 text-center font-semibold text-sm text-[#1a1a1a]">
+                            {item.rounds}
+                          </span>
+                           <button
+                             onClick={() => updateRounds(item.id, item.rounds + 1)}
+                             className="w-8 h-8 rounded-lg flex items-center justify-center font-bold transition-colors bg-gray-100 text-[#8B1A2B]"
+                          >
+                            +
+                          </button>
+                        </div>
 
-                      {/* Remove */}
-                      <button
-                        onClick={() => removeCocktail(item.id)}
-                        className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center font-bold transition-colors"
-                        style={{ background: 'rgba(239,68,68,0.1)', color: '#dc2626' }}
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
+                       {/* Remove */}
+                       <button
+                         onClick={() => removeCocktail(item.id)}
+                         className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center font-bold transition-colors"
+                         style={{ background: 'rgba(239,68,68,0.1)', color: '#dc2626' }}
+                       >
+                         ×
+                       </button>
+                     </div>
+                   ))}
+                 </div>
+               </div>
+             )}
+
+              {state.cocktails.length === 0 && !searchQuery && (
+                <div className="text-center py-12">
+                  <p className="text-base text-gray-400">
+                    Caută și adaugă cocktail-uri pentru a începe
+                  </p>
                 </div>
-              </div>
-            )}
-
-            {state.cocktails.length === 0 && !searchQuery && (
-              <div className="text-center py-12">
-                <p style={{ color: '#888' }} className="text-base">
-                  Caută și adaugă cocktail-uri pentru a începe
-                </p>
-              </div>
-            )}
+              )}
           </div>
         ) : (
           // ── SHOPPING LIST VIEW ──
           <div className="space-y-6">
-            {/* Header */}
-            <div className="p-6 rounded-xl" style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.08)' }}>
-              <h2 className="ff text-2xl font-bold mb-2" style={{ color: '#111' }}>
-                {state.partyName}
-              </h2>
-              <p className="text-sm mb-4" style={{ color: '#666' }}>
-                👥 {state.guestCount} oaspeți · 🍹 {state.cocktails.length} cocktail-uri
-              </p>
-              <div className="flex gap-2">
-                <button
-                  onClick={printShoppingList}
-                  className="flex-1 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all"
-                  style={{ background: '#111', color: '#fff' }}
-                >
-                  🖨️ Printează
-                </button>
-                <button
-                  onClick={shareShoppingList}
-                  className="flex-1 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all"
-                  style={{ background: '#b8394e', color: '#fff' }}
-                >
-                  📤 Partajează
-                </button>
-              </div>
-            </div>
-
-            {/* Grouping toggle */}
-            <div className="flex gap-2">
-              <button
-                onClick={() => setShopGrouping('ingredients')}
-                className="flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all"
-                style={{
-                  background: shopGrouping === 'ingredients' ? '#111' : '#fff',
-                  color: shopGrouping === 'ingredients' ? '#fff' : '#555',
-                  border: `1px solid ${shopGrouping === 'ingredients' ? '#111' : 'rgba(0,0,0,0.08)'}`,
-                }}
-              >
-                📦 După ingrediente
-              </button>
-              <button
-                onClick={() => setShopGrouping('cocktail')}
-                className="flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all"
-                style={{
-                  background: shopGrouping === 'cocktail' ? '#111' : '#fff',
-                  color: shopGrouping === 'cocktail' ? '#fff' : '#555',
-                  border: `1px solid ${shopGrouping === 'cocktail' ? '#111' : 'rgba(0,0,0,0.08)'}`,
-                }}
-              >
-                🍹 După cocktail
-              </button>
-            </div>
-
-            {/* Shopping list */}
-            {state.cocktails.length === 0 ? (
-              <div className="text-center py-12">
-                <p style={{ color: '#888' }} className="text-base">
-                  Adaugă cocktail-uri pentru a genera lista de cumpărături
+             {/* Header */}
+              <div className="p-6 rounded-xl bg-white border border-gray-200">
+                <h2 className="ff text-2xl font-bold mb-2 text-[#1a1a1a]">
+                  {state.partyName}
+                </h2>
+                <p className="text-sm mb-4 text-gray-600">
+                  👥 {state.guestCount} oaspeți · 🍹 {state.cocktails.length} cocktail-uri
                 </p>
-              </div>
-            ) : shopGrouping === 'ingredients' ? (
-              /* ── Grouped by ingredient category ── */
-              <div className="space-y-6">
-                {Object.entries(ingredientsByCategory).map(([category, items]) => (
-                  <div key={category} className="p-6 rounded-xl" style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.08)' }}>
-                    <h3 className="font-semibold text-base mb-4 flex items-center gap-2" style={{ color: '#111' }}>
-                      <span>{getCategoryEmoji(category)}</span>
-                      {getCategoryLabel(category)}
-                    </h3>
-                    <ul className="space-y-2">
-                      {items.map((ing, idx) => {
-                        const raw = ing.amount * state.guestCount
-                        const norm = normalizeToShoppingUnit(raw, ing.unit)
-                        return (
-                          <li key={idx} className="flex items-center justify-between text-sm">
-                            <span style={{ color: '#333' }}>
-                              {ing.name}
-                            </span>
-                            <span className="font-semibold" style={{ color: '#8B1A2B' }}>
-                              {formatAmount(norm.amount)} {norm.unit}
-                            </span>
-                          </li>
-                        )
-                      })}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              /* ── Grouped by cocktail ── */
-              <div className="space-y-6">
-                {state.cocktails.map((item) => {
-                  const serves = getServes(item.cocktail)
-                  const multiplier = (item.rounds * state.guestCount) / serves
-                  const totalServings = Math.ceil(item.rounds * state.guestCount / serves)
-                  const ingredients = getIngredients(item.cocktail)
-                  return (
-                    <div key={item.id} className="p-6 rounded-xl" style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.08)' }}>
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="font-semibold text-base flex items-center gap-2" style={{ color: '#111' }}>
-                          🍹 {item.cocktail.title}
-                        </h3>
-                        <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: 'rgba(139,26,43,0.1)', color: '#8B1A2B' }}>
-                          {item.rounds} runde · ~{totalServings} porții
-                        </span>
-                      </div>
-                      {ingredients.length > 0 ? (
-                        <ul className="space-y-2">
-                          {ingredients.map((ingStr, idx) => {
-                            const parsed = parseIngredient(ingStr)
-                            const scaledAmount = parsed.amount * multiplier
-                            const norm = normalizeToShoppingUnit(scaledAmount, parsed.unit)
-                            return (
-                              <li key={idx} className="flex items-center justify-between text-sm">
-                                <span style={{ color: '#333' }}>{parsed.name}</span>
-                                <span className="font-semibold" style={{ color: '#8B1A2B' }}>
-                                  {formatAmount(norm.amount)} {norm.unit}
-                                </span>
-                              </li>
-                            )
-                          })}
-                        </ul>
-                      ) : (
-                        <p className="text-sm italic" style={{ color: '#888' }}>Nu sunt ingrediente listate.</p>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            )}
+               <div className="flex gap-2">
+                 <button
+                   onClick={printShoppingList}
+                   className="flex-1 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all"
+                   style={{ background: '#111', color: '#fff' }}
+                 >
+                   🖨️ Printează
+                 </button>
+                 <button
+                   onClick={shareShoppingList}
+                   className="flex-1 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all"
+                   style={{ background: '#b8394e', color: '#fff' }}
+                 >
+                   📤 Partajează
+                 </button>
+               </div>
+             </div>
+
+               {/* Grouping toggle */}
+               <div className="flex gap-2">
+                 <button
+                   onClick={() => setShopGrouping('foodgroups')}
+                   className={`flex-1 px-3 py-2.5 rounded-xl font-semibold text-xs transition-all ${
+                     shopGrouping === 'foodgroups'
+                       ? 'bg-[#111] text-white border border-[#111]'
+                       : 'bg-white text-gray-500 border border-gray-200'
+                   }`}
+                 >
+                   📦 Grupe
+                 </button>
+                 <button
+                   onClick={() => setShopGrouping('product')}
+                   className={`flex-1 px-3 py-2.5 rounded-xl font-semibold text-xs transition-all ${
+                     shopGrouping === 'product'
+                       ? 'bg-[#111] text-white border border-[#111]'
+                       : 'bg-white text-gray-500 border border-gray-200'
+                   }`}
+                 >
+                   🏷️ Produse
+                 </button>
+                 <button
+                   onClick={() => setShopGrouping('cocktail')}
+                   className={`flex-1 px-3 py-2.5 rounded-xl font-semibold text-xs transition-all ${
+                     shopGrouping === 'cocktail'
+                       ? 'bg-[#111] text-white border border-[#111]'
+                       : 'bg-white text-gray-500 border border-gray-200'
+                   }`}
+                 >
+                   🍹 Rețete
+                 </button>
+               </div>
+
+              {/* Shopping list */}
+               {state.cocktails.length === 0 ? (
+                 <div className="text-center py-12">
+                   <p className="text-base text-gray-400">
+                     Adaugă cocktail-uri pentru a genera lista de cumpărături
+                   </p>
+                 </div>
+               ) : shopGrouping === 'foodgroups' ? (
+                 /* ── Grouped by ingredient category ── */
+                 <div className="space-y-6">
+                   {Object.entries(ingredientsByCategory).map(([category, items]) => (
+                     <div key={category} className="p-6 rounded-xl bg-white border border-gray-200">
+                       <h3 className="font-semibold text-base mb-4 flex items-center gap-2 text-[#1a1a1a]">
+                         <span>{getCategoryEmoji(category)}</span>
+                         {getCategoryLabel(category)}
+                       </h3>
+                       <ul className="space-y-2">
+                         {items.map((ing, idx) => {
+                           const raw = ing.amount * state.guestCount
+                           const norm = normalizeToShoppingUnit(raw, ing.unit)
+                           return (
+                             <li key={idx} className="flex items-center justify-between text-sm">
+                               <span className="text-gray-700">
+                                 {ing.name}
+                               </span>
+                               <span className="font-semibold text-[#8B1A2B]">
+                                 {formatAmount(norm.amount)} {norm.unit}
+                               </span>
+                             </li>
+                           )
+                         })}
+                       </ul>
+                     </div>
+                   ))}
+                 </div>
+               ) : shopGrouping === 'product' ? (
+                 /* ── Flat product list ── */
+                 <div className="space-y-6">
+                   <div className="p-6 rounded-xl bg-white border border-gray-200">
+                     <h3 className="font-semibold text-base mb-4 flex items-center gap-2 text-[#1a1a1a]">
+                       <span>🏷️</span> Toate produsele
+                     </h3>
+                     <ul className="space-y-2">
+                       {aggregatedIngredients
+                         .slice()
+                         .sort((a, b) => a.name.localeCompare(b.name, 'ro'))
+                         .map((ing, idx) => {
+                           const raw = ing.amount * state.guestCount
+                           const norm = normalizeToShoppingUnit(raw, ing.unit)
+                           return (
+                             <li key={idx} className="flex items-center justify-between text-sm">
+                               <span className="text-gray-700">
+                                 {ing.name}
+                                 <span className="text-xs ml-2 text-gray-400">
+                                   ({getCategoryLabel(ing.category)})
+                                 </span>
+                               </span>
+                               <span className="font-semibold text-[#8B1A2B]">
+                                 {formatAmount(norm.amount)} {norm.unit}
+                               </span>
+                             </li>
+                           )
+                         })}
+                     </ul>
+                   </div>
+                 </div>
+               ) : (
+                /* ── Grouped by cocktail ── */
+                <div className="space-y-6">
+                  {state.cocktails.map((item) => {
+                    const serves = getServes(item.cocktail)
+                    const multiplier = (item.rounds * state.guestCount) / serves
+                    const totalServings = Math.ceil(item.rounds * state.guestCount / serves)
+                    const ingredients = getIngredients(item.cocktail)
+                     return (
+                       <div key={item.id} className="p-6 rounded-xl bg-white border border-gray-200">
+                         <div className="flex items-center justify-between mb-4">
+                           <h3 className="font-semibold text-base flex items-center gap-2 text-[#1a1a1a]">
+                             🍹 {item.cocktail.title}
+                           </h3>
+                           <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: 'rgba(139,26,43,0.1)', color: '#8B1A2B' }}>
+                             {item.rounds} runde · ~{totalServings} porții
+                           </span>
+                         </div>
+                         {ingredients.length > 0 ? (
+                           <ul className="space-y-2">
+                             {ingredients.map((ingStr, idx) => {
+                               const parsed = parseIngredient(ingStr)
+                               const scaledAmount = parsed.amount * multiplier
+                               const norm = normalizeToShoppingUnit(scaledAmount, parsed.unit)
+                               return (
+                                 <li key={idx} className="flex items-center justify-between text-sm">
+                                   <span className="text-gray-700">{parsed.name}</span>
+                                   <span className="font-semibold text-[#8B1A2B]">
+                                     {formatAmount(norm.amount)} {norm.unit}
+                                   </span>
+                                 </li>
+                               )
+                             })}
+                           </ul>
+                         ) : (
+                           <p className="text-sm italic text-gray-400">Nu sunt ingrediente listate.</p>
+                         )}
+                       </div>
+                     )
+                  })}
+                </div>
+              )}
           </div>
         )}
       </div>

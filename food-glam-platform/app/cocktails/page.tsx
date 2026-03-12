@@ -118,7 +118,7 @@ export default async function CocktailsPage() {
 
   return (
     <main
-      className="min-h-screen bg-[#f8f8f8] text-[#1a1a1a] dark:bg-[#0a0a0a] dark:text-[#f0f0f0]"
+      className="min-h-screen bg-[#f8f8f8] text-[#1a1a1a]"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       <style>{`
@@ -160,9 +160,9 @@ export default async function CocktailsPage() {
             <h1 className="ff-display text-5xl md:text-6xl font-extrabold tracking-tight mb-3 leading-tight text-white">
               Toate Cocktailurile
             </h1>
-             <p className="text-lg mb-6 text-gray-500 dark:text-[#ccc]">
-               Descoperă rețete de cocktailuri din întreaga lume
-             </p>
+              <p className="text-lg mb-6 text-gray-500">
+                Descoperă rețete de cocktailuri din întreaga lume
+              </p>
             <Link
               href="/submit/cocktail"
                className="inline-flex items-center gap-2 font-semibold px-5 py-2.5 rounded-full text-sm transition-all duration-200"
@@ -179,23 +179,23 @@ export default async function CocktailsPage() {
       {/* ── MAIN CONTENT ── */}
       <div className="px-6 md:px-8 py-12 max-w-7xl mx-auto space-y-12">
         {sortedSpirits.length === 0 ? (
-          <div className="text-center py-12">
-             <p className="text-lg text-gray-500 dark:text-[#888]">
-               Nu au fost găsite cocktail-uri. Încearcă mai târziu!
-             </p>
-          </div>
+           <div className="text-center py-12">
+              <p className="text-lg text-gray-500">
+                Nu au fost găsite cocktail-uri. Încearcă mai târziu!
+              </p>
+           </div>
         ) : (
           sortedSpirits.map((spirit) => (
             <section key={spirit}>
               {/* Spirit header */}
-              <div className="mb-6">
-                 <h2 className="ff-display text-2xl font-bold mb-1 text-gray-900 dark:text-white">
-                   {spirit}
-                 </h2>
-                 <p className="text-sm text-gray-500 dark:text-[#888]">
-                   {groupedBySpirit[spirit].length} cocktail-uri
-                 </p>
-              </div>
+               <div className="mb-6">
+                  <h2 className="ff-display text-2xl font-bold mb-1 text-gray-900">
+                    {spirit}
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    {groupedBySpirit[spirit].length} cocktail-uri
+                  </p>
+               </div>
 
               {/* Cocktail grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -206,11 +206,11 @@ export default async function CocktailsPage() {
                   const serves = recipeJson.serves || 1
 
                   return (
-                     <Link
-                       key={cocktail.id}
-                       href={`/cocktails/${cocktail.slug}`}
-                       className="cocktail-card rounded-2xl overflow-hidden flex flex-col bg-white border border-gray-200 dark:bg-[#1a1a1a] dark:border-white/[0.08]"
-                     >
+                      <Link
+                        key={cocktail.id}
+                        href={`/cocktails/${cocktail.slug}`}
+                        className="cocktail-card rounded-2xl overflow-hidden flex flex-col bg-white border border-gray-200"
+                      >
                        {/* Image */}
                        <div className="relative w-full" style={{ height: '240px' }}>
                          <FallbackImage
@@ -267,19 +267,19 @@ export default async function CocktailsPage() {
                       {/* Info section */}
                       <div className="flex-1 flex flex-col justify-between p-3.5">
                         {/* Summary */}
-                         {cocktail.summary && (
-                           <p className="text-xs leading-relaxed line-clamp-2 mb-3 text-gray-500 dark:text-[#aaa]">
-                             {cocktail.summary}
-                           </p>
-                         )}
+                          {cocktail.summary && (
+                            <p className="text-xs leading-relaxed line-clamp-2 mb-3 text-gray-500">
+                              {cocktail.summary}
+                            </p>
+                          )}
 
                         {/* Serves info */}
-                         {serves > 0 && (
-                           <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-[#888]">
-                             <span>🥂</span>
-                             <span>{serves} porție{serves !== 1 ? 'i' : ''}</span>
-                           </div>
-                         )}
+                          {serves > 0 && (
+                            <div className="flex items-center gap-2 text-xs text-gray-500">
+                              <span>🥂</span>
+                              <span>{serves} porție{serves !== 1 ? 'i' : ''}</span>
+                            </div>
+                          )}
                       </div>
                     </Link>
                   )

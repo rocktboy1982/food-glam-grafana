@@ -89,16 +89,16 @@ export default function TrendingSection() {
 
   return (
     <div
-      className="rounded-2xl overflow-hidden flex flex-col h-full bg-white border border-gray-200 dark:bg-[#111] dark:border-white/[0.08]"
+      className="rounded-2xl overflow-hidden flex flex-col h-full bg-white border border-gray-200"
     >
        {/* ── Header ── */}
-       <div
-         className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-white/[0.07]"
-       >
+        <div
+          className="flex items-center justify-between px-4 py-3 border-b border-gray-100"
+        >
         <div className="flex items-center gap-2">
           <span className="text-base">🔥</span>
             <span
-              className="font-bold text-sm tracking-wide text-gray-900 dark:text-[#f0f0f0]"
+              className="font-bold text-sm tracking-wide text-gray-900"
               style={{ fontFamily: "'Syne', sans-serif" }}
             >
              În tendințe acum
@@ -122,46 +122,46 @@ export default function TrendingSection() {
       </div>
 
        {/* ── Tab toggle ── */}
-       <div
-         className="flex px-3 pt-2.5 pb-1 gap-1.5 border-b border-gray-100 dark:border-white/[0.05]"
-       >
+        <div
+          className="flex px-3 pt-2.5 pb-1 gap-1.5 border-b border-gray-100"
+        >
           <button
             onClick={() => setTab('recipes')}
-            className={`flex-1 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${
-              tab === 'recipes'
-                ? "bg-[rgba(139,26,43,0.18)] text-[#8B1A2B]"
-                : "bg-gray-100 text-gray-500 dark:bg-white/[0.05] dark:text-gray-500"
-            }`}
+             className={`flex-1 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${
+               tab === 'recipes'
+                 ? "bg-[rgba(139,26,43,0.18)] text-[#8B1A2B]"
+                 : "bg-gray-100 text-gray-500"
+             }`}
           >
            🍽️ Rețete
          </button>
         <button
           onClick={() => setTab('cocktails')}
-          className={`flex-1 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${
-            tab === 'cocktails'
-              ? "bg-[rgba(139,26,43,0.2)] text-[#b8394e]"
-              : "bg-gray-100 text-gray-500 dark:bg-white/[0.05] dark:text-gray-500"
-          }`}
+           className={`flex-1 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${
+             tab === 'cocktails'
+               ? "bg-[rgba(139,26,43,0.2)] text-[#b8394e]"
+               : "bg-gray-100 text-gray-500"
+           }`}
         >
           🍹 Cocktailuri
         </button>
       </div>
 
       {/* ── Loading skeleton ── */}
-      {loading && tab === 'recipes' && (
-        <div className="p-3 space-y-3">
-           {Array.from({ length: 8 }).map((_, i) => (
-             <div key={i} className="rounded-2xl overflow-hidden animate-pulse bg-gray-200 dark:bg-[#1a1a1a]" style={{ height: 130 }} />
-           ))}
-        </div>
-      )}
+       {loading && tab === 'recipes' && (
+         <div className="p-3 space-y-3">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="rounded-2xl overflow-hidden animate-pulse bg-gray-200" style={{ height: 130 }} />
+            ))}
+         </div>
+       )}
 
        {/* ── Empty state ── */}
-        {!loading && items.length === 0 && (
-          <p className="px-4 py-10 text-sm text-center text-gray-400 dark:text-[#444]">
-            Nimic în tendințe deocamdată
-          </p>
-        )}
+         {!loading && items.length === 0 && (
+           <p className="px-4 py-10 text-sm text-center text-gray-400">
+             Nimic în tendințe deocamdată
+           </p>
+         )}
 
       {/* ── List ── */}
       {(!loading || tab === 'cocktails') && items.length > 0 && (
@@ -189,11 +189,11 @@ export default function TrendingSection() {
                      className="object-cover group-hover:scale-105 transition-transform duration-500"
                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                    />
-                 ) : (
-                   <div className="w-full h-full flex items-center justify-center text-3xl bg-gray-200 dark:bg-[#1a1a1a]">
-                     {item._type === 'cocktail' ? '🍹' : '🍽️'}
-                   </div>
-                 )}
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-3xl bg-gray-200">
+                      {item._type === 'cocktail' ? '🍹' : '🍽️'}
+                    </div>
+                  )}
 
                 {/* Gradient overlay */}
                 <div
@@ -246,9 +246,9 @@ export default function TrendingSection() {
 
        {/* ── Footer ── */}
        {(!loading || tab === 'cocktails') && items.length > 0 && (
-         <div
-           className="px-4 py-2.5 border-t border-gray-100 dark:border-white/[0.05]"
-         >
+        <div
+          className="px-4 py-2.5 border-t border-gray-100"
+        >
           <Link
             href={tab === 'recipes' ? '/search?sort=trending' : '/search?mode=cocktails&sort=trending'}
              className="block text-center text-xs font-semibold py-1.5 rounded-xl transition-all"

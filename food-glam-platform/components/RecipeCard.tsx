@@ -216,21 +216,21 @@ export default function RecipeCard({
               key={t}
               href={`/search?diet_tags=${encodeURIComponent(t)}`}
               onClick={(e) => e.stopPropagation()}
-              className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-[10px] font-medium capitalize hover:bg-blue-200 transition-colors"
+               className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-[10px] font-medium capitalize hover:bg-blue-200 transition-colors dark:bg-blue-900/20 dark:text-blue-400"
             >
               {t}
             </Link>
           ))}
-          {foodTags.slice(0, 2).map((t) => (
-            <Link
-              key={t}
-              href={`/search?food_tags=${encodeURIComponent(t)}`}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-[10px] font-medium capitalize hover:bg-amber-200 transition-colors"
-            >
-              {t}
-            </Link>
-          ))}
+           {foodTags.slice(0, 2).map((t) => (
+             <Link
+               key={t}
+               href={`/search?food_tags=${encodeURIComponent(t)}`}
+               onClick={(e) => e.stopPropagation()}
+               className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-[10px] font-medium capitalize hover:bg-amber-200 transition-colors dark:bg-amber-900/20 dark:text-amber-400"
+             >
+               {t}
+             </Link>
+           ))}
         </div>
 
         {/* Actions */}
@@ -252,9 +252,9 @@ export default function RecipeCard({
            </button>
            <button
              onClick={() => handleVote(1)}
-             className={`px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 font-medium transition-colors ${
-               userVote === 1 ? 'bg-rose-100 text-rose-700' : 'bg-muted text-muted-foreground hover:bg-muted/80'
-             }`}
+              className={`px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 font-medium transition-colors ${
+                userVote === 1 ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/20 dark:text-rose-400' : 'bg-muted text-muted-foreground hover:bg-muted/80'
+              }`}
            >
              <Heart size={12} className={userVote === 1 ? 'fill-current' : ''} />
              {voteCount}
@@ -277,7 +277,7 @@ export default function RecipeCard({
 
          {/* Creator */}
          <div className="border-t pt-2 mt-auto flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-stone-200 overflow-hidden flex-shrink-0">
+             <div className="w-7 h-7 rounded-full bg-stone-200 dark:bg-white/10 overflow-hidden flex-shrink-0">
               <FallbackImage src={created_by.avatar_url || ''} alt={created_by.display_name} width={28} height={28} className="w-full h-full object-cover" fallbackEmoji="👨‍🍳" />
            </div>
           <span className="text-xs text-muted-foreground truncate flex-1">

@@ -284,7 +284,7 @@ function VideoEmbed({ url }: { url: string }) {
   const embedUrl = normalizeToEmbed(url)
   if (!embedUrl) return null
   return (
-    <div className="rounded-xl overflow-hidden border border-stone-200 shadow-sm bg-black aspect-video">
+    <div className="rounded-xl overflow-hidden border border-stone-200 dark:border-white/10 shadow-sm bg-black aspect-video">
        <iframe
          src={embedUrl}
          className="w-full h-full"
@@ -304,7 +304,7 @@ function PhotoGallery({ photos }: { photos: string[] }) {
        {valid.map((src, i) => (
           <div
             key={i}
-            className="flex-shrink-0 w-48 h-36 rounded-xl overflow-hidden border border-stone-200 shadow-sm snap-start relative"
+             className="flex-shrink-0 w-48 h-36 rounded-xl overflow-hidden border border-stone-200 dark:border-white/10 shadow-sm snap-start relative"
           >
             <FallbackImage
               src={src}
@@ -706,14 +706,14 @@ export default async function RecipePage({ params }: RecipePageProps) {
                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Etichete</p>
                   <div className="flex flex-wrap gap-1.5">
                     {mockRecipe.foodTags?.map((tag: string) => (
-                      <span key={tag} className="px-2.5 py-1 rounded-full text-xs bg-amber-50 text-amber-700 border border-amber-200">
-                        {tag}
-                      </span>
+                       <span key={tag} className="px-2.5 py-1 rounded-full text-xs bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800">
+                         {tag}
+                       </span>
                     ))}
                     {dietTags.map((tag: string) => (
-                      <span key={tag} className="px-2.5 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        {tag}
-                      </span>
+                       <span key={tag} className="px-2.5 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800">
+                         {tag}
+                       </span>
                     ))}
                   </div>
                 </CardContent>
@@ -752,7 +752,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
                           { label: 'Carbohidrați',    value: detailNutrition.carbs,    unit: 'g' },
                           { label: 'Grăsimi',      value: detailNutrition.fat,      unit: 'g' },
                        ] as const).map(({ label, value, unit }) => (
-                         <div key={label} className="bg-stone-50 rounded-lg p-2.5 text-center">
+                          <div key={label} className="bg-stone-50 dark:bg-white/5 rounded-lg p-2.5 text-center">
                            <p className="text-xs text-muted-foreground mb-0.5">{label}</p>
                            <p className="text-sm font-bold">{value}<span className="text-[10px] font-normal ml-0.5">{unit}</span></p>
                          </div>
