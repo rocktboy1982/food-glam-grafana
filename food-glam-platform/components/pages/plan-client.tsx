@@ -1184,61 +1184,34 @@ export default function PlanClient() {
                       </div>
                     </div>
 
-                    {/* Generate button — Pro gated */}
-                    {isPro ? (
-                      <button
-                        onClick={() => {
-                          generateShoppingList()
-                          setMatchStep('list')
-                        }}
-                        style={{
-                          width: '100%', padding: '14px 20px', borderRadius: 14,
-                          background: '#111', color: '#fff', fontSize: 15, fontWeight: 700,
-                          border: 'none', cursor: 'pointer', transition: 'all 0.2s',
-                        }}
-                        onMouseOver={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#333' }}
-                        onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#111' }}
-                      >
-                        ✨ Generate Shopping List
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => setShowProModal(true)}
-                        style={{
-                          width: '100%', padding: '14px 20px', borderRadius: 14,
-                          background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-                          color: '#fff', fontSize: 15, fontWeight: 700,
-                          border: 'none', cursor: 'pointer', transition: 'all 0.2s',
-                          boxShadow: '0 4px 14px rgba(217,119,6,0.3)',
-                        }}
-                        onMouseOver={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.9' }}
-                        onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '1' }}
-                      >
-                        ⭐ Upgrade la Pro pentru a genera lista
-                      </button>
-                    )}
+                    {/* Generate button */}
                     <button
                       onClick={() => {
-                        // Build raw ingredient list from planner (no AI)
-                        const resolvedScope: ShoppingScope = shopScope.type === 'range'
-                          ? { type: 'range', from: shopRangeFrom, to: shopRangeTo }
-                          : shopScope.type === 'day'
-                            ? { type: 'day', weekIndex: currentWeek, day: shopScope.day }
-                            : { type: 'week', weekIndex: currentWeek }
-                        const items = buildShoppingList(planner, resolvedScope)
-                        if (items.length === 0) { alert('No meals planned for this range.'); return }
-                        // Group by category
-                        const grouped: Record<string, typeof items> = {}
-                        items.forEach((item) => {
-                          const cat = item.category || 'Other'
-                          if (!grouped[cat]) grouped[cat] = []
-                          grouped[cat].push(item)
-                        })
-                        // Build print HTML
-                        const scopeLabel = shopScope.type === 'day' ? `Today (${shopScope.day})`
-                          : shopScope.type === 'range' ? `Weeks ${shopRangeFrom + 1}\u2013${shopRangeTo + 1}`
-                          : `Week ${currentWeek + 1}`
-                        let html = `<!DOCTYPE html><html><head><title>Shopping List</title><style>
+                        generateShoppingList()
+                        setMatchStep('list')
+                      }}
+                      style={{
+                        width: '100%', padding: '14px 20px', borderRadius: 14,
+                        background: '#111', color: '#fff', fontSize: 15, fontWeight: 700,
+                        border: 'none', cursor: 'pointer', transition: 'all 0.2s',
+                      }}
+                      onMouseOver={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#333' }}
+                      onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#111' }}
+                    >
+                      Generează lista de cumpărături
+                    </button>
+                    <button
+                      onClick={() => {
+                        // Use the already-computed groupedItems based on current shopGrouping
+                        if (shopItems.length === 0) { alert('Nu sunt mese planificate pentru acest interval.'); return }
+
+                        const scopeLabel = shopScope.type === 'day' ? `Astăzi (${shopScope.day})`
+                          : shopScope.type === 'range' ? `Săptămânile ${shopRangeFrom + 1}\u2013${shopRangeTo + 1}`
+                          : `Săptămâna ${currentWeek + 1}`
+                        const groupLabel = shopGrouping === 'category' ? 'pe categorii'
+                          : shopGrouping === 'recipe' ? 'pe rețete' : 'pe zile'
+
+                        let html = `<!DOCTYPE html><html><head><title>Listă de cumpărături</title><style>
                           * { box-sizing: border-box; margin: 0; padding: 0; }
                           body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 780px; margin: 0 auto; padding: 32px 40px; color: #111; font-size: 16px; line-height: 1.5; }
                           h1 { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
@@ -1250,7 +1223,7 @@ export default function PlanClient() {
                           .name { font-weight: 600; font-size: 16px; }
                           .qty { color: #555; font-size: 15px; }
                           .note { color: #aa7700; font-style: italic; font-size: 13px; }
-                          .recipes { font-size: 12px; color: #aaa; padding: 2px 0 6px 30px; }
+                          .meta { font-size: 12px; color: #aaa; padding: 2px 0 6px 30px; }
                           @media print {
                             body { padding: 0; font-size: 13pt; }
                             @page { size: A4; margin: 1.8cm 2cm; }
@@ -1260,18 +1233,26 @@ export default function PlanClient() {
                             .name { font-size: 13pt; }
                             .qty { font-size: 12pt; }
                             .note { font-size: 11pt; }
-                            .recipes { font-size: 10pt; }
+                            .meta { font-size: 10pt; }
                             li.item { break-inside: avoid; }
                           }
                         </style></head><body>`
-                        html += `<h1>\uD83D\uDED2 Shopping List</h1>`
-                        html += `<p class="scope">${scopeLabel} \u00B7 ${items.length} items</p>`
-                        Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).forEach(([cat, catItems]) => {
-                          html += `<h2>${cat}</h2><ul>`
-                          catItems.forEach((item) => {
+                        html += `<h1>\uD83D\uDED2 List\u0103 de cump\u0103r\u0103turi</h1>`
+                        html += `<p class="scope">${scopeLabel} \u00B7 ${shopItems.length} produse \u00B7 ${groupLabel}</p>`
+
+                        Object.entries(groupedItems).sort(([a], [b]) => a.localeCompare(b)).forEach(([group, items]) => {
+                          html += `<h2>${group}</h2><ul>`
+                          items.forEach((item) => {
                             const qty = item.totalQty % 1 === 0 ? String(item.totalQty) : item.totalQty.toFixed(1)
                             html += `<li class="item"><div class="check"></div><div><span class="name">${item.name}</span> <span class="qty">${qty} ${item.unit}</span>${item.subtypeNote ? ` <span class="note">(${item.subtypeNote})</span>` : ''}</div></li>`
-                            if (item.fromRecipes.length > 0) html += `<div class="recipes">${item.fromRecipes.join(' &middot; ')}</div>`
+                            // Show context based on grouping mode
+                            if (shopGrouping === 'category' && item.fromRecipes.length > 0) {
+                              html += `<div class="meta">${item.fromRecipes.join(' &middot; ')}</div>`
+                            } else if (shopGrouping === 'recipe' && item.fromDays.length > 0) {
+                              html += `<div class="meta">${item.fromDays.join(' &middot; ')}</div>`
+                            } else if (shopGrouping === 'day' && item.fromRecipes.length > 0) {
+                              html += `<div class="meta">${item.fromRecipes.join(' &middot; ')}</div>`
+                            }
                           })
                           html += `</ul>`
                         })
@@ -1330,7 +1311,7 @@ export default function PlanClient() {
                       <>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, paddingBottom: 16, borderBottom: '1px solid #eee' }}>
                           <h3 style={{ fontSize: 15, fontWeight: 600, color: '#111', margin: 0 }}>
-                            {shopItems.filter((i) => !i.checked).length} items remaining
+                            {shopItems.filter((i) => !i.checked).length} produse rămase
                           </h3>
                           <button
                             onClick={() => setShopItems((prev) => prev.map((i) => ({ ...i, checked: false })))}
@@ -1350,7 +1331,7 @@ export default function PlanClient() {
                               (e.currentTarget as HTMLButtonElement).style.color = '#999'
                             }}
                           >
-                            Uncheck all
+                            Debifează tot
                           </button>
                         </div>
 
@@ -1429,7 +1410,11 @@ export default function PlanClient() {
                                       />
                                     )}
                                     <p style={{ fontSize: 10, color: '#aaa', margin: '1px 0 0 0', lineHeight: 1.2 }}>
-                                      {item.fromRecipes.join(' · ')}
+                                      {shopGrouping === 'recipe'
+                                        ? item.fromDays.join(' · ')
+                                        : shopGrouping === 'day'
+                                          ? item.fromRecipes.join(' · ')
+                                          : item.fromRecipes.join(' · ')}
                                     </p>
                                   </div>
                                 </li>
@@ -1735,7 +1720,7 @@ export default function PlanClient() {
         </div>
       )}
     </div></main>
-    {showProModal && <ProPaywallModal onClose={() => setShowProModal(false)} feature="Generarea listei de cumpărături" />}
+    {/* Pro paywall removed — all features available to all users */}
     </>
   )
 }

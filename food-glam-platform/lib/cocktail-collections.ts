@@ -54,7 +54,7 @@ export const COCKTAIL_COLLECTIONS: CocktailCollection[] = [
     title: 'Încălzitoare de Iarnă',
     desc: 'Condimentate, calde și reconfortante',
     emoji: '🔥',
-    img: 'https://images.unsplash.com/photo-1578897367052-e0e6b5b0b2b0?w=600&q=80',
+    img: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&q=80',
     slugs: [
       'irish-coffee', 'hot-toddy', 'mulled-wine', 'gluhwein', 'glogg',
       'hot-buttered-rum-classic', 'buttered-rum', 'eggnog-cocktail', 'eggnog-flip',
