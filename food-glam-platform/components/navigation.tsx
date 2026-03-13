@@ -6,6 +6,7 @@ import FallbackImage from '@/components/FallbackImage'
 import { useRouter, usePathname } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
 import { useTheme } from '@/components/theme-provider'
+import { supabase } from '@/lib/supabase-client'
 
 /* ─── nav items ──────────────────────────────────────────────────────────── */
 
@@ -30,6 +31,116 @@ const MOBILE_TABS = [
   { href: '/me/grocery',       icon: '🛒', label: 'Cumpărături'     },
   { href: '/me',               icon: '👤', label: 'Profil'  },
 ]
+
+/* ─── real user hook (checks Supabase auth session) ──────────────────────── */
+
+interface User { id: string; display_name: string; handle: string; avatar_url: string | null }
+
+function useRealUser() {
+  const [user, setUser] = useState<User | null>(null)
+  const [hydrated, setHydrated] = useState(false)
+
+  useEffect(() => {
+    let mounted = true
+
+    const initAuth = async () => {
+      try {
+        // Check current session
+        const { data: { user: authUser } } = await supabase.auth.getUser()
+        
+        if (mounted && authUser) {
+          // Fetch profile from profiles table to get latest display_name and handle
+          try {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('display_name, handle, avatar_url')
+              .eq('id', authUser.id)
+              .single()
+
+            if (mounted) {
+              const realUser: User = {
+                id: authUser.id,
+                display_name: profile?.display_name || authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'User',
+                handle: profile?.handle || authUser.email?.split('@')[0] || 'user',
+                avatar_url: profile?.avatar_url || authUser.user_metadata?.avatar_url || null,
+              }
+              setUser(realUser)
+            }
+          } catch (err) {
+            // Fallback to auth metadata if profile fetch fails
+            if (mounted) {
+              const realUser: User = {
+                id: authUser.id,
+                display_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'User',
+                handle: authUser.email?.split('@')[0] || 'user',
+                avatar_url: authUser.user_metadata?.avatar_url || null,
+              }
+              setUser(realUser)
+            }
+          }
+        }
+        
+        if (mounted) setHydrated(true)
+      } catch (err) {
+        if (mounted) setHydrated(true)
+      }
+    }
+
+    initAuth()
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (mounted) {
+        if (session?.user) {
+          try {
+            // Fetch profile from profiles table
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('display_name, handle, avatar_url')
+              .eq('id', session.user.id)
+              .single()
+
+            if (mounted) {
+              const realUser: User = {
+                id: session.user.id,
+                display_name: profile?.display_name || session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
+                handle: profile?.handle || session.user.email?.split('@')[0] || 'user',
+                avatar_url: profile?.avatar_url || session.user.user_metadata?.avatar_url || null,
+              }
+              setUser(realUser)
+            }
+          } catch (err) {
+            // Fallback to auth metadata if profile fetch fails
+            if (mounted) {
+              const realUser: User = {
+                id: session.user.id,
+                display_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
+                handle: session.user.email?.split('@')[0] || 'user',
+                avatar_url: session.user.user_metadata?.avatar_url || null,
+              }
+              setUser(realUser)
+            }
+          }
+        } else {
+          setUser(null)
+        }
+      }
+    })
+
+    return () => {
+      mounted = false
+      subscription?.unsubscribe()
+    }
+  }, [])
+
+  const signOut = async () => {
+    await supabase.auth.signOut()
+    localStorage.removeItem('mock_user')
+    setUser(null)
+  }
+
+  return { user, hydrated, signOut }
+}
 
 /* ─── mock-user helper (localStorage, no Supabase required) ─────────────── */
 
@@ -81,11 +192,17 @@ function useMockUser() {
 export function Navigation() {
   const router = useRouter()
   const pathname = usePathname()
-  const { user, hydrated, signOut } = useMockUser()
+  const { user: realUser, hydrated: realHydrated, signOut: realSignOut } = useRealUser()
+  const { user: mockUser, hydrated: mockHydrated, signOut: mockSignOut } = useMockUser()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchVal, setSearchVal] = useState('')
   const searchRef = useRef<HTMLInputElement>(null)
   const { theme, toggleTheme } = useTheme()
+  
+  // Use real user if available, otherwise fall back to mock user
+  const user = realUser || mockUser
+  const hydrated = realHydrated && mockHydrated
+  const signOut = realUser ? realSignOut : mockSignOut
 
   /* close mobile menu on route change */
   useEffect(() => { setMobileOpen(false) }, [pathname])

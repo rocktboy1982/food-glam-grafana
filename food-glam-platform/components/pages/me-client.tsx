@@ -11,6 +11,16 @@ import Link from "next/link";
 
 interface MockUser { id: string; display_name: string; handle: string; avatar_url: string | null }
 
+interface Profile {
+  id: string
+  email: string
+  display_name: string
+  handle: string
+  bio: string | null
+  avatar_url: string | null
+  banner_url: string | null
+}
+
 export default function MeClientPage() {
   const { flags, loading, setOverride } = useFeatureFlags();
   const { theme, setTheme } = useTheme();
@@ -18,6 +28,7 @@ export default function MeClientPage() {
   const powerMode = !!flags.powerMode;
 
   const [user, setUser] = useState<{ email?: string; user_metadata?: { full_name?: string }; id: string } | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [mockUser, setMockUser] = useState<MockUser | null>(null);
 
   // Load mock user from localStorage
@@ -35,12 +46,40 @@ export default function MeClientPage() {
         const { data } = await supabase.auth.getUser();
         if (!mounted) return;
         setUser(data.user ?? null);
+
+        // If authenticated, fetch real profile from API
+        if (data.user) {
+          try {
+            const res = await fetch('/api/profiles/me')
+            if (res.ok) {
+              const profileData = await res.json()
+              if (mounted && profileData.profile) {
+                setProfile(profileData.profile)
+              }
+            }
+          } catch (err) {
+            console.error('Failed to fetch profile:', err)
+          }
+        }
       } catch (e) {
         console.error(e);
       }
     })();
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        // Fetch profile when auth state changes
+        fetch('/api/profiles/me')
+          .then(res => res.ok ? res.json() : null)
+          .then(data => {
+            if (mounted && data?.profile) {
+              setProfile(data.profile)
+            }
+          })
+          .catch(err => console.error('Failed to fetch profile:', err))
+      } else {
+        setProfile(null)
+      }
     });
     return () => {
       mounted = false;
@@ -61,26 +100,37 @@ export default function MeClientPage() {
        <section className="text-center">
          <h1 className="text-3xl font-bold mb-2" style={{ fontFamily: "'Syne', sans-serif" }}>Profil</h1>
          <p className="mb-4 text-sm" style={{ color: '#777' }}>Gestionează-ți contul, modurile și setările.</p>
-        {/* Avatar */}
-        <div className="w-20 h-20 mx-auto rounded-full mb-3 flex items-center justify-center text-3xl select-none font-bold overflow-hidden"
-          style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}>
-           {mockUser?.avatar_url
-             ? <FallbackImage src={mockUser.avatar_url} alt="" className="w-full h-full object-cover" fallbackEmoji="👨‍🍳" />
-             : (mockUser?.display_name?.charAt(0).toUpperCase() ?? '👤')}
-        </div>
-        {mockUser && (
-          <div className="mb-3">
-            <p className="text-lg font-bold" style={{ color: '#111' }}>{mockUser.display_name}</p>
-            <p className="text-sm" style={{ color: '#888' }}>@{mockUser.handle}</p>
-            <Link
-              href={`/chefs/${mockUser.handle}`}
-              className="inline-block mt-2 text-xs font-semibold px-4 py-1.5 rounded-full"
-              style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}
-            >
-               Vezi profilul bucătarului →
-            </Link>
-          </div>
-        )}
+         {/* Avatar */}
+         <div className="w-20 h-20 mx-auto rounded-full mb-3 flex items-center justify-center text-3xl select-none font-bold overflow-hidden"
+           style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}>
+            {(profile?.avatar_url || mockUser?.avatar_url)
+              ? <FallbackImage src={profile?.avatar_url || mockUser?.avatar_url || ''} alt="" className="w-full h-full object-cover" fallbackEmoji="👨‍🍳" />
+              : ((profile?.display_name || mockUser?.display_name)?.charAt(0).toUpperCase() ?? '👤')}
+         </div>
+         {(profile || mockUser) && (
+           <div className="mb-3">
+             <p className="text-lg font-bold" style={{ color: 'hsl(var(--foreground))' }}>{profile?.display_name || mockUser?.display_name}</p>
+             <p className="text-sm" style={{ color: '#888' }}>@{profile?.handle || mockUser?.handle}</p>
+             <div className="flex flex-col gap-2 mt-2">
+               <Link
+                 href={`/chefs/${profile?.handle || mockUser?.handle}`}
+                 className="inline-block text-xs font-semibold px-4 py-1.5 rounded-full"
+                 style={{ background: 'linear-gradient(135deg,#ff4d6d,#ff9500)', color: '#fff' }}
+               >
+                  Vezi profilul bucătarului →
+               </Link>
+               {user && (
+                 <Link
+                   href="/me/profile/edit"
+                   className="inline-block text-xs font-semibold px-4 py-1.5 rounded-full"
+                   style={{ background: 'rgba(255,77,109,0.15)', color: '#ff4d6d' }}
+                 >
+                   Editează profilul
+                 </Link>
+               )}
+             </div>
+           </div>
+         )}
         <div className="mb-4">
           <SignInButton />
         </div>

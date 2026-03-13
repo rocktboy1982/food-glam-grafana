@@ -10,6 +10,7 @@ import FeatureFlagPanel from '@/components/dev/feature-flag-panel'
 import CookieConsent from '@/components/CookieConsent'
 import ToastClient from '@/components/ui/toast-client'
 import { ADSENSE_PUB_ID, ADS_ENABLED } from '@/lib/adsense-config'
+import { Analytics } from '@vercel/analytics/next'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -87,16 +88,23 @@ export default function RootLayout({
               <Navigation />
               {children}
               {/* Global Footer */}
-              <footer className="w-full border-t border-gray-200 dark:border-gray-700 mt-16 py-8 px-4">
-                <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500 dark:text-gray-400">
-                  <p>© {new Date().getFullYear()} MareChef.ro — Platformă Culinară</p>
-                  <div className="flex items-center gap-4">
-                    <a href="https://www.pexels.com" target="_blank" rel="noopener noreferrer" className="hover:underline">
-                      Fotografii furnizate de Pexels
-                    </a>
+              <footer className="w-full border-t border-gray-200 dark:border-gray-800 mt-auto py-8 px-4 bg-gray-50 dark:bg-[#0d0d0d]">
+                <div className="max-w-7xl mx-auto flex flex-col items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                  <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4">
+                    <p>© {new Date().getFullYear()} MareChef.ro — Platformă Culinară</p>
+                    <div className="flex items-center gap-4">
+                      <a href="https://www.pexels.com" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                        Fotografii furnizate de Pexels
+                      </a>
+                    </div>
                   </div>
+                  <p className="text-center text-[10px] text-gray-400 dark:text-gray-500 max-w-2xl">
+                    MareChef.ro este o platformă culinară independentă. Funcționalitățile platformei sunt proprietatea MareChef.ro. 
+                    Rețetele și fotografiile aparțin autorilor respectivi și sunt utilizate conform licențelor aplicabile. Toate drepturile rezervate.
+                  </p>
                 </div>
               </footer>
+              <Analytics />
               <CookieConsent />
               {process.env.NODE_ENV !== 'production' && <FeatureFlagPanel />}
             </ToastClient>
