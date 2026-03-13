@@ -74,6 +74,10 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
   const [shareUrl, setShareUrl] = useState<string | null>(null)
   const [showShareModal, setShowShareModal] = useState(false)
   const [sharing, setSharing] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [pantryItems, setPantryItems] = useState<Array<{ id: string; name: string; qty: string }>>([])
+  const [showPantryCheck, setShowPantryCheck] = useState(false)
+  const [loadingPantry, setLoadingPantry] = useState(false)
   const addInputRef = useRef<HTMLInputElement>(null)
 
   const fetchData = useCallback(async () => {
@@ -284,8 +288,72 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
     navigator.clipboard.writeText(text).catch(() => {})
   }
 
-  const unchecked = items.filter((i) => !i.checked)
-  const checked = items.filter((i) => i.checked)
+  const handleFetchPantry = async () => {
+    setLoadingPantry(true)
+    try {
+      const res = await fetch('/api/pantry', { headers: { 'x-mock-user-id': getUserId() } })
+      if (res.ok) {
+        const data = await res.json()
+        setPantryItems(data)
+        setShowPantryCheck(true)
+      }
+    } catch {
+      // ignore
+    } finally {
+      setLoadingPantry(false)
+    }
+  }
+
+  const handleCheckPantryMatches = async () => {
+    const pantryNames = pantryItems.map((p) => p.name.toLowerCase())
+    const matchedIds = items
+      .filter((item) => pantryNames.some((pName) => item.name.toLowerCase().includes(pName) || pName.includes(item.name.toLowerCase())))
+      .map((item) => item.id)
+
+    if (matchedIds.length === 0) return
+
+    setItems((prev) => prev.map((i) => matchedIds.includes(i.id) ? { ...i, checked: true } : i))
+    try {
+      await Promise.all(
+        matchedIds.map((itemId) =>
+          fetch(`/api/shopping-lists/${listId}/items`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', 'x-mock-user-id': getUserId() },
+            body: JSON.stringify({ item_id: itemId, checked: true }),
+          })
+        )
+      )
+    } catch {
+      fetchData()
+    }
+    setShowPantryCheck(false)
+  }
+
+  const handleDeleteChecked = async () => {
+    if (checked.length === 0) return
+    const confirmed = confirm(`Sigur vrei să ștergi ${checked.length} produse bifate?`)
+    if (!confirmed) return
+
+    const checkedIds = checked.map((i) => i.id)
+    setItems((prev) => prev.filter((i) => !checkedIds.includes(i.id)))
+    try {
+      await Promise.all(
+        checkedIds.map((itemId) =>
+          fetch(`/api/shopping-lists/${listId}/items`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json', 'x-mock-user-id': getUserId() },
+            body: JSON.stringify({ item_id: itemId }),
+          })
+        )
+      )
+    } catch {
+      fetchData()
+    }
+  }
+
+  const filteredItems = items.filter((i) => i.name.toLowerCase().includes(searchQuery.toLowerCase()))
+  const unchecked = filteredItems.filter((i) => !i.checked)
+  const checked = filteredItems.filter((i) => i.checked)
   const uncheckedGrouped = groupByCategory(unchecked)
   const checkedGrouped = groupByCategory(checked)
   const sortedCategories = (groups: Record<string, ListItem[]>) =>
@@ -401,30 +469,45 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
                 </div>
               </div>
 
-              {/* Action buttons */}
-              <div className="no-print" style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-                {([
-                   { label: '📋', title: 'Copiază', fn: handleCopyList, disabled: false },
-                   { label: '🖨️', title: 'Tipărire', fn: handlePrint, disabled: false },
-                   { label: '🔗', title: 'Partajează', fn: handleShare, disabled: sharing },
-                ] as const).map(({ label, title, fn, disabled }) => (
-                  <button
-                    key={title}
-                    onClick={fn}
-                    disabled={disabled}
-                    title={title}
-                    style={{
-                      width: 36, height: 36, borderRadius: 8, border: '1px solid #e5e5e5',
-                      background: '#fff', cursor: disabled ? 'not-allowed' : 'pointer',
-                      fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      transition: 'all 0.15s', opacity: disabled ? 0.5 : 1,
-                    }}
-                    onMouseOver={(e) => { if (!disabled) (e.currentTarget as HTMLButtonElement).style.background = '#f5f5f5' }}
-                    onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#fff' }}
-                  >
-                    {label}
-                  </button>
-                ))}
+               {/* Action buttons */}
+               <div className="no-print" style={{ display: 'flex', gap: 4, flexShrink: 0, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                 {([
+                    { label: '📋', title: 'Copiază', fn: handleCopyList, disabled: false },
+                    { label: '🖨️', title: 'Tipărire', fn: handlePrint, disabled: false },
+                    { label: '🔗', title: 'Partajează', fn: handleShare, disabled: sharing },
+                 ] as const).map(({ label, title, fn, disabled }) => (
+                   <button
+                     key={title}
+                     onClick={fn}
+                     disabled={disabled}
+                     title={title}
+                     style={{
+                       width: 36, height: 36, borderRadius: 8, border: '1px solid #e5e5e5',
+                       background: '#fff', cursor: disabled ? 'not-allowed' : 'pointer',
+                       fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                       transition: 'all 0.15s', opacity: disabled ? 0.5 : 1,
+                     }}
+                     onMouseOver={(e) => { if (!disabled) (e.currentTarget as HTMLButtonElement).style.background = '#f5f5f5' }}
+                     onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#fff' }}
+                   >
+                     {label}
+                   </button>
+                 ))}
+                 <button
+                   onClick={handleFetchPantry}
+                   disabled={loadingPantry}
+                   title="Verifică cămara"
+                   style={{
+                     padding: '0 12px', height: 36, borderRadius: 8, border: '1px solid #e5e5e5',
+                     background: '#fff', color: '#111', fontSize: 12, fontWeight: 600,
+                     cursor: loadingPantry ? 'not-allowed' : 'pointer', transition: 'all 0.15s', whiteSpace: 'nowrap',
+                     opacity: loadingPantry ? 0.5 : 1,
+                   }}
+                   onMouseOver={(e) => { if (!loadingPantry) (e.currentTarget as HTMLButtonElement).style.background = '#f5f5f5' }}
+                   onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#fff' }}
+                 >
+                   🏠 Ce am deja?
+                 </button>
                 <button
                   onClick={() => router.push(`/me/grocery/match/${listId}`)}
                    title="Potrivește cu magazinul"
@@ -486,8 +569,45 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
             )}
           </div>
 
-          {/* Items card — grouped by category */}
-          {unchecked.length > 0 && (
+           {/* Search bar */}
+           {items.length > 0 && (
+             <div className="no-print" style={{ marginBottom: 16 }}>
+               <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#fff', borderRadius: 16, padding: '12px 16px', boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}>
+                 <span style={{ fontSize: 14, color: '#999' }}>🔍</span>
+                 <input
+                   type="text"
+                   value={searchQuery}
+                   onChange={(e) => setSearchQuery(e.target.value)}
+                   placeholder="Caută în listă…"
+                   style={{
+                     flex: 1, fontSize: 13, background: 'transparent', border: 'none',
+                     outline: 'none', color: '#111', padding: '4px 0',
+                   }}
+                 />
+                 {searchQuery && (
+                   <button
+                     onClick={() => setSearchQuery('')}
+                     style={{
+                       padding: '4px 8px', fontSize: 12, color: '#999', background: 'transparent',
+                       border: 'none', cursor: 'pointer', borderRadius: 4,
+                     }}
+                     onMouseOver={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#111' }}
+                     onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#999' }}
+                   >
+                     ✕
+                   </button>
+                 )}
+                 {searchQuery && (
+                   <span style={{ fontSize: 11, color: '#999', whiteSpace: 'nowrap' }}>
+                     {filteredItems.length} rezultat{filteredItems.length !== 1 ? 'e' : ''}
+                   </span>
+                 )}
+               </div>
+             </div>
+           )}
+
+           {/* Items card — grouped by category */}
+           {unchecked.length > 0 && (
             <div style={{
               background: '#fff', borderRadius: 16, padding: '20px 24px',
               boxShadow: '0 1px 4px rgba(0,0,0,0.08)', marginBottom: 16,
@@ -760,15 +880,31 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
             </div>
           )}
 
-          {/* Checked items — collapsed card */}
-          {checked.length > 0 && (
-            <div style={{
-              background: '#fff', borderRadius: 16, padding: '16px 24px',
-              boxShadow: '0 1px 4px rgba(0,0,0,0.08)', marginBottom: 16, opacity: 0.7,
-            }}>
-               <h3 style={{ fontSize: 12, fontWeight: 600, color: '#999', textTransform: 'uppercase', letterSpacing: 0.5, margin: '0 0 10px 0' }}>
-                 ✓ Bifate ({checked.length})
-               </h3>
+           {/* Checked items — collapsed card */}
+           {checked.length > 0 && (
+             <div style={{
+               background: '#fff', borderRadius: 16, padding: '16px 24px',
+               boxShadow: '0 1px 4px rgba(0,0,0,0.08)', marginBottom: 16, opacity: 0.7,
+             }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                  <h3 style={{ fontSize: 12, fontWeight: 600, color: '#999', textTransform: 'uppercase', letterSpacing: 0.5, margin: 0 }}>
+                    ✓ Bifate ({checked.length})
+                  </h3>
+                  <button
+                    className="no-print"
+                    onClick={handleDeleteChecked}
+                    title="Șterge bifate"
+                    style={{
+                      padding: '4px 10px', fontSize: 11, fontWeight: 600, borderRadius: 6,
+                      border: '1px solid #ddd', background: '#fff', color: '#e00', cursor: 'pointer',
+                      transition: 'all 0.15s',
+                    }}
+                    onMouseOver={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#fee' }}
+                    onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#fff' }}
+                  >
+                    🗑️ Șterge bifate
+                  </button>
+                </div>
 
               {sortedCategories(checkedGrouped).map(([category, catItems]) => (
                 <div key={category} style={{ marginBottom: 8 }}>
@@ -826,8 +962,76 @@ export default function ShoppingListDetailClient({ listId }: { listId: string })
         </div>
       </div>
 
-      {/* Share modal */}
-      {showShareModal && (
+       {/* Pantry check modal */}
+       {showPantryCheck && (
+         <div
+           className="share-modal-overlay no-print"
+           onClick={() => setShowPantryCheck(false)}
+           style={{
+             position: 'fixed', inset: 0, zIndex: 50, background: 'rgba(0,0,0,0.4)',
+             display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16,
+           }}
+         >
+           <div
+             onClick={(e) => e.stopPropagation()}
+             style={{
+               background: '#fff', borderRadius: 16, padding: 24, width: '100%', maxWidth: 420,
+               boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+             }}
+           >
+             <h2 style={{ fontSize: 18, fontWeight: 600, color: '#111', margin: '0 0 4px 0' }}>Ce am deja?</h2>
+             <p style={{ fontSize: 13, color: '#888', margin: '0 0 16px 0' }}>
+               {pantryItems.length === 0
+                 ? 'Cămara este goală. Adaugă produse în cămară pentru a le exclude automat.'
+                 : `Găsite ${pantryItems.length} produse în cămară. Bifează-le automat?`}
+             </p>
+
+             {pantryItems.length > 0 && (
+               <div style={{ marginBottom: 16, maxHeight: 300, overflowY: 'auto', border: '1px solid #f0f0f0', borderRadius: 8, padding: 12 }}>
+                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                   {pantryItems.map((item) => (
+                     <li key={item.id} style={{ fontSize: 12, color: '#666', display: 'flex', alignItems: 'center', gap: 6 }}>
+                       <span style={{ fontSize: 14 }}>📦</span>
+                       <span>{item.name}</span>
+                       {item.qty && <span style={{ color: '#999', fontSize: 11 }}>({item.qty})</span>}
+                     </li>
+                   ))}
+                 </ul>
+               </div>
+             )}
+
+             <div style={{ display: 'flex', gap: 8 }}>
+               {pantryItems.length > 0 && (
+                 <button
+                   onClick={handleCheckPantryMatches}
+                   style={{
+                     flex: 1, padding: '10px 16px', fontSize: 13, fontWeight: 600, borderRadius: 8,
+                     border: 'none', background: '#1a7f37', color: '#fff', cursor: 'pointer',
+                   }}
+                   onMouseOver={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#166534' }}
+                   onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#1a7f37' }}
+                 >
+                   Bifează toate din cămară
+                 </button>
+               )}
+               <button
+                 onClick={() => setShowPantryCheck(false)}
+                 style={{
+                   flex: 1, padding: '10px 16px', fontSize: 13, fontWeight: 600, borderRadius: 8,
+                   border: '1px solid #ddd', background: '#fff', color: '#111', cursor: 'pointer',
+                 }}
+                 onMouseOver={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#f5f5f5' }}
+                 onMouseOut={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#fff' }}
+               >
+                 Gata
+               </button>
+             </div>
+           </div>
+         </div>
+       )}
+
+       {/* Share modal */}
+       {showShareModal && (
         <div
           className="share-modal-overlay no-print"
           onClick={() => setShowShareModal(false)}
