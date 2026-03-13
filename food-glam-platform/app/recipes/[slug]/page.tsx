@@ -418,7 +418,7 @@ export async function generateMetadata({ params }: RecipePageProps): Promise<Met
   // Try Supabase first
   const { data: post } = await supabase
     .from('posts')
-    .select('title, summary, hero_image_url, votes, created_at')
+    .select('title, summary, hero_image_url, created_at')
     .eq('slug', slug)
     .eq('type', 'recipe')
     .single()
@@ -437,7 +437,6 @@ export async function generateMetadata({ params }: RecipePageProps): Promise<Met
       title: mockRecipe.title,
       summary: mockRecipe.summary,
       hero_image_url: mockRecipe.hero_image_url,
-      votes: mockRecipe.votes,
       created_at: new Date().toISOString(),
     }
   }
