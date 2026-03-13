@@ -6,6 +6,8 @@ import { notFound } from 'next/navigation'
 import { createServiceSupabaseClient } from '@/lib/supabase-server'
 import { COCKTAIL_COLLECTIONS } from '@/lib/cocktail-collections'
 
+export const dynamic = 'force-dynamic'
+
 interface Cocktail {
   id: string
   slug: string

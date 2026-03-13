@@ -2,6 +2,8 @@ import { MetadataRoute } from 'next'
 import { createServiceSupabaseClient } from '@/lib/supabase-server'
 import { MOCK_RECIPES } from '@/lib/mock-data'
 
+export const dynamic = 'force-dynamic'
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://marechef.ro'
   const staticPages: MetadataRoute.Sitemap = [

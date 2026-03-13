@@ -6,6 +6,8 @@ import FallbackImage from '@/components/FallbackImage'
 import { createServiceSupabaseClient } from '@/lib/supabase-server'
 import { AdInArticle, AdSidebar } from '@/components/ads/ad-placements'
 
+export const dynamic = 'force-dynamic'
+
 /* ── Interfaces ─────────────────────────────────────────────────────────── */
 
 interface CocktailRecipeJson {

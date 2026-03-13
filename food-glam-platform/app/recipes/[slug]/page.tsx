@@ -19,6 +19,8 @@ import FollowChefButton from '@/components/pages/follow-chef-button'
 import RecipeRating, { StarDisplay } from '@/components/RecipeRating'
 import { AdInArticle, AdSidebar } from '@/components/ads/ad-placements'
 
+export const dynamic = 'force-dynamic'
+
 // Rich mock recipe details keyed by slug
 const MOCK_RECIPE_DETAILS: Record<string, {
   servings: number

@@ -5,6 +5,8 @@ import { createServiceSupabaseClient } from '@/lib/supabase-server'
 import { COCKTAIL_COLLECTIONS } from '@/lib/cocktail-collections'
 import { AdBanner } from '@/components/ads/ad-placements'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Cărți de Cocktailuri | MareChef.ro',
   description: 'Descoperă rețete de cocktailuri din întreaga lume. Whisky, Gin, Rum, Tequila, Vodka și multe altele pe MareChef.ro.',

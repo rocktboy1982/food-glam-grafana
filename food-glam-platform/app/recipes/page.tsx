@@ -5,6 +5,8 @@ import FallbackImage from '@/components/FallbackImage'
 import { createServiceSupabaseClient } from '@/lib/supabase-server'
 import { AdBanner } from '@/components/ads/ad-placements'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Rețete | MareChef.ro',
   description: 'Descoperă mii de rețete delicioase din întreaga lume. Caută după țară, dificultate și ingrediente pe MareChef.ro.',

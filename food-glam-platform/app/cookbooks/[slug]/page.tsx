@@ -4,6 +4,8 @@ import FallbackImage from '@/components/FallbackImage'
 import { notFound } from 'next/navigation'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 
+export const dynamic = 'force-dynamic'
+
 export default async function CookbookDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const supabase = await createServerSupabaseClient()

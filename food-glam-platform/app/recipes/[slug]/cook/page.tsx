@@ -3,6 +3,8 @@ import { createServerSupabaseClient } from '@/lib/supabase-server'
 import CookModeClient from '@/components/pages/cook-mode-client'
 import { MOCK_RECIPES } from '@/lib/mock-data'
 
+export const dynamic = 'force-dynamic'
+
 interface IngredientSection {
   title?: string;
   ingredients: string[];
