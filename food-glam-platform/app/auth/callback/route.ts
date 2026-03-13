@@ -43,10 +43,15 @@ export async function GET(request: Request) {
           .eq('id', user.id)
           .single()
         
-        // If no profile exists, create one
+        const serviceClient = createServiceSupabaseClient()
+
+        // Upgrade Google avatar to higher resolution (s96-c → s400-c)
+        const rawAvatar: string | null = user.user_metadata?.avatar_url || null
+        const googleAvatar = rawAvatar
+          ? rawAvatar.replace(/=s\d+-c$/, '=s400-c')
+          : null
+
         if (!existingProfile) {
-          const serviceClient = createServiceSupabaseClient()
-          
           // Generate a unique handle from email
           const baseHandle = user.email?.split('@')[0] || 'user'
           let handle = baseHandle
@@ -64,14 +69,13 @@ export async function GET(request: Request) {
             if (!existingHandle) {
               collision = false
             } else {
-              // Append 4 random characters to make it unique
               const randomSuffix = Math.random().toString(36).substring(2, 6)
               handle = `${baseHandle}_${randomSuffix}`
               attempts++
             }
           }
           
-          // Insert the new profile
+          // Insert the new profile with Google avatar
           await serviceClient
             .from('profiles')
             .insert({
@@ -79,8 +83,26 @@ export async function GET(request: Request) {
               email: user.email || '',
               display_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
               handle: handle,
-              avatar_url: user.user_metadata?.avatar_url || null,
+              avatar_url: googleAvatar,
             })
+        } else if (googleAvatar) {
+          // Existing user: sync Google avatar on every login
+          // Only update if current avatar is a Google avatar or empty (don't overwrite custom GDrive links)
+          const { data: currentProfile } = await serviceClient
+            .from('profiles')
+            .select('avatar_url')
+            .eq('id', user.id)
+            .single()
+
+          const currentAvatar = currentProfile?.avatar_url || ''
+          const isGoogleAvatar = !currentAvatar || currentAvatar.includes('googleusercontent.com')
+
+          if (isGoogleAvatar) {
+            await serviceClient
+              .from('profiles')
+              .update({ avatar_url: googleAvatar })
+              .eq('id', user.id)
+          }
         }
       }
       
