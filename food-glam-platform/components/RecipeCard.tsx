@@ -130,6 +130,13 @@ export default function RecipeCard({
 
   const calories = nutrition_per_serving?.calories
 
+  // Determine calorie density color
+  const getCalorieDensityColor = (calorieCount: number) => {
+    if (calorieCount < 300) return 'bg-green-400'
+    if (calorieCount <= 600) return 'bg-yellow-400'
+    return 'bg-orange-400'
+  }
+
   return (
     <div className="border rounded-xl overflow-hidden flex flex-col bg-card shadow-sm hover:shadow-md transition-shadow h-full">
        {/* Image */}
@@ -145,24 +152,25 @@ export default function RecipeCard({
            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
            fallbackEmoji="🍽️"
          />
-        {/* Tag badge top-left */}
-        {tag && (
-          <span className="absolute top-2 left-2 bg-amber-500 text-white px-2 py-0.5 rounded-full text-xs font-bold shadow">
-            {tag}
-          </span>
-        )}
-        {/* Tested badge top-right */}
-         {is_tested && (
-           <span className="absolute top-2 right-2 bg-green-500 text-white px-2 py-0.5 rounded-full text-xs font-bold shadow">
-             Testat ✓
+         {/* Tag badge top-left */}
+         {tag && (
+           <span className="absolute top-2 left-2 bg-amber-500 text-white px-2 py-0.5 rounded-full text-xs font-bold shadow">
+             {tag}
            </span>
          )}
-        {/* Calorie badge bottom-right */}
-        {calories && (
-          <span className="absolute bottom-2 right-2 bg-black/60 text-white px-2 py-0.5 rounded-full text-xs font-medium backdrop-blur-sm">
-            {calories} kcal
-          </span>
-        )}
+         {/* Tested badge top-right */}
+          {is_tested && (
+            <span className="absolute top-2 right-2 bg-green-500 text-white px-2 py-0.5 rounded-full text-xs font-bold shadow">
+              Testat ✓
+            </span>
+          )}
+         {/* Calorie badge bottom-right with Noom-style color dot */}
+         {calories && (
+           <span className="absolute bottom-2 right-2 bg-black/60 text-white px-2 py-0.5 rounded-full text-xs font-medium backdrop-blur-sm flex items-center gap-1.5">
+             <div className={`w-2.5 h-2.5 rounded-full ${getCalorieDensityColor(calories)}`} />
+             {calories} kcal
+           </span>
+         )}
         {/* Cook time badge bottom-left */}
         {cook_time_minutes && (
           <span className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-0.5 rounded-full text-xs font-medium backdrop-blur-sm flex items-center gap-1">

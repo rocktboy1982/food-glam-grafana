@@ -30,6 +30,9 @@ export default function EditProfilePage() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [avatarError, setAvatarError] = useState<string | null>(null)
   const [gdriveInput, setGdriveInput] = useState('')
+  const [bannerUrl, setBannerUrl] = useState<string | null>(null)
+  const [bannerGdriveInput, setBannerGdriveInput] = useState('')
+  const [bannerError, setBannerError] = useState<string | null>(null)
 
   useEffect(() => {
     let mounted = true
@@ -53,13 +56,14 @@ export default function EditProfilePage() {
         }
 
         const data = await res.json()
-        if (mounted && data.profile) {
-          setProfile(data.profile)
-          setDisplayName(data.profile.display_name)
-          setHandle(data.profile.handle)
-          setBio(data.profile.bio || '')
-          setAvatarUrl(data.profile.avatar_url)
-        }
+         if (mounted && data.profile) {
+           setProfile(data.profile)
+           setDisplayName(data.profile.display_name)
+           setHandle(data.profile.handle)
+           setBio(data.profile.bio || '')
+           setAvatarUrl(data.profile.avatar_url)
+           setBannerUrl(data.profile.banner_url)
+         }
       } catch (err) {
         console.error('Error loading profile:', err)
       } finally {
@@ -110,23 +114,42 @@ export default function EditProfilePage() {
   }
 
   function handleGdriveLink(input: string) {
-    setGdriveInput(input)
-    setAvatarError(null)
+     setGdriveInput(input)
+     setAvatarError(null)
 
-    if (!input.trim()) {
-      // Clear avatar if input emptied
-      setAvatarUrl(profile?.avatar_url ?? null)
-      return
-    }
+     if (!input.trim()) {
+       // Clear avatar if input emptied
+       setAvatarUrl(profile?.avatar_url ?? null)
+       return
+     }
 
-    const directUrl = parseGoogleDriveUrl(input.trim())
-    if (directUrl) {
-      setAvatarUrl(directUrl)
-    } else {
-      setAvatarError('Link invalid. Folosește un link Google Drive de partajare.')
-      setAvatarUrl(profile?.avatar_url ?? null)
-    }
-  }
+     const directUrl = parseGoogleDriveUrl(input.trim())
+     if (directUrl) {
+       setAvatarUrl(directUrl)
+     } else {
+       setAvatarError('Link invalid. Folosește un link Google Drive de partajare.')
+       setAvatarUrl(profile?.avatar_url ?? null)
+     }
+   }
+
+   function handleBannerGdriveLink(input: string) {
+     setBannerGdriveInput(input)
+     setBannerError(null)
+
+     if (!input.trim()) {
+       // Clear banner if input emptied
+       setBannerUrl(profile?.banner_url ?? null)
+       return
+     }
+
+     const directUrl = parseGoogleDriveUrl(input.trim())
+     if (directUrl) {
+       setBannerUrl(directUrl)
+     } else {
+       setBannerError('Link invalid. Folosește un link Google Drive de partajare.')
+       setBannerUrl(profile?.banner_url ?? null)
+     }
+   }
 
   async function handleSave() {
     if (!profile) return
@@ -134,17 +157,18 @@ export default function EditProfilePage() {
     setErrors({})
     setLoading(true)
 
-    try {
-       const res = await fetch('/api/profiles/me', {
-         method: 'PATCH',
-         headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify({
-           display_name: displayName.trim(),
-           handle: handle.trim(),
-           bio: bio.trim(),
-           ...(avatarUrl !== profile.avatar_url ? { avatar_url: avatarUrl } : {}),
-         }),
-       })
+     try {
+        const res = await fetch('/api/profiles/me', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            display_name: displayName.trim(),
+            handle: handle.trim(),
+            bio: bio.trim(),
+            ...(avatarUrl !== profile.avatar_url ? { avatar_url: avatarUrl } : {}),
+            ...(bannerUrl !== profile.banner_url ? { banner_url: bannerUrl } : {}),
+          }),
+        })
 
       const data = await res.json()
 
@@ -173,16 +197,16 @@ export default function EditProfilePage() {
     }
   }
 
-  const inputStyle = (field: string) => ({
-    width: '100%',
-    padding: '10px 14px',
-    borderRadius: 10,
-    border: errors[field] ? '1.5px solid #ff4d6d' : '1.5px solid rgba(0,0,0,0.14)',
-    background: 'hsl(var(--background))',
-    color: 'hsl(var(--foreground))',
-    fontSize: 14,
-    outline: 'none',
-  } as React.CSSProperties)
+   const inputStyle = (field: string) => ({
+     width: '100%',
+     padding: '10px 14px',
+     borderRadius: 10,
+     border: errors[field] ? '1.5px solid #ff4d6d' : '1.5px solid hsl(var(--border))',
+     background: 'hsl(var(--background))',
+     color: 'hsl(var(--foreground))',
+     fontSize: 14,
+     outline: 'none',
+   } as React.CSSProperties)
 
   return (
     <div
@@ -195,58 +219,58 @@ export default function EditProfilePage() {
     >
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap');.ff{font-family:'Syne',sans-serif;}@keyframes spin{to{transform:rotate(360deg);}}`}</style>
 
-      {/* Banner preview */}
-      <div className="relative w-full" style={{ height: 160 }}>
-        {profile.banner_url ? (
-          <FallbackImage
-            src={profile.banner_url}
-            alt=""
-            className="w-full h-full object-cover"
-            fallbackEmoji="🍽️"
-          />
-        ) : (
-          <div className="w-full h-full" style={{ background: 'linear-gradient(135deg,#ff4d6d22,#ff950022)' }} />
-        )}
-        <div className="absolute inset-0" style={{ background: 'rgba(245,245,245,0.55)' }} />
-        <button
-          onClick={() => router.back()}
-          className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-sm font-semibold backdrop-blur"
-          style={{ background: 'rgba(255,255,255,0.75)', color: '#111', border: '1px solid rgba(0,0,0,0.12)' }}
-        >
-          ← Înapoi
-        </button>
-      </div>
+       {/* Banner preview */}
+       <div className="relative w-full" style={{ height: 160 }}>
+         {bannerUrl ? (
+           <FallbackImage
+             src={bannerUrl}
+             alt=""
+             className="w-full h-full object-cover"
+             fallbackEmoji="🍽️"
+           />
+         ) : (
+           <div className="w-full h-full" style={{ background: 'linear-gradient(135deg,#ff4d6d22,#ff950022)' }} />
+         )}
+         <div className="absolute inset-0" style={{ background: 'hsl(var(--background)/0.55)' }} />
+         <button
+           onClick={() => router.back()}
+           className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-sm font-semibold backdrop-blur"
+           style={{ background: 'hsl(var(--background)/0.75)', color: 'hsl(var(--foreground))', border: '1px solid rgba(0,0,0,0.12)' }}
+         >
+           ← Înapoi
+         </button>
+       </div>
 
       {/* Avatar section */}
       <div className="px-5 max-w-xl mx-auto" style={{ marginTop: -40 }}>
         <div className="mb-5">
           {/* Avatar preview */}
           <div className="mb-3">
-            {avatarUrl ? (
-              <FallbackImage
-                src={avatarUrl}
-                alt=""
-                className="w-20 h-20 rounded-full object-cover border-4"
-                style={{ borderColor: '#dde3ee' }}
-                fallbackEmoji="👨‍🍳"
-              />
-            ) : (
-              <div
-                className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold border-4"
-                style={{
-                  background: 'linear-gradient(135deg,#ff4d6d,#ff9500)',
-                  color: '#fff',
-                  borderColor: '#dde3ee',
-                }}
-              >
+             {avatarUrl ? (
+               <FallbackImage
+                 src={avatarUrl}
+                 alt=""
+                 className="w-20 h-20 rounded-full object-cover border-4"
+                 style={{ borderColor: 'hsl(var(--border))' }}
+                 fallbackEmoji="👨‍🍳"
+               />
+             ) : (
+               <div
+                 className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold border-4"
+                 style={{
+                   background: 'linear-gradient(135deg,#ff4d6d,#ff9500)',
+                   color: '#fff',
+                   borderColor: 'hsl(var(--border))',
+                 }}
+               >
                 {displayName.charAt(0).toUpperCase() || '?'}
               </div>
             )}
           </div>
 
-          <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider" style={{ color: '#555' }}>
-            Fotografie de profil
-          </label>
+           <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider" style={{ color: 'hsl(var(--muted-foreground))' }}>
+             Fotografie de profil
+           </label>
 
           {/* Google avatar indicator */}
           {avatarUrl && avatarUrl.includes('googleusercontent.com') && !gdriveInput && (
@@ -267,27 +291,49 @@ export default function EditProfilePage() {
             placeholder="Opțional: link Google Drive pentru altă poză"
             style={inputStyle('avatar_url')}
           />
-          <p className="text-xs mt-1.5" style={{ color: '#888' }}>
-            Implicit se folosește poza de la Google. Poți schimba cu un link Google Drive.
-          </p>
+           <p className="text-xs mt-1.5" style={{ color: 'hsl(var(--muted-foreground))' }}>
+             Implicit se folosește poza de la Google. Poți schimba cu un link Google Drive.
+           </p>
           {avatarError && (
             <p className="text-xs mt-1" style={{ color: '#ff4d6d' }}>
               {avatarError}
             </p>
-          )}
-        </div>
+           )}
+         </div>
 
-        <h1 className="ff text-2xl font-extrabold mb-1">Editează profilul</h1>
-        <p className="text-sm mb-6" style={{ color: '#888' }}>
-          @{profile.handle} · modificările apar pe pagina ta publică
-        </p>
+         {/* Banner section */}
+         <div className="mb-5">
+           <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider" style={{ color: 'hsl(var(--muted-foreground))' }}>
+             Banner
+           </label>
+           <input
+             type="url"
+             value={bannerGdriveInput}
+             onChange={(e) => handleBannerGdriveLink(e.target.value)}
+             placeholder="Opțional: link Google Drive pentru banner"
+             style={inputStyle('banner_url')}
+           />
+           <p className="text-xs mt-1.5" style={{ color: 'hsl(var(--muted-foreground))' }}>
+             Opțional: link Google Drive pentru banner
+           </p>
+           {bannerError && (
+             <p className="text-xs mt-1" style={{ color: '#ff4d6d' }}>
+               {bannerError}
+             </p>
+           )}
+         </div>
+
+         <h1 className="ff text-2xl font-extrabold mb-1">Editează profilul</h1>
+         <p className="text-sm mb-6" style={{ color: 'hsl(var(--muted-foreground))' }}>
+           @{profile.handle} · modificările apar pe pagina ta publică
+         </p>
 
         <div className="space-y-5">
-          {/* Display name */}
-          <div>
-            <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider" style={{ color: '#555' }}>
-              Nume afișat <span style={{ color: '#ff4d6d' }}>*</span>
-            </label>
+           {/* Display name */}
+           <div>
+             <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider" style={{ color: 'hsl(var(--muted-foreground))' }}>
+               Nume afișat <span style={{ color: '#ff4d6d' }}>*</span>
+             </label>
             <input
               type="text"
               value={displayName}
@@ -305,29 +351,29 @@ export default function EditProfilePage() {
                   {errors.display_name}
                 </p>
               ) : (
-                <span />
-              )}
-              <p className="text-xs" style={{ color: '#aaa' }}>
-                {displayName.length}/60
-              </p>
-            </div>
+               <span />
+               )}
+               <p className="text-xs" style={{ color: 'hsl(var(--muted-foreground)/0.6)' }}>
+                 {displayName.length}/60
+               </p>
+             </div>
           </div>
 
-          {/* Handle */}
-          <div>
-            <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider" style={{ color: '#555' }}>
-              Nume de utilizator <span style={{ color: '#ff4d6d' }}>*</span>
-            </label>
+           {/* Handle */}
+           <div>
+             <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider" style={{ color: 'hsl(var(--muted-foreground))' }}>
+               Nume de utilizator <span style={{ color: '#ff4d6d' }}>*</span>
+             </label>
             <div className="flex items-center" style={{ position: 'relative' }}>
-              <span
-                style={{
-                  position: 'absolute',
-                  left: 14,
-                  color: '#888',
-                  fontSize: 14,
-                  fontWeight: 500,
-                }}
-              >
+               <span
+                 style={{
+                   position: 'absolute',
+                   left: 14,
+                   color: 'hsl(var(--muted-foreground))',
+                   fontSize: 14,
+                   fontWeight: 500,
+                 }}
+               >
                 @
               </span>
               <input
@@ -352,19 +398,19 @@ export default function EditProfilePage() {
                   {errors.handle}
                 </p>
               ) : (
-                <span />
-              )}
-              <p className="text-xs" style={{ color: '#aaa' }}>
-                {handle.length}/30
-              </p>
-            </div>
-          </div>
+               <span />
+               )}
+               <p className="text-xs" style={{ color: 'hsl(var(--muted-foreground)/0.6)' }}>
+                 {handle.length}/30
+               </p>
+             </div>
+           </div>
 
-          {/* Bio */}
-          <div>
-            <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider" style={{ color: '#555' }}>
-              Biografie
-            </label>
+           {/* Bio */}
+           <div>
+             <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider" style={{ color: 'hsl(var(--muted-foreground))' }}>
+               Biografie
+             </label>
             <textarea
               value={bio}
               onChange={(e) => {
@@ -384,9 +430,9 @@ export default function EditProfilePage() {
               ) : (
                 <span />
               )}
-              <p className="text-xs" style={{ color: bio.length > 260 ? '#ff4d6d' : '#aaa' }}>
-                {bio.length}/280
-              </p>
+               <p className="text-xs" style={{ color: bio.length > 260 ? '#ff4d6d' : 'hsl(var(--muted-foreground)/0.6)' }}>
+                 {bio.length}/280
+               </p>
             </div>
           </div>
 

@@ -1001,9 +1001,10 @@ const UNIT_TO_GRAMS: Record<string, number> = {
   'lingura':      15,   // tablespoon (lingură — without diacritic)
   'linguri':      15,   // tablespoons plural
   'lingură':      15,   // tablespoon (with diacritic)
-  'cana':        240,   // cup (cană — without diacritic)
-  'cani':        240,   // cups plural
-  'cană':        240,   // cup (with diacritic)
+  'cana':        250,   // Romanian mug (cană — ~250ml, larger than US cup)
+  'cani':        250,   // mugs plural (căni)
+  'cană':        250,   // Romanian mug (with diacritic)
+  'căni':        250,   // mugs plural (with diacritic)
   'pahar':       200,   // glass / cup (~200 ml)
   'pahare':      200,   // glasses plural
   // Containers

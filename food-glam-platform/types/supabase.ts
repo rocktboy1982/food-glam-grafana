@@ -217,10 +217,12 @@ export type Database = {
           hero_image_url: string | null
           id: string
           is_tested: boolean | null
+          meal_type: string | null
           quality_score: number | null
           recipe_json: Json | null
           slug: string
           status: string | null
+          summary: string | null
           title: string
           type: string
           video_url: string | null
@@ -234,10 +236,12 @@ export type Database = {
           hero_image_url?: string | null
           id?: string
           is_tested?: boolean | null
+          meal_type?: string | null
           quality_score?: number | null
           recipe_json?: Json | null
           slug: string
           status?: string | null
+          summary?: string | null
           title: string
           type?: string
           video_url?: string | null
@@ -251,10 +255,12 @@ export type Database = {
           hero_image_url?: string | null
           id?: string
           is_tested?: boolean | null
+          meal_type?: string | null
           quality_score?: number | null
           recipe_json?: Json | null
           slug?: string
           status?: string | null
+          summary?: string | null
           title?: string
           type?: string
           video_url?: string | null

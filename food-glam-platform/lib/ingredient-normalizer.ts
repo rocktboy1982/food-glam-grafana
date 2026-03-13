@@ -147,56 +147,125 @@ export interface MergedIngredient {
   unit: string
 }
 
+// Known unit tokens — Romanian + English. Longest-first so "linguri de" doesn't
+// partially match "linguri" and leave "de" attached to the ingredient name.
+// The "de" / "of" preposition after a unit is stripped automatically.
+const KNOWN_UNITS = new Set([
+  // Romanian units (with and without diacritics)
+  'g', 'kg', 'ml', 'l', 'dl',
+  'lingura', 'lingură', 'linguri',
+  'lingurita', 'linguriță', 'lingurițe', 'lingurite',
+  'cana', 'cană', 'cani', 'căni',
+  'pahar', 'pahare',
+  'felie', 'felii',
+  'bucata', 'bucată', 'bucati', 'bucăți',
+  'legatura', 'legătură', 'legaturi',
+  'catel', 'cățel', 'catei', 'căței',
+  'fir', 'fire',
+  'varf', 'vârf',
+  'pumn', 'pumni',
+  'pachet', 'pachete',
+  'cutie', 'cutii',
+  'conserva', 'conservă',
+  'plic',
+  'capatana', 'căpățână',
+  'crenguita', 'crenguță',
+  'frunza', 'frunză', 'frunze',
+  'foaie', 'foi',
+  'tulpina', 'tulpină',
+  'ramurica', 'rămurică',
+  'strop',
+  'praf',
+  // English units
+  'cup', 'cups',
+  'tbsp', 'tablespoon', 'tablespoons',
+  'tsp', 'teaspoon', 'teaspoons',
+  'oz', 'ounce', 'ounces',
+  'lb', 'lbs', 'pound', 'pounds',
+  'pinch', 'dash', 'bunch',
+  'clove', 'cloves',
+  'slice', 'slices',
+  'piece', 'pieces',
+  'can', 'cans',
+  'sprig', 'sprigs',
+  'leaf', 'leaves',
+  'head', 'heads',
+  'stalk', 'stalks',
+  'strip', 'strips',
+])
+
 export function parseIngredient(ingredient: string): ParsedIngredient {
   const original = ingredient.trim()
-  const pattern = /^([\d\s\/.\\-]+)?\s*([a-zA-Z\s]+?)?\s+(.+)$/
-  const match = ingredient.match(pattern)
-  
+
   let amount: number | null = null
   let unit: string | null = null
   let name = original
-  
-  if (match) {
-    const [, amountStr, unitStr, nameStr] = match
-    
-    if (amountStr) {
-      const clean = amountStr.trim()
-      if (clean.includes('/')) {
-        const parts = clean.split(/\s+/)
-        let total = 0
-        for (const part of parts) {
-          if (part.includes('/')) {
-            const [num, denom] = part.split('/')
-            total += parseFloat(num) / parseFloat(denom)
-          } else {
-            total += parseFloat(part)
-          }
+
+  // Step 1: Extract leading number (supports fractions, decimals, ranges, ½ ⅓ etc.)
+  const numPattern = /^([\d\s\/.,½⅓⅔¼¾⅛-]+)\s*/
+  const numMatch = original.match(numPattern)
+  let rest = original
+
+  if (numMatch) {
+    const raw = numMatch[1].trim()
+    rest = original.slice(numMatch[0].length)
+
+    // Parse the amount
+    // Replace Unicode fractions
+    let clean = raw
+      .replace(/½/g, '1/2').replace(/⅓/g, '1/3').replace(/⅔/g, '2/3')
+      .replace(/¼/g, '1/4').replace(/¾/g, '3/4').replace(/⅛/g, '1/8')
+      .replace(/,/g, '.')  // European decimal comma
+
+    if (clean.includes('/')) {
+      const parts = clean.split(/\s+/)
+      let total = 0
+      for (const part of parts) {
+        if (part.includes('/')) {
+          const [num, denom] = part.split('/')
+          total += parseFloat(num) / parseFloat(denom)
+        } else if (part) {
+          total += parseFloat(part)
         }
-        amount = total
-      } else if (clean.includes('-')) {
-        const [, high] = clean.split('-')
-        amount = parseFloat(high)
-      } else {
-        amount = parseFloat(clean)
       }
+      amount = total
+    } else if (clean.includes('-')) {
+      // Range: take the higher value
+      const [, high] = clean.split('-')
+      amount = parseFloat(high)
+    } else {
+      amount = parseFloat(clean)
     }
-    
-    if (unitStr) {
-      unit = unitStr.trim().toLowerCase()
-    }
-    
-    name = nameStr.trim()
+
+    if (isNaN(amount as number)) amount = null
   }
-  
+
+  // Step 2: Try to match a known unit token at the start of `rest`
+  const words = rest.split(/\s+/)
+  const firstWord = words[0]?.toLowerCase()
+
+  if (firstWord && KNOWN_UNITS.has(firstWord)) {
+    unit = firstWord
+    // Skip the unit word + optional "de" / "of" preposition
+    let skip = 1
+    if (words[skip]?.toLowerCase() === 'de' || words[skip]?.toLowerCase() === 'of') {
+      skip++
+    }
+    name = words.slice(skip).join(' ')
+  } else {
+    name = rest
+  }
+
+  // Step 3: Normalize the ingredient name → resolve to English canonical
   const rawNormalized = name.toLowerCase()
-    .replace(/\(.*?\)/g, '')
-    .replace(/,.*$/, '')
-    .replace(/\b(fresh|frozen|dried|chopped|diced|minced|sliced)\b/g, '')
+    .replace(/\(.*?\)/g, '')       // Remove parenthetical notes
+    .replace(/,.*$/, '')           // Remove everything after first comma
+    .replace(/\b(fresh|frozen|dried|chopped|diced|minced|sliced|proaspăt|proaspătă|proaspete|tocat|tocată|tocate|topit|topită|topite|tăiat|tăiată|tăiate|feliată|feliate|măcinat|măcinată|prăjit|prăjită|ras|rasă|fiert|fiartă|mărunt|fin|mare|mediu|mic)\b/gi, '')
     .trim()
   // Resolve foreign-language ingredient names to English canonical
   const normalizedName = resolveIngredientName(rawNormalized)
-  
-  return { original, amount, unit, name, normalizedName }
+
+  return { original, amount, unit, name: name.trim(), normalizedName }
 }
 
 export function mergeIngredients(ingredients: string[]): MergedIngredient[] {

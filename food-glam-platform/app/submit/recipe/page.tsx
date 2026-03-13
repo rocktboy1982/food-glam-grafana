@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase-client'
 import { useToast } from '@/components/ui/toast'
 import { Button } from '@/components/ui/button'
-import { REGION_META } from '@/lib/recipe-taxonomy'
+import { REGION_META, COURSES } from '@/lib/recipe-taxonomy'
 import { IngredientInput } from '@/components/ui/ingredient-input'
 
 /* ── Derive flat country list from taxonomy ──────────────── */
@@ -105,6 +105,7 @@ interface RecipeFormState {
   photoGallery: string[]
   regionId: string      // e.g. 'asian', 'european'
   countryId: string     // e.g. 'japanese', 'italian'
+  mealType: string      // e.g. 'breakfast', 'dinner'
   dietTags: string[]
   foodTags: string[]
   servings: string
@@ -121,6 +122,7 @@ const emptyForm: RecipeFormState = {
   photoGallery: [''],
   regionId: '',
   countryId: '',
+  mealType: '',
   dietTags: [],
   foodTags: [],
   servings: '',
@@ -207,32 +209,33 @@ function SubmitRecipePageContent() {
       }
 
       setForm({
-        title: post.title || '',
-        summary: (rj.summary as string) || '',
-        heroImageUrl: post.hero_image_url || '',
-        videoUrl: (post.video_url as string) || (rj.videoUrl as string) || '',
-        photoGallery: ((rj.photoGallery as string[]) || []).length > 0
-          ? (rj.photoGallery as string[])
-          : [''],
-        regionId: storedRegionId,
-        countryId: storedCountryId,
-        dietTags: (post.diet_tags as string[]) || [],
-        foodTags: (post.food_tags as string[]) || [],
-        servings: String((rj.servings as number) || ''),
-        cookTime: String((rj.cookTime as number) || ''),
-        ingredients: (() => {
-          const raw = (rj.ingredients as (string | IngredientRow)[]) || []
-          const rows: IngredientRow[] = raw.map(r =>
-            typeof r === 'string'
-              ? { qty: '', unit: '', name: r }
-              : r
-          )
-          return rows.length > 0 ? rows : [emptyIngredient()]
-        })(),
-        steps: ((rj.steps as string[]) || ['']).length > 0
-          ? (rj.steps as string[])
-          : [''],
-      })
+         title: post.title || '',
+         summary: (rj.summary as string) || '',
+         heroImageUrl: post.hero_image_url || '',
+         videoUrl: (post.video_url as string) || (rj.videoUrl as string) || '',
+         photoGallery: ((rj.photoGallery as string[]) || []).length > 0
+           ? (rj.photoGallery as string[])
+           : [''],
+         regionId: storedRegionId,
+         countryId: storedCountryId,
+         mealType: (post.meal_type as string) || '',
+         dietTags: (post.diet_tags as string[]) || [],
+         foodTags: (post.food_tags as string[]) || [],
+         servings: String((rj.servings as number) || ''),
+         cookTime: String((rj.cookTime as number) || ''),
+         ingredients: (() => {
+           const raw = (rj.ingredients as (string | IngredientRow)[]) || []
+           const rows: IngredientRow[] = raw.map(r =>
+             typeof r === 'string'
+               ? { qty: '', unit: '', name: r }
+               : r
+           )
+           return rows.length > 0 ? rows : [emptyIngredient()]
+         })(),
+         steps: ((rj.steps as string[]) || ['']).length > 0
+           ? (rj.steps as string[])
+           : [''],
+       })
     })()
   }, [editId])
 
@@ -244,13 +247,14 @@ function SubmitRecipePageContent() {
   const PREF_KEY = 'recipe_submit_prefs'
 
   useEffect(() => {
-    if (editId) return // editing — keep loaded values, don’t overwrite
+    if (editId) return // editing — keep loaded values, don't overwrite
     try {
       const raw = localStorage.getItem(PREF_KEY)
       if (!raw) return
       const prefs = JSON.parse(raw) as {
         regionId?: string
         countryId?: string
+        mealType?: string
         dietTags?: string[]
         foodTags?: string[]
       }
@@ -258,6 +262,7 @@ function SubmitRecipePageContent() {
         ...prev,
         regionId:  prefs.regionId  ?? prev.regionId,
         countryId: prefs.countryId ?? prev.countryId,
+        mealType:  prefs.mealType  ?? prev.mealType,
         dietTags:  Array.isArray(prefs.dietTags)  ? prefs.dietTags  : prev.dietTags,
         foodTags:  Array.isArray(prefs.foodTags)  ? prefs.foodTags  : prev.foodTags,
       }))
@@ -266,16 +271,17 @@ function SubmitRecipePageContent() {
   }, []) // intentionally runs once on mount
 
   useEffect(() => {
-    if (editId) return // don’t clobber prefs with edit data
+    if (editId) return // don't clobber prefs with edit data
     try {
       localStorage.setItem(PREF_KEY, JSON.stringify({
         regionId:  form.regionId,
         countryId: form.countryId,
+        mealType:  form.mealType,
         dietTags:  form.dietTags,
         foodTags:  form.foodTags,
       }))
     } catch { /* quota exceeded or private browsing — silent fail */ }
-  }, [form.regionId, form.countryId, form.dietTags, form.foodTags, editId])
+  }, [form.regionId, form.countryId, form.mealType, form.dietTags, form.foodTags, editId])
 
   /* ── field helpers ──────────────────────────────────────── */
   const set = useCallback(<K extends keyof RecipeFormState>(key: K, val: RecipeFormState[K]) => {
@@ -367,6 +373,7 @@ function SubmitRecipePageContent() {
         slug,
         hero_image_url: form.heroImageUrl || null,
         approach_id: form.countryId || null,   // keep existing FK for now
+        meal_type: form.mealType || null,
         diet_tags: form.dietTags.length > 0 ? form.dietTags : null,
         food_tags: form.foodTags.length > 0 ? form.foodTags : null,
         video_url: form.videoUrl || null,
@@ -853,11 +860,38 @@ function SubmitRecipePageContent() {
           </div>
         </div>
 
-        {/* ── Diet tags ─────────────────────────────────────── */}
-        <div className={sectionCls}>
-          <label className={labelCls}>
-            Etichete dietetice <span className="text-muted-foreground text-xs font-normal">(opțional — bifează ce se aplică)</span>
-          </label>
+         {/* ── Meal Type ─────────────────────────────────────── */}
+         <div className={sectionCls}>
+           <label className={labelCls}>
+             Tip de masă <span className="text-muted-foreground text-xs font-normal">(opțional — ajută la filtrare)</span>
+           </label>
+           <div className="flex flex-wrap gap-2">
+             {COURSES.filter(course => course.id !== 'all').map(course => {
+               const active = form.mealType === course.id
+               return (
+                 <button
+                   key={course.id}
+                   type="button"
+                   onClick={() => set('mealType', form.mealType === course.id ? '' : course.id)}
+                   className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-all ${
+                     active
+                       ? 'border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-900/20 dark:text-rose-400 dark:border-rose-500'
+                       : 'border-border text-muted-foreground hover:border-foreground/30'
+                   }`}
+                 >
+                   <span>{course.emoji}</span>
+                   {course.label}
+                 </button>
+               )
+             })}
+           </div>
+         </div>
+
+         {/* ── Diet tags ─────────────────────────────────────── */}
+         <div className={sectionCls}>
+           <label className={labelCls}>
+             Etichete dietetice <span className="text-muted-foreground text-xs font-normal">(opțional — bifează ce se aplică)</span>
+           </label>
           <div className="flex flex-wrap gap-2">
             {DIET_TAGS.map(tag => {
               const active = form.dietTags.includes(tag)

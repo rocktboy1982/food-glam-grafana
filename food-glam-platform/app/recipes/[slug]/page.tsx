@@ -13,6 +13,7 @@ import RecipeIngredientsClient from "@/components/pages/recipe-ingredients-clien
 import RecipeActionsClient from "@/components/pages/recipe-actions-client"
 import RecipeCommentsClient from "@/components/pages/recipe-comments-client"
 import { createServerSupabaseClient, createServiceSupabaseClient } from '@/lib/supabase-server'
+import { estimateRecipeCalories } from '@/lib/calorie-engine'
 import { MOCK_RECIPES } from '@/lib/mock-data'
 import { normalizeToEmbed } from '@/lib/embed'
 import FollowChefButton from '@/components/pages/follow-chef-button'
@@ -838,6 +839,30 @@ export default async function RecipePage({ params }: RecipePageProps) {
   const isTested = post.is_tested
   const sourceUrl = (post as Record<string, unknown>).source_url as string | null
 
+  // Auto-compute nutrition from calorie engine if not stored in recipe_json
+  const allIngredientStrings = ingredientSections.flatMap(s => s.ingredients)
+  const storedNutrition = recipeData.nutrition_per_serving
+  const hasStoredNutrition = storedNutrition && typeof storedNutrition.calories === 'number' && storedNutrition.calories > 0
+
+  let computedNutrition: { calories: number; protein: number; carbs: number; fat: number } | null = null
+  if (!hasStoredNutrition && allIngredientStrings.length > 0) {
+    const { totalKcal, knownCount } = estimateRecipeCalories(allIngredientStrings)
+    if (knownCount > 0 && totalKcal > 0) {
+      const perServing = Math.round(totalKcal / servings)
+      computedNutrition = {
+        calories: perServing,
+        protein: 0,  // Calorie engine only estimates kcal for now
+        carbs: 0,
+        fat: 0,
+      }
+    }
+  }
+
+  // Use stored nutrition if available, otherwise use computed
+  const effectiveNutrition = hasStoredNutrition
+    ? storedNutrition as { calories: number; protein: number; carbs: number; fat: number }
+    : computedNutrition
+
   // Generate JSON-LD for SEO
   const jsonLdData = generateRecipeJsonLd(post, {
     servings,
@@ -846,7 +871,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
     total_time: totalTime,
     ingredients: rawIngredients,
     steps,
-    nutrition: recipeData.nutrition_per_serving || {},
+    nutrition: effectiveNutrition || recipeData.nutrition_per_serving || {},
   }, slug)
 
   return (
@@ -1098,7 +1123,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
 
             {/* Advanced section (gated by feature flag) */}
             <RecipeAdvancedClient
-              nutrition={recipeData.nutrition_per_serving || { calories: null, protein: null, carbs: null, fat: null }}
+              nutrition={effectiveNutrition || { calories: null, protein: null, carbs: null, fat: null }}
               fasting={undefined}
               foodLog={false}
               ingredients={ingredientSections.flatMap(s => s.ingredients)}
@@ -1153,19 +1178,24 @@ export default async function RecipePage({ params }: RecipePageProps) {
              )}
 
              {/* Quick Nutrition */}
-             {recipeData.nutrition_per_serving && (
+             {effectiveNutrition && (
                <Card className="shadow-sm">
                   <CardContent className="p-4">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Nutriție per porție</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                      Nutriție per porție
+                      {computedNutrition && !hasStoredNutrition && (
+                        <span className="ml-1 text-[9px] font-normal text-amber-500">~ estimat</span>
+                      )}
+                    </p>
                     <div className="grid grid-cols-2 gap-3">
                       {[
-                        { label: 'Calorii', value: (recipeData.nutrition_per_serving as Record<string, number>).calories, unit: 'kcal' },
-                        { label: 'Proteine', value: (recipeData.nutrition_per_serving as Record<string, number>).protein, unit: 'g' },
-                        { label: 'Carbohidrați', value: (recipeData.nutrition_per_serving as Record<string, number>).carbs, unit: 'g' },
-                        { label: 'Grăsimi', value: (recipeData.nutrition_per_serving as Record<string, number>).fat, unit: 'g' },
+                        { label: 'Calorii', value: effectiveNutrition.calories, unit: 'kcal' },
+                        { label: 'Proteine', value: effectiveNutrition.protein, unit: 'g' },
+                        { label: 'Carbohidrați', value: effectiveNutrition.carbs, unit: 'g' },
+                        { label: 'Grăsimi', value: effectiveNutrition.fat, unit: 'g' },
                       ].map((item) => (
                         <div key={item.label} className="text-center p-2 rounded-lg bg-muted/50">
-                          <p className="text-lg font-bold">{item.value ?? '—'}</p>
+                          <p className="text-lg font-bold">{item.value || '—'}</p>
                           <p className="text-[10px] text-muted-foreground">{item.unit} {item.label.toLowerCase()}</p>
                         </div>
                       ))}

@@ -19,7 +19,7 @@ import {
 } from 'lucide-react'
 import RecipeCard from '@/components/RecipeCard'
 import { AdInFeed } from '@/components/ads/ad-placements'
-import { REGION_META } from '@/lib/recipe-taxonomy'
+import { REGION_META, COURSES } from '@/lib/recipe-taxonomy'
 import type { MockCocktail } from '@/lib/mock-data'
 
 
@@ -45,6 +45,13 @@ interface Recipe {
   is_tested: boolean
   quality_score: number | null
   created_at: string
+  meal_type: string | null
+  nutrition_per_serving: {
+    calories: number
+    protein: number
+    carbs: number
+    fat: number
+  } | null
   created_by: {
     id: string
     display_name: string
@@ -70,6 +77,7 @@ interface SearchResponse {
     food_style_id: string
     cookbook_id: string
     chapter_id: string
+    meal_type: string
   }
 }
 
@@ -223,6 +231,7 @@ function SearchDiscoveryPageClientContent() {
   const [cookbookId, setCookbookId] = useState(searchParams.get('cookbook_id') || '')
   const [chapterId, setChapterId] = useState(searchParams.get('chapter_id') || '')
   const [calMax, setCalMax] = useState(parseInt(searchParams.get('cal_max') || '0') || 0)
+  const [mealType, setMealType] = useState(searchParams.get('meal_type') || '')
 
   // ---- Cocktail-specific state ----
   const [cocktails, setCocktails] = useState<MockCocktail[]>([])
@@ -267,6 +276,7 @@ function SearchDiscoveryPageClientContent() {
     searchTagFilter: string,
     searchQualityMin: number,
     searchCalMax: number,
+    searchMealType: string,
   ) => {
     abortRef.current?.abort()
     abortRef.current = new AbortController()
@@ -284,6 +294,7 @@ function SearchDiscoveryPageClientContent() {
     if (searchTagFilter) params.set('tag', searchTagFilter)
     if (searchQualityMin > 0) params.set('quality_min', String(searchQualityMin))
     if (searchCalMax > 0) params.set('cal_max', String(searchCalMax))
+    if (searchMealType) params.set('meal_type', searchMealType)
     params.set('page', String(searchPage))
     params.set('per_page', String(PER_PAGE))
 
@@ -362,6 +373,7 @@ function SearchDiscoveryPageClientContent() {
     newTagFilter?: string,
     newQualityMin?: number,
     newCalMax?: number,
+    newMealType?: string,
   ) => {
     const q = newQuery ?? query
     const a = newApproach ?? approach
@@ -374,6 +386,7 @@ function SearchDiscoveryPageClientContent() {
     const tf = newTagFilter ?? tagFilter
     const qm = newQualityMin ?? qualityMin
     const cm = newCalMax ?? calMax
+    const mt = newMealType ?? mealType
 
     // Update URL
     updateURL({
@@ -387,11 +400,12 @@ function SearchDiscoveryPageClientContent() {
       tag: tf,
       quality_min: qm > 0 ? String(qm) : '',
       cal_max: cm > 0 ? String(cm) : '',
+      meal_type: mt,
       page: p > 1 ? String(p) : '',
     })
 
-    fetchResults(q, a, d, t, s, p, ft, it, tf, qm, cm)
-  }, [query, approach, dietTags, sort, foodTags, isTested, tagFilter, qualityMin, calMax, fetchResults, updateURL])
+    fetchResults(q, a, d, t, s, p, ft, it, tf, qm, cm, mt)
+  }, [query, approach, dietTags, sort, foodTags, isTested, tagFilter, qualityMin, calMax, mealType, fetchResults, updateURL])
 
   // ---- Debounced search for text input ----
   const handleQueryChange = (value: string) => {
@@ -452,6 +466,11 @@ function SearchDiscoveryPageClientContent() {
     triggerSearch(undefined, undefined, undefined, undefined, 1, undefined, undefined, undefined, undefined, val)
   }
 
+  const handleMealTypeChange = (val: string) => {
+    setMealType(val)
+    setPage(1)
+    triggerSearch(undefined, undefined, undefined, undefined, 1, undefined, undefined, undefined, undefined, undefined, val)
+  }
 
   const handleSortChange = (val: string) => {
     setSort(val)
@@ -476,8 +495,9 @@ function SearchDiscoveryPageClientContent() {
     setTagFilter('')
     setQualityMin(0)
     setCalMax(0)
+    setMealType('')
     setPage(1)
-    triggerSearch('', '', [], 'relevance', 1, [], false, '', 0, 0)
+    triggerSearch('', '', [], 'relevance', 1, [], false, '', 0, 0, '')
   }
 
   // ---- Mode switch ----
@@ -490,7 +510,7 @@ function SearchDiscoveryPageClientContent() {
       fetchCocktails(query, cocktailCategory, cocktailSpirit, 'trending', 1)
     } else {
       router.replace('/search', { scroll: false })
-      fetchResults(query, approach, dietTags, 'recipe', sort, 1, foodTags, isTested, tagFilter, qualityMin, calMax)
+      fetchResults(query, approach, dietTags, 'recipe', sort, 1, foodTags, isTested, tagFilter, qualityMin, calMax, mealType)
     }
   }
 
@@ -513,14 +533,14 @@ function SearchDiscoveryPageClientContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const hasActiveFilters = query || approach || dietTags.length > 0 || sort !== 'relevance' || foodTags.length > 0 || isTested || tagFilter || qualityMin > 0 || calMax > 0 || cookbookId || chapterId
+  const hasActiveFilters = query || approach || dietTags.length > 0 || sort !== 'relevance' || foodTags.length > 0 || isTested || tagFilter || qualityMin > 0 || calMax > 0 || mealType || cookbookId || chapterId
 
   // ---- Initial load ----
   useEffect(() => {
     if (mode === 'cocktails') {
       fetchCocktails(query, cocktailCategory, cocktailSpirit, 'trending', page)
     } else {
-      fetchResults(query, approach, dietTags, 'recipe', sort, page, foodTags, isTested, tagFilter, qualityMin, calMax)
+      fetchResults(query, approach, dietTags, 'recipe', sort, page, foodTags, isTested, tagFilter, qualityMin, calMax, mealType)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -535,6 +555,7 @@ function SearchDiscoveryPageClientContent() {
     tagFilter ? 1 : 0,
     qualityMin > 0 ? 1 : 0,
     calMax > 0 ? 1 : 0,
+    mealType ? 1 : 0,
   ].reduce((a, b) => a + b, 0)
 
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE))
@@ -775,14 +796,33 @@ background: 'linear-gradient(135deg, rgba(139,26,43,0.12) 0%, rgba(184,57,78,0.0
                        Șterge tot
                      </button>
                    )}
-                 </div>
+                  </div>
 
-                 {/* Region */}
-                 <div>
-                   <div className="flex items-center justify-between mb-2">
-                     <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider">Regiune</label>
-                     {approach && (<button onClick={() => handleApproachChange('')} className="text-[10px] text-amber-600 hover:text-amber-700 font-medium">Șterge</button>)}
-                   </div>
+                  {/* Meal Type */}
+                  <div>
+                    <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">Tip Masă</label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {COURSES.filter(c => c.id !== 'all').map(course => {
+                        const isActive = mealType === course.id
+                        return (
+                          <button
+                            key={course.id}
+                            onClick={() => handleMealTypeChange(mealType === course.id ? '' : course.id)}
+                            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${isActive ? 'bg-rose-500 text-white shadow-sm' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}
+                          >
+                            {course.emoji} {course.label}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Region */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider">Regiune</label>
+                      {approach && (<button onClick={() => handleApproachChange('')} className="text-[10px] text-amber-600 hover:text-amber-700 font-medium">Șterge</button>)}
+                    </div>
                    <select value={approach} onChange={e => handleApproachChange(e.target.value)} className="w-full text-xs rounded-lg border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-stone-700 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 cursor-pointer">
                      <option value="">🌍 Toate regiunile</option>
                     {REGION_GROUPS.map(group => (
@@ -894,17 +934,25 @@ background: 'linear-gradient(135deg, rgba(139,26,43,0.12) 0%, rgba(184,57,78,0.0
                 </p>
 
                 {/* Active filter pills */}
-                {(approach || dietTags.length > 0 || foodTags.length > 0 || tagFilter || isTested || qualityMin > 0 || calMax > 0) && (
-                  <div className="hidden md:flex items-center gap-1.5 flex-wrap">
-                    {approach && (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-medium">
-                        {REGIONS.find(a => a.slug === approach)?.label}
-                        <button onClick={() => handleApproachChange('')} className="hover:text-amber-900">
-                          <X className="w-3 h-3" />
-                        </button>
-                      </span>
-                    )}
-                    {dietTags.map(tag => (
+                 {(approach || dietTags.length > 0 || foodTags.length > 0 || tagFilter || isTested || qualityMin > 0 || calMax > 0 || mealType) && (
+                   <div className="hidden md:flex items-center gap-1.5 flex-wrap">
+                     {approach && (
+                       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-medium">
+                         {REGIONS.find(a => a.slug === approach)?.label}
+                         <button onClick={() => handleApproachChange('')} className="hover:text-amber-900">
+                           <X className="w-3 h-3" />
+                         </button>
+                       </span>
+                     )}
+                     {mealType && (
+                       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-100 text-rose-800 text-xs font-medium">
+                         {COURSES.find(c => c.id === mealType)?.label}
+                         <button onClick={() => handleMealTypeChange('')} className="hover:text-rose-900">
+                           <X className="w-3 h-3" />
+                         </button>
+                       </span>
+                     )}
+                     {dietTags.map(tag => (
                       <span key={tag} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-medium capitalize">
                         {tag.replace('-', ' ')}
                         <button onClick={() => handleDietTagToggle(tag)} className="hover:text-emerald-900">
@@ -1080,23 +1128,24 @@ background: 'linear-gradient(135deg, rgba(139,26,43,0.12) 0%, rgba(184,57,78,0.0
                     style={{ animationDelay: `${idx * 40}ms`, animationFillMode: 'both', animationDuration: '300ms' }}
                   >
                     <RecipeCard
-                      id={recipe.id}
-                      slug={recipe.slug}
-                      title={recipe.title}
-                      summary={recipe.summary}
-                      hero_image_url={recipe.hero_image_url}
-                      region={recipe.region}
-                      votes={recipe.votes}
-                      comments={recipe.comments}
-                      tag={recipe.tag}
-                      badges={recipe.badges}
-                      dietTags={recipe.dietTags}
-                      foodTags={recipe.foodTags}
-                      is_tested={recipe.is_tested}
-                      quality_score={recipe.quality_score}
-                      created_by={recipe.created_by}
-                      is_saved={recipe.is_saved}
-                    />
+                       id={recipe.id}
+                       slug={recipe.slug}
+                       title={recipe.title}
+                       summary={recipe.summary}
+                       hero_image_url={recipe.hero_image_url}
+                       region={recipe.region}
+                       votes={recipe.votes}
+                       comments={recipe.comments}
+                       tag={recipe.tag}
+                       badges={recipe.badges}
+                       dietTags={recipe.dietTags}
+                       foodTags={recipe.foodTags}
+                       is_tested={recipe.is_tested}
+                       quality_score={recipe.quality_score}
+                       created_by={recipe.created_by}
+                       is_saved={recipe.is_saved}
+                       nutrition_per_serving={recipe.nutrition_per_serving}
+                     />
                   </div>
                 ))}
               </div>

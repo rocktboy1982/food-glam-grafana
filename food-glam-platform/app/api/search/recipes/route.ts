@@ -10,6 +10,7 @@ import { getVotesByPostIds, getRecentVotes } from '@/lib/data-access/votes'
  *   q          - search text (title + summary full-text / ilike)
  *   approach   - approach slug filter (e.g. "asian")
  *   diet_tags  - comma-separated diet tags (e.g. "vegan,gluten-free")
+ *   meal_type  - meal type filter (e.g. "breakfast", "lunch", "dessert")
  *   type       - post type filter (recipe | short | video | image)
  *   sort       - relevance (default) | trending | newest
  *   page       - page number (default 1)
@@ -22,6 +23,7 @@ export async function GET(req: NextRequest) {
     const approach = url.searchParams.get('approach')?.trim() || ''
     const dietTagsRaw = url.searchParams.get('diet_tags')?.trim() || ''
     const foodTagsRaw = url.searchParams.get('food_tags')?.trim() || ''
+    const meal_type = url.searchParams.get('meal_type')?.trim() || ''
     const type = url.searchParams.get('type')?.trim() || ''
     const sort = url.searchParams.get('sort')?.trim() || 'relevance'
     const cuisine_id = url.searchParams.get('cuisine_id')?.trim() || ''
@@ -94,7 +96,7 @@ export async function GET(req: NextRequest) {
             page,
             per_page: perPage,
             has_more: page * perPage < filtered.length,
-            filters: { q, approach, diet_tags: dietTags, food_tags: foodTags, type: type || 'recipe', sort, cuisine_id, food_style_id, cookbook_id, chapter_id, is_tested, tag: tag_filter, quality_min },
+            filters: { q, approach, diet_tags: dietTags, food_tags: foodTags, meal_type, type: type || 'recipe', sort, cuisine_id, food_style_id, cookbook_id, chapter_id, is_tested, tag: tag_filter, quality_min },
             _note: 'Using mock data - Local Supabase not running'
           })
         }
@@ -109,14 +111,14 @@ export async function GET(req: NextRequest) {
           page,
           per_page: perPage,
           has_more: page * perPage < filtered.length,
-          filters: { q, approach, diet_tags: dietTags, food_tags: foodTags, type: type || 'recipe', sort, cuisine_id, food_style_id, cookbook_id, chapter_id, is_tested, tag: tag_filter, quality_min },
-          _note: 'Using mock data - Local Supabase not running'
+          filters: { q, approach, diet_tags: dietTags, food_tags: foodTags, meal_type, type: type || 'recipe', sort, cuisine_id, food_style_id, cookbook_id, chapter_id, is_tested, tag: tag_filter, quality_min },
+            _note: 'Using mock data - Local Supabase not running'
         })
       }
     }
 
     // Cache key
-    const cacheKey = `search:recipes:${q}:${approach}:${dietTags.join(',')}:${type}:${sort}:${cuisine_id}:${food_style_id}:${cookbook_id}:${chapter_id}:${page}:${perPage}:${cal_max}`
+    const cacheKey = `search:recipes:${q}:${approach}:${dietTags.join(',')}:${meal_type}:${type}:${sort}:${cuisine_id}:${food_style_id}:${cookbook_id}:${chapter_id}:${page}:${perPage}:${cal_max}`
     const cached = cacheGet(cacheKey)
     if (cached) return NextResponse.json(cached)
 
@@ -136,6 +138,8 @@ export async function GET(req: NextRequest) {
         quality_score,
         diet_tags,
         food_tags,
+        meal_type,
+        recipe_json,
         type,
         status,
         created_at,
@@ -187,6 +191,11 @@ export async function GET(req: NextRequest) {
       query = query.contains('diet_tags', dietTags)
     }
 
+    // Meal type filter - direct column match on posts.meal_type
+    if (meal_type) {
+      query = query.eq('meal_type', meal_type)
+    }
+
     // Cookbook hierarchy filters: recipes table has cuisine_id/food_style_id/cookbook_id/chapter_id
     // We look up matching post_ids from the recipes table and filter posts by those ids
     const hierarchyFilters = [
@@ -211,7 +220,7 @@ export async function GET(req: NextRequest) {
           page,
           per_page: perPage,
           has_more: false,
-          filters: { q, approach, diet_tags: dietTags, type: type || 'recipe', sort, cuisine_id, food_style_id, cookbook_id, chapter_id }
+          filters: { q, approach, diet_tags: dietTags, meal_type, type: type || 'recipe', sort, cuisine_id, food_style_id, cookbook_id, chapter_id }
         }
         cacheSet(cacheKey, result, 15)
         return NextResponse.json(result)
@@ -255,7 +264,7 @@ export async function GET(req: NextRequest) {
         page,
         per_page: perPage,
         has_more: false,
-        filters: { q, approach, diet_tags: dietTags, type: type || 'recipe', sort, cuisine_id, food_style_id, cookbook_id, chapter_id }
+        filters: { q, approach, diet_tags: dietTags, meal_type, type: type || 'recipe', sort, cuisine_id, food_style_id, cookbook_id, chapter_id }
       }
       cacheSet(cacheKey, result, 15)
       return NextResponse.json(result)
@@ -288,6 +297,10 @@ export async function GET(req: NextRequest) {
       const approachData = post.approaches as any
       const creatorData = post.created_by as any
 
+      // Extract nutrition_per_serving from recipe_json if available
+      const recipeJson = (post.recipe_json || {}) as Record<string, unknown>
+      const nutrition = recipeJson.nutrition_per_serving as { calories: number; protein: number; carbs: number; fat: number } | null | undefined
+
       return {
         id: post.id,
         slug: post.slug,
@@ -303,8 +316,10 @@ export async function GET(req: NextRequest) {
         badges: badges.length > 0 ? badges : undefined,
         dietTags: post.diet_tags || [],
         foodTags: post.food_tags || [],
+        meal_type: post.meal_type || null,
         is_tested: post.is_tested,
         quality_score: post.quality_score,
+        nutrition_per_serving: nutrition || null,
         created_at: post.created_at,
         created_by: {
           id: creatorData?.id as string || '',
@@ -332,7 +347,7 @@ export async function GET(req: NextRequest) {
       page,
       per_page: perPage,
       has_more: page * perPage < totalCount,
-      filters: { q, approach, diet_tags: dietTags, type: type || 'recipe', sort, cuisine_id, food_style_id, cookbook_id, chapter_id }
+      filters: { q, approach, diet_tags: dietTags, meal_type, type: type || 'recipe', sort, cuisine_id, food_style_id, cookbook_id, chapter_id }
     }
 
     cacheSet(cacheKey, result, 15)
