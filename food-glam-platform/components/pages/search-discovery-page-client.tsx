@@ -2,6 +2,7 @@
 
 import React, { Suspense, useState, useEffect, useRef, useCallback } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import FallbackImage from '@/components/FallbackImage'
 import { useRouter, useSearchParams } from 'next/navigation'
 import {
@@ -1006,12 +1007,13 @@ background: 'linear-gradient(135deg, rgba(139,26,43,0.12) 0%, rgba(184,57,78,0.0
             {mode === 'cocktails' && !loading && cocktails.length > 0 && (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                 {cocktails.map((c, idx) => (
-                  <div
+                  <Link
+                    href={`/cocktails/${c.slug}`}
                     key={c.id}
-                    className="animate-in fade-in slide-in-from-bottom-2 h-full"
+                    className="animate-in fade-in slide-in-from-bottom-2 h-full block"
                     style={{ animationDelay: `${idx * 40}ms`, animationFillMode: 'both', animationDuration: '300ms' }}
                   >
-                    <div className="rounded-xl overflow-hidden flex flex-col h-full border transition-all hover:shadow-lg" style={{ background: 'rgba(255,255,255,0.75)', borderColor: 'rgba(0,0,0,0.1)' }}>
+                    <div className="rounded-xl overflow-hidden flex flex-col h-full border transition-all hover:shadow-lg cursor-pointer" style={{ background: 'rgba(255,255,255,0.75)', borderColor: 'rgba(0,0,0,0.1)' }}>
                        {/* Image */}
                        <div className="relative">
                          <FallbackImage src={c.hero_image_url} alt={c.title} width={400} height={176} className="w-full h-44 object-cover" fallbackEmoji="🍽️" />
@@ -1052,11 +1054,11 @@ background: 'linear-gradient(135deg, rgba(139,26,43,0.12) 0%, rgba(184,57,78,0.0
                         <div className="flex items-center gap-2 pt-2 border-t" style={{ borderColor: 'rgba(0,0,0,0.08)' }}>
                           <span className="text-xs" style={{ color: '#8B1A2B' }}>♥ {c.votes}</span>
                           <span className="text-xs" style={{ color: '#888' }}>★ {c.quality_score.toFixed(1)}</span>
-                           <span className="text-xs ml-auto" style={{ color: '#888' }}>Servește {c.serves}</span>
+                            <span className="text-xs ml-auto" style={{ color: '#888' }}>Servește {c.serves}</span>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
