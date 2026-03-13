@@ -41,3 +41,5 @@ scripts/translate-error.log
 
 # database backups
 backups/
+
+.vercel
