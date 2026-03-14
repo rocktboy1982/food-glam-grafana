@@ -1287,7 +1287,46 @@ export default function PlanClient() {
                         ;(e.currentTarget as HTMLButtonElement).style.background = '#fff'
                       }}
                     >
-                      🖨️ Print Shopping List
+                      Printează lista
+                    </button>
+
+                    {/* eMAG shopping button */}
+                    <button
+                      onClick={() => {
+                        if (shopItems.length === 0) return
+                        // Save items to localStorage for the eMAG shop page
+                        const emagItems = shopItems.map(item => ({
+                          id: item.id,
+                          name: item.name,
+                          totalQty: item.totalQty,
+                          unit: item.unit,
+                          category: item.category,
+                          fromRecipes: item.fromRecipes,
+                        }))
+                        localStorage.setItem('marechef_emag_shop_items', JSON.stringify(emagItems))
+                        window.open('/me/emag-shop', '_blank')
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '12px 20px',
+                        borderRadius: 14,
+                        background: '#f7c948',
+                        color: '#111',
+                        fontSize: 14,
+                        fontWeight: 600,
+                        border: '2px solid #e6b93d',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        marginTop: 10,
+                      }}
+                      onMouseOver={(e) => {
+                        (e.currentTarget as HTMLButtonElement).style.background = '#e6b93d'
+                      }}
+                      onMouseOut={(e) => {
+                        (e.currentTarget as HTMLButtonElement).style.background = '#f7c948'
+                      }}
+                    >
+                      🛒 Cumpără pe eMAG
                     </button>
                   </div>
                 )}
@@ -1456,7 +1495,41 @@ export default function PlanClient() {
                               (e.currentTarget as HTMLButtonElement).style.background = '#f3f3f3'
                             }}
                           >
-                            📋 Copy
+                            📋 Copiază
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (shopItems.length === 0) return
+                              const emagItems = shopItems.map(item => ({
+                                id: item.id,
+                                name: item.name,
+                                totalQty: item.totalQty,
+                                unit: item.unit,
+                                category: item.category,
+                                fromRecipes: item.fromRecipes,
+                              }))
+                              localStorage.setItem('marechef_emag_shop_items', JSON.stringify(emagItems))
+                              window.open('/me/emag-shop', '_blank')
+                            }}
+                            style={{
+                              padding: '10px 16px',
+                              borderRadius: 10,
+                              background: '#f7c948',
+                              color: '#111',
+                              fontSize: 13,
+                              fontWeight: 600,
+                              border: 'none',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s',
+                            }}
+                            onMouseOver={(e) => {
+                              (e.currentTarget as HTMLButtonElement).style.background = '#e6b93d'
+                            }}
+                            onMouseOut={(e) => {
+                              (e.currentTarget as HTMLButtonElement).style.background = '#f7c948'
+                            }}
+                          >
+                            🛒 eMAG
                           </button>
                           <button
                             onClick={saveToShoppingList}
@@ -1485,7 +1558,7 @@ export default function PlanClient() {
                               }
                             }}
                           >
-                            {shopSaveState === 'saving' ? '⏳ Saving…' : shopSaveState === 'saved' ? '✅ Saved!' : shopSaveState === 'error' ? '❌ Error' : '💾 Save to List'}
+                            {shopSaveState === 'saving' ? '⏳ Se salvează…' : shopSaveState === 'saved' ? '✅ Salvat!' : shopSaveState === 'error' ? '❌ Eroare' : '💾 Salvează'}
                           </button>
                         </div>
                         {shopSaveState === 'error' && shopSaveError && (
