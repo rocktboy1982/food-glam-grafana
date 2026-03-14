@@ -99,9 +99,55 @@ function normalizeForSearch(raw: string): string {
   return s || raw.trim()  // fallback to original if we stripped everything
 }
 
-function getEmagSearchUrl(itemName: string): string {
-  const normalized = normalizeForSearch(itemName)
-  const query = normalized
+// Small units that should be stripped — searching "500g sare" is useful, "1 linguriță sare" is not
+const SMALL_UNITS = new Set([
+  'lingurita', 'linguriță', 'lingurițe', 'lingurite',
+  'lingura', 'lingură', 'linguri',
+  'varf', 'vârf',
+  'pumn', 'pumni',
+  'strop', 'praf',
+  'fir', 'fire',
+  'catel', 'cățel', 'catei', 'căței',
+  'frunza', 'frunză', 'frunze',
+  'foaie', 'foi',
+  'ramurica', 'rămurică',
+  'crenguita', 'crenguță',
+  'pinch', 'dash', 'sprig', 'sprigs', 'clove', 'cloves',
+  'tsp', 'teaspoon', 'teaspoons',
+  'tbsp', 'tablespoon', 'tablespoons',
+])
+
+// Weight/volume units worth keeping — "500g făină" or "1kg orez" helps eMAG find the right pack size
+const WEIGHT_UNITS = new Set([
+  'g', 'kg', 'ml', 'l', 'dl',
+  'oz', 'ounce', 'ounces', 'lb', 'lbs', 'pound', 'pounds',
+])
+
+function buildEmagQuery(itemName: string, totalQty: number, unit: string): string {
+  const name = normalizeForSearch(itemName)
+
+  // Decide if we include quantity + unit in the search
+  const unitLower = unit.toLowerCase()
+
+  if (WEIGHT_UNITS.has(unitLower) && totalQty > 0) {
+    // Keep weight/volume: "500 g făină" → "500g faina"
+    const qty = totalQty % 1 === 0 ? String(totalQty) : totalQty.toFixed(0)
+    return `${qty}${unitLower} ${name}`
+  }
+
+  if (!SMALL_UNITS.has(unitLower) && totalQty >= 1 && unitLower) {
+    // Keep meaningful quantities: "2 cani smantana", "3 pachete paste"
+    // But skip fractions like "1/2 cană" — those are small
+    const qty = totalQty % 1 === 0 ? String(totalQty) : totalQty.toFixed(0)
+    return `${qty} ${unit} ${name}`
+  }
+
+  // Small units or no unit — just the ingredient name
+  return name
+}
+
+function getEmagSearchUrl(itemName: string, totalQty: number = 0, unit: string = ''): string {
+  const query = buildEmagQuery(itemName, totalQty, unit)
     .toLowerCase()
     .replace(/[()]/g, '')
     .trim()
@@ -157,7 +203,7 @@ export default function EmagShopPage() {
   }
 
   const openSingleItem = (item: EmagShopItem) => {
-    window.open(getEmagSearchUrl(item.name), '_blank', 'noopener')
+    window.open(getEmagSearchUrl(item.name, item.totalQty, item.unit), '_blank', 'noopener')
   }
 
   const openAllSelected = () => {
@@ -168,7 +214,7 @@ export default function EmagShopPage() {
     const batch = selected.slice(0, 10)
     batch.forEach((item, i) => {
       setTimeout(() => {
-        window.open(getEmagSearchUrl(item.name), '_blank', 'noopener')
+        window.open(getEmagSearchUrl(item.name, item.totalQty, item.unit), '_blank', 'noopener')
       }, i * 300) // stagger by 300ms to avoid popup blocker
     })
 
@@ -295,11 +341,9 @@ export default function EmagShopPage() {
                         <span className="ml-1">· {item.fromRecipes.join(', ')}</span>
                       )}
                     </p>
-                    {normalizeForSearch(item.name).toLowerCase() !== item.name.toLowerCase() && (
-                      <p className="text-[10px] text-amber-600 dark:text-amber-400">
-                        eMAG: &quot;{normalizeForSearch(item.name)}&quot;
-                      </p>
-                    )}
+                    <p className="text-[10px] text-amber-600 dark:text-amber-400">
+                      eMAG: &quot;{buildEmagQuery(item.name, item.totalQty, item.unit)}&quot;
+                    </p>
                   </div>
 
                   {/* eMAG button */}
