@@ -37,8 +37,71 @@ const CATEGORY_ICONS: Record<string, string> = {
   'Altele': '🛒',
 }
 
+// Romanian units, cooking adjectives, and prepositions to strip from ingredient names
+const STRIP_UNITS = new Set([
+  'g', 'kg', 'ml', 'l', 'dl',
+  'lingura', 'lingură', 'linguri',
+  'lingurita', 'linguriță', 'lingurițe', 'lingurite',
+  'cana', 'cană', 'cani', 'căni',
+  'pahar', 'pahare',
+  'felie', 'felii',
+  'bucata', 'bucată', 'bucati', 'bucăți',
+  'legatura', 'legătură', 'legaturi',
+  'catel', 'cățel', 'catei', 'căței',
+  'fir', 'fire',
+  'varf', 'vârf',
+  'pumn', 'pumni',
+  'pachet', 'pachete',
+  'cutie', 'cutii',
+  'conserva', 'conservă',
+  'plic',
+  'frunza', 'frunză', 'frunze',
+  'foaie', 'foi',
+  'strop', 'praf',
+  'ramurica', 'rămurică',
+  'crenguita', 'crenguță',
+  'cup', 'cups', 'tbsp', 'tsp', 'tablespoon', 'teaspoon',
+  'oz', 'ounce', 'lb', 'pound',
+  'pinch', 'dash', 'bunch', 'clove', 'cloves',
+  'slice', 'slices', 'piece', 'pieces', 'sprig', 'sprigs',
+])
+
+const STRIP_ADJECTIVES = /\b(proaspăt|proaspătă|proaspete|tocat|tocată|tocate|topit|topită|topite|tăiat|tăiată|tăiate|feliat|feliată|feliate|măcinat|măcinată|prăjit|prăjită|ras|rasă|fiert|fiartă|mărunt|fin|mare|mediu|mic|fresh|frozen|dried|chopped|diced|minced|sliced)\b/gi
+
+function normalizeForSearch(raw: string): string {
+  let s = raw.trim()
+
+  // Remove leading numbers, fractions, decimals
+  s = s.replace(/^[\d\s\/.,½⅓⅔¼¾⅛-]+/, '').trim()
+
+  // Remove known units at the start
+  const words = s.split(/\s+/)
+  let startIdx = 0
+  while (startIdx < words.length && STRIP_UNITS.has(words[startIdx].toLowerCase())) {
+    startIdx++
+  }
+  // Also skip "de" / "of" preposition after unit
+  if (startIdx > 0 && words[startIdx]?.toLowerCase() === 'de') {
+    startIdx++
+  }
+  s = words.slice(startIdx).join(' ')
+
+  // Remove parenthetical notes and everything after comma
+  s = s.replace(/\(.*?\)/g, '').replace(/,.*$/, '')
+
+  // Remove cooking adjectives
+  s = s.replace(STRIP_ADJECTIVES, '')
+
+  // Remove "și" (and) at the end — e.g. "sare și piper" stays as-is, that's fine
+  // Clean up extra whitespace
+  s = s.replace(/\s+/g, ' ').trim()
+
+  return s || raw.trim()  // fallback to original if we stripped everything
+}
+
 function getEmagSearchUrl(itemName: string): string {
-  const query = itemName
+  const normalized = normalizeForSearch(itemName)
+  const query = normalized
     .toLowerCase()
     .replace(/[()]/g, '')
     .trim()
@@ -232,13 +295,18 @@ export default function EmagShopPage() {
                         <span className="ml-1">· {item.fromRecipes.join(', ')}</span>
                       )}
                     </p>
+                    {normalizeForSearch(item.name).toLowerCase() !== item.name.toLowerCase() && (
+                      <p className="text-[10px] text-amber-600 dark:text-amber-400">
+                        eMAG: &quot;{normalizeForSearch(item.name)}&quot;
+                      </p>
+                    )}
                   </div>
 
                   {/* eMAG button */}
                   <button
                     onClick={() => openSingleItem(item)}
                     className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#f7c948] text-black hover:bg-[#e6b93d] transition-colors"
-                    title={`Caută "${item.name}" pe eMAG`}
+                    title={`Caută "${normalizeForSearch(item.name)}" pe eMAG`}
                   >
                     <span className="text-[10px]">🔍</span>
                     eMAG
