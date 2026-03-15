@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   title: 'MareChef.ro - Platformă Culinară',
   description: 'O platformă culinară elegantă unde poți descoperi rețete din toată lumea. Salvează rețete favorite, creează planuri de masă și generează liste de cumpărături.',
   keywords: ['rețete', 'gătit', 'mâncare', 'rețete ușoare', 'rețete sănătoase', 'planuri de masă'],
+  other: {
+    'profitshareid': 'd71654ad223cdf6397214d8057b92c38',
+  },
   authors: [{ name: 'MareChef.ro' }],
   creator: 'MareChef.ro',
   publisher: 'MareChef.ro',
