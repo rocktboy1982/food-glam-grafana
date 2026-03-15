@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 
 /* ── Types ────────────────────────────────────────────────────────────────── */
@@ -13,6 +13,7 @@ interface EmagShopItem {
   category: string
   fromRecipes: string[]
   selected: boolean
+  affiliateUrl: string | null  // Profitshare tracked URL (null = direct eMAG link)
 }
 
 /* ── Affiliate Note ───────────────────────────────────────────────────────── */
@@ -169,18 +170,56 @@ function getCategoryIcon(category: string): string {
 export default function EmagShopPage() {
   const [items, setItems] = useState<EmagShopItem[]>([])
   const [hydrated, setHydrated] = useState(false)
+  const [affiliateLoading, setAffiliateLoading] = useState(false)
+
+  // Generate affiliate links for all items via Profitshare API
+  const generateAffiliateLinks = useCallback(async (shopItems: EmagShopItem[]) => {
+    if (shopItems.length === 0) return
+
+    setAffiliateLoading(true)
+    try {
+      const links = shopItems.map(item => ({
+        name: buildEmagQuery(item.name, item.totalQty, item.unit),
+        url: getEmagSearchUrl(item.name, item.totalQty, item.unit),
+      }))
+
+      const res = await fetch('/api/profitshare/links', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ links }),
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        const affiliateLinks = data.links as Array<{ name: string; url: string; ps_url: string }>
+
+        // Map affiliate URLs back to items
+        setItems(prev => prev.map((item, i) => ({
+          ...item,
+          affiliateUrl: affiliateLinks[i]?.ps_url || null,
+        })))
+      }
+    } catch {
+      // Silently fail — items still have direct eMAG links as fallback
+    } finally {
+      setAffiliateLoading(false)
+    }
+  }, [])
 
   // Load items from localStorage on mount
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
       if (raw) {
-        const parsed = JSON.parse(raw) as Omit<EmagShopItem, 'selected'>[]
-        setItems(parsed.map(item => ({ ...item, selected: true })))
+        const parsed = JSON.parse(raw) as Omit<EmagShopItem, 'selected' | 'affiliateUrl'>[]
+        const loaded = parsed.map(item => ({ ...item, selected: true, affiliateUrl: null }))
+        setItems(loaded)
+        // Fire affiliate link generation in background
+        generateAffiliateLinks(loaded)
       }
     } catch { /* ignore */ }
     setHydrated(true)
-  }, [])
+  }, [generateAffiliateLinks])
 
   // Group by category
   const grouped = useMemo(() => {
@@ -207,8 +246,12 @@ export default function EmagShopPage() {
     setItems(prev => prev.map(item => ({ ...item, selected: !allSelected })))
   }
 
+  const getItemUrl = (item: EmagShopItem): string => {
+    return item.affiliateUrl || getEmagSearchUrl(item.name, item.totalQty, item.unit)
+  }
+
   const openSingleItem = (item: EmagShopItem) => {
-    window.open(getEmagSearchUrl(item.name, item.totalQty, item.unit), '_blank', 'noopener')
+    window.open(getItemUrl(item), '_blank', 'noopener')
   }
 
   const openAllSelected = () => {
@@ -219,7 +262,7 @@ export default function EmagShopPage() {
     const batch = selected.slice(0, 10)
     batch.forEach((item, i) => {
       setTimeout(() => {
-        window.open(getEmagSearchUrl(item.name, item.totalQty, item.unit), '_blank', 'noopener')
+        window.open(getItemUrl(item), '_blank', 'noopener')
       }, i * 300) // stagger by 300ms to avoid popup blocker
     })
 
@@ -277,6 +320,9 @@ export default function EmagShopPage() {
       </div>
       <p className="text-muted-foreground text-sm mb-6">
         Selectează produsele pe care vrei să le cauți pe eMAG. Fiecare se deschide într-un tab nou.
+        {affiliateLoading && (
+          <span className="ml-2 text-amber-500 text-xs">Se generează link-urile...</span>
+        )}
       </p>
 
       {/* Select all / deselect all */}
