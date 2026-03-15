@@ -14,10 +14,40 @@ import { Analytics } from '@vercel/analytics/next'
 
 const inter = Inter({ subsets: ['latin'] })
 
+// Niche: rețete tradiționale românești reinterpretate + fine dining acasă + cocktailuri
+// Targeting long-tail queries: "ce pot găti azi", "rețete românești tradiționale",
+// "rețete fine dining acasă", "planuri de masă săptămânale", "cocktailuri de casă"
 export const metadata: Metadata = {
   title: 'MareChef.ro - Platformă Culinară',
   description: 'O platformă culinară elegantă unde poți descoperi rețete din toată lumea. Salvează rețete favorite, creează planuri de masă și generează liste de cumpărături.',
-  keywords: ['rețete', 'gătit', 'mâncare', 'rețete ușoare', 'rețete sănătoase', 'planuri de masă'],
+  keywords: [
+    // Cele mai căutate query-uri în România (Google Trends data)
+    'rețete',
+    'rețete simple',
+    'rețete rapide',
+    'rețete de casă',
+    'cum se face',
+    // Top preparate căutate (volum ultra-ridicat)
+    'ciorbă de pui',
+    'sarmale',
+    'mici de casă',
+    'ciorbă de burtă',
+    'mămăligă',
+    // Long-tail cu intenție ridicată
+    'rețete rapide cu pui',
+    'tort de casă',
+    'retete gata in 30 de minute',
+    'cina rapida in 15 minute',
+    // Funcționalități platformă
+    'plan de masă săptămânal',
+    'listă de cumpărături automată',
+    'cocktailuri de casă',
+    'rețete internaționale în română',
+    // Trending 2025
+    'kebab la tavă',
+    'rețete la air fryer',
+    'rețete de post',
+  ],
   other: {
     'profitshareid': 'd71654ad223cdf6397214d8057b92c38',
   },
@@ -35,7 +65,7 @@ export const metadata: Metadata = {
     url: 'https://marechef.ro',
     siteName: 'MareChef.ro',
     title: 'MareChef.ro - Platformă Culinară',
-    description: 'O platformă culinară elegantă unde poți descoperi rețete din toată lumea.',
+    description: 'O platformă culinară elegantă unde poți descoperi rețete din toată lumea. Salvează rețete favorite, creează planuri de masă și generează liste de cumpărături.',
     images: [
       {
         url: 'https://marechef.ro/og-image.jpg',
@@ -47,8 +77,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'MareChef.ro - Platformă Culinară',
-    description: 'O platformă culinară elegantă unde poți descoperi rețete din toată lumea.',
+    title: 'MareChef.ro — Rețete Tradiționale Românești & Fine Dining Acasă',
+    description: 'Rețete românești tradiționale reinterpretate, fine dining acasă și cocktailuri elegante.',
     images: ['https://marechef.ro/og-image.jpg'],
   },
   alternates: {
@@ -76,6 +106,47 @@ export default function RootLayout({
   return (
     <html lang="ro">
       <body className={inter.className}>
+        {/* WebSite + Organization schema.org — tells Google what this site is */}
+        <Script
+          id="website-jsonld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@graph': [
+                {
+                  '@type': 'WebSite',
+                  '@id': 'https://marechef.ro/#website',
+                  url: 'https://marechef.ro',
+                  name: 'MareChef.ro',
+                  description: 'O platformă culinară elegantă unde poți descoperi rețete din toată lumea. Salvează rețete favorite, creează planuri de masă și generează liste de cumpărături.',
+                  inLanguage: 'ro-RO',
+                  potentialAction: {
+                    '@type': 'SearchAction',
+                    target: { '@type': 'EntryPoint', urlTemplate: 'https://marechef.ro/search?q={search_term_string}' },
+                    'query-input': 'required name=search_term_string',
+                  },
+                },
+                {
+                  '@type': 'Organization',
+                  '@id': 'https://marechef.ro/#organization',
+                  name: 'MareChef.ro',
+                  url: 'https://marechef.ro',
+                  logo: {
+                    '@type': 'ImageObject',
+                    url: 'https://marechef.ro/logo.svg',
+                    width: 512,
+                    height: 512,
+                  },
+                  description: 'O platformă culinară elegantă unde poți descoperi rețete din toată lumea. Salvează rețete favorite, creează planuri de masă și generează liste de cumpărături.',
+                  sameAs: [],
+                },
+              ],
+            }),
+          }}
+          strategy="afterInteractive"
+        />
+
         {/* Google AdSense — loaded once globally, ad units push() individually */}
         {ADS_ENABLED && process.env.NODE_ENV === 'production' && (
           <Script

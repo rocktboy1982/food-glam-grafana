@@ -404,6 +404,31 @@ function generateRecipeJsonLd(recipe: any, detail: any, slug: string) {
     jsonLd.datePublished = new Date(recipe.created_at).toISOString().split('T')[0]
   }
 
+  if (recipe.updated_at) {
+    jsonLd.dateModified = new Date(recipe.updated_at).toISOString().split('T')[0]
+  }
+
+  // keywords: tags + cuisine — help Google categorize the recipe for related queries
+  const keywordParts: string[] = []
+  if (recipe.tags && Array.isArray(recipe.tags)) keywordParts.push(...recipe.tags)
+  if (recipe.region) keywordParts.push(recipe.region)
+  if (detail.meal_type) keywordParts.push(detail.meal_type)
+  if (keywordParts.length > 0) {
+    jsonLd.keywords = keywordParts.join(', ')
+  }
+
+  // image as ImageObject for better rich-result eligibility
+  if (recipe.hero_image_url) {
+    jsonLd.image = [
+      {
+        '@type': 'ImageObject',
+        url: recipe.hero_image_url,
+        height: 800,
+        width: 1200,
+      },
+    ]
+  }
+
   return jsonLd
 }
 
