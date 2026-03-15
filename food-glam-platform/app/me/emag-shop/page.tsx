@@ -105,7 +105,7 @@ function normalizeForSearch(raw: string): string {
   return s || raw.trim()  // fallback to original if we stripped everything
 }
 
-// Small units that should be stripped — searching "500g sare" is useful, "1 linguriță sare" is not
+// Small units that should be stripped — searching "500g sare" is useful, "1 buc făină" is not
 const SMALL_UNITS = new Set([
   'lingurita', 'linguriță', 'lingurițe', 'lingurite',
   'lingura', 'lingură', 'linguri',
@@ -118,7 +118,18 @@ const SMALL_UNITS = new Set([
   'foaie', 'foi',
   'ramurica', 'rămurică',
   'crenguita', 'crenguță',
+  'buc', 'bucata', 'bucată', 'bucati', 'bucăți',
+  'felie', 'felii',
+  'cana', 'cană', 'cani', 'căni',
+  'pahar', 'pahare',
+  'pachet', 'pachete',
+  'cutie', 'cutii',
+  'conserva', 'conservă',
+  'plic',
+  'legatura', 'legătură', 'legaturi',
   'pinch', 'dash', 'sprig', 'sprigs', 'clove', 'cloves',
+  'slice', 'slices', 'piece', 'pieces',
+  'cup', 'cups', 'can', 'cans',
   'tsp', 'teaspoon', 'teaspoons',
   'tbsp', 'tablespoon', 'tablespoons',
 ])
