@@ -97,6 +97,60 @@ const COOKING_ADJECTIVES = new Set([
 // Prepositions that connect unit to product
 const PREPOSITIONS = new Set(['de', 'of', 'cu', 'din', 'pentru', 'la', 'sau'])
 
+/**
+ * Unit normalization: converts any non-canonical unit to ml (volumes) or g (weights).
+ * Count units (buc, felie, etc.) are NOT in this map — they stay as-is.
+ *
+ * Why this matters: the shopping list aggregation key is `name__unit`.
+ * "80 cl bere" and "960 ml bere" must both become "ml" so they merge into 1760 ml.
+ */
+const UNIT_NORMALIZATION: Record<string, { factor: number; canonical: string }> = {
+  // Volume → ml
+  'cl':          { factor: 10,   canonical: 'ml' },
+  'dl':          { factor: 100,  canonical: 'ml' },
+  'l':           { factor: 1000, canonical: 'ml' },
+  'litru':       { factor: 1000, canonical: 'ml' },
+  'litri':       { factor: 1000, canonical: 'ml' },
+  // Romanian cups/spoons
+  'cana':        { factor: 250,  canonical: 'ml' },
+  'cană':        { factor: 250,  canonical: 'ml' },
+  'cani':        { factor: 250,  canonical: 'ml' },
+  'căni':        { factor: 250,  canonical: 'ml' },
+  'lingura':     { factor: 15,   canonical: 'ml' },
+  'lingură':     { factor: 15,   canonical: 'ml' },
+  'linguri':     { factor: 15,   canonical: 'ml' },
+  'lingurita':   { factor: 5,    canonical: 'ml' },
+  'linguriță':   { factor: 5,    canonical: 'ml' },
+  'lingurițe':   { factor: 5,    canonical: 'ml' },
+  'lingurite':   { factor: 5,    canonical: 'ml' },
+  'pahar':       { factor: 200,  canonical: 'ml' },
+  'pahare':      { factor: 200,  canonical: 'ml' },
+  'halba':       { factor: 500,  canonical: 'ml' },
+  'halbă':       { factor: 500,  canonical: 'ml' },
+  // English volume
+  'cup':         { factor: 237,  canonical: 'ml' },
+  'cups':        { factor: 237,  canonical: 'ml' },
+  'tbsp':        { factor: 15,   canonical: 'ml' },
+  'tablespoon':  { factor: 15,   canonical: 'ml' },
+  'tablespoons': { factor: 15,   canonical: 'ml' },
+  'tsp':         { factor: 5,    canonical: 'ml' },
+  'teaspoon':    { factor: 5,    canonical: 'ml' },
+  'teaspoons':   { factor: 5,    canonical: 'ml' },
+  // oz treated as liquid (30ml) — cocktail-first platform; RO recipes use g/kg for solids
+  'oz':          { factor: 30,   canonical: 'ml' },
+  'ounce':       { factor: 30,   canonical: 'ml' },
+  'ounces':      { factor: 30,   canonical: 'ml' },
+  'uncii':       { factor: 30,   canonical: 'ml' },
+  'uncie':       { factor: 30,   canonical: 'ml' },
+  // Weight → g
+  'kg':          { factor: 1000, canonical: 'g' },
+  'gr':          { factor: 1,    canonical: 'g' },
+  'lb':          { factor: 454,  canonical: 'g' },
+  'lbs':         { factor: 454,  canonical: 'g' },
+  'pound':       { factor: 454,  canonical: 'g' },
+  'pounds':      { factor: 454,  canonical: 'g' },
+}
+
 export function normalizeIngredientForSearch(raw: string): string {
   let s = raw.trim()
 
@@ -251,6 +305,14 @@ export function parseIngredientString(raw: string): { qty: number; unit: string;
   } else if (words.length > 0) {
     // Check for units glued to number: "500g" → already split by numMatch
     // No unit found — default to "buc"
+  }
+
+  // Step 2.5: Normalize unit to canonical form (ml / g) and scale qty accordingly.
+  // This ensures "80 cl bere" and "960 ml bere" both become unit="ml" so they aggregate.
+  const norm = UNIT_NORMALIZATION[unit.toLowerCase()]
+  if (norm) {
+    qty = qty * norm.factor
+    unit = norm.canonical
   }
 
   // Step 3: Build the product name from remaining words
