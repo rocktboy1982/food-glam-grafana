@@ -2,6 +2,20 @@ import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import { getVotesByPostIds } from '@/lib/data-access/votes'
 
+// Deterministic daily shuffle — same results for everyone on the same day
+function dailyShuffle<T>(arr: T[]): T[] {
+  const today = new Date()
+  const daySeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate()
+  const shuffled = [...arr]
+  let seed = daySeed
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    seed = (seed * 1103515245 + 12345) & 0x7fffffff
+    const j = seed % (i + 1);
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
 export async function GET(req: Request) {
   // Check if Supabase is available
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -36,7 +50,8 @@ export async function GET(req: Request) {
 
     const { data: { user }, error: userError } = await supabase.auth.getUser()
 
-    const { data: posts, error: postsError } = await supabase
+    // Fetch a large pool of recipes, then daily-shuffle to rotate content every 24h
+    const { data: allPosts, error: postsError } = await supabase
       .from('posts')
       .select(`
         id,
@@ -58,8 +73,11 @@ export async function GET(req: Request) {
       `)
       .eq('type', 'recipe')
       .eq('status', 'active')
-      .order('created_at', { ascending: false })
-      .limit(12)
+      .order('quality_score', { ascending: false, nullsFirst: false })
+      .limit(100)
+
+    // Daily rotation: shuffle the pool and pick the first 12
+    const posts = dailyShuffle(allPosts || []).slice(0, 12)
 
     if (postsError) {
       console.error('Posts query error:', postsError)
@@ -123,7 +141,7 @@ export async function GET(req: Request) {
       has_user: !!user
     }, {
       headers: {
-        'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=300',
+        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
       },
     })
   } catch (err: any) {

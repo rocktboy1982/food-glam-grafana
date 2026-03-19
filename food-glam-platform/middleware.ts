@@ -18,6 +18,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 301)
   }
 
+  // Recipe pages: no auth needed, just return (only matched for redirect above)
+  if (pathname.startsWith('/recipes/')) {
+    return NextResponse.next()
+  }
+
   // Skip auth check for public routes and static assets
   if (
     pathname.startsWith('/api/recipes') ||

@@ -2,6 +2,20 @@ import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import { getRecentVotes } from '@/lib/data-access/votes'
 
+function dailyShuffle<T>(arr: T[]): T[] {
+  const today = new Date()
+  // Different seed than homepage so trending shows different recipes
+  const daySeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate() + 777
+  const shuffled = [...arr]
+  let seed = daySeed
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    seed = (seed * 1103515245 + 12345) & 0x7fffffff
+    const j = seed % (i + 1);
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
 export async function GET(req: Request) {
   // Check if local Supabase is running
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -64,7 +78,7 @@ export async function GET(req: Request) {
       voteMap.set(postId, stats.trending)
     })
 
-    const trendingRecipes = posts
+    let trendingRecipes = posts
       ?.map(post => ({
         id: post.id,
         title: post.title,
@@ -76,9 +90,21 @@ export async function GET(req: Request) {
       .sort((a, b) => b.votes - a.votes)
       .slice(0, 10) || []
 
+    // If no real votes yet, daily-rotate from the pool so trending isn't empty
+    if (trendingRecipes.length < 5) {
+      const shuffled = dailyShuffle(posts || [])
+      trendingRecipes = shuffled.slice(0, 10).map(post => ({
+        id: post.id,
+        title: post.title,
+        slug: post.slug,
+        votes: 0,
+        tag: 'Popular'
+      }))
+    }
+
     return NextResponse.json({ recipes: trendingRecipes }, {
       headers: {
-        'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=300',
+        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
       },
     })
   } catch (err: any) {
