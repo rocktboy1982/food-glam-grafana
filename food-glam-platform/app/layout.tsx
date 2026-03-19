@@ -108,6 +108,16 @@ export default function RootLayout({
   // ...existing code...
   return (
     <html lang="ro">
+      <head>
+        {/* Google Analytics (GA4) */}
+        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-4X6TFY53BY" strategy="afterInteractive" />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-4X6TFY53BY');`}
+        </Script>
+      </head>
       <body className={inter.className}>
         {/* WebSite + Organization schema.org — tells Google what this site is */}
         <Script
