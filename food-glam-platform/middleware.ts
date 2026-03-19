@@ -3,8 +3,20 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
+// Country prefixes that were stripped from recipe slugs (SEO cleanup March 2026)
+const COUNTRY_PREFIX_RE = /^\/recipes\/(afghanistan|albania|algeria|argentina|armenia|australia|austria|azerbaijan|bahrain|bangladesh|barbados|belarus|belgium|benin|bhutan|bolivia|bosnia|botswana|brazil|brunei|bulgaria|burkina|burundi|cambodia|cameroon|canada|chile|china|colombia|congo|costa|croatia|cuba|cyprus|czech|denmark|djibouti|dominican|east|ecuador|egypt|el|eritrea|estonia|ethiopia|fiji|finland|france|gambia|georgia|germany|ghana|greece|guatemala|guinea|guyana|haiti|hawaii|honduras|hong|hungary|iceland|india|indonesia|iran|iraq|ireland|israel|italy|ivory)-(.+)$/
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // 301 redirect old country-prefixed recipe slugs to clean slugs
+  const prefixMatch = pathname.match(COUNTRY_PREFIX_RE)
+  if (prefixMatch) {
+    const cleanSlug = prefixMatch[2]
+    const url = request.nextUrl.clone()
+    url.pathname = `/recipes/${cleanSlug}`
+    return NextResponse.redirect(url, 301)
+  }
 
   // Skip auth check for public routes and static assets
   if (
@@ -66,5 +78,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/me/:path*', '/api/admin/:path*'],
+  matcher: ['/me/:path*', '/api/admin/:path*', '/recipes/:path*'],
 }
