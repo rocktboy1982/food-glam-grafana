@@ -12,6 +12,7 @@ import SimilarRecipesClient from "@/components/pages/similar-recipes-client"
 import RecipeIngredientsClient from "@/components/pages/recipe-ingredients-client"
 import RecipeActionsClient from "@/components/pages/recipe-actions-client"
 import RecipeCommentsClient from "@/components/pages/recipe-comments-client"
+import RelatedRecipes from "@/components/related-recipes"
 import { createServerSupabaseClient, createServiceSupabaseClient } from '@/lib/supabase-server'
 import { estimateRecipeCalories } from '@/lib/calorie-engine'
 import { MOCK_RECIPES } from '@/lib/mock-data'
@@ -431,6 +432,70 @@ function generateRecipeBreadcrumbJsonLd(title: string, slug: string) {
 }
 
 /**
+ * Generate FAQ JSON-LD schema from recipe data.
+ * Produces 2-3 common Q&As in Romanian for rich-result eligibility.
+ */
+function generateFaqJsonLd(
+  title: string,
+  detail: { prep_time?: string | null; cook_time?: string | null; total_time?: string | null; servings?: number },
+  nutrition?: { calories?: number | null; protein?: number | null; carbs?: number | null; fat?: number | null } | null
+) {
+  const faqItems: { '@type': 'Question'; name: string; acceptedAnswer: { '@type': 'Answer'; text: string } }[] = []
+
+  // Q1: Preparation time
+  if (detail.prep_time || detail.cook_time || detail.total_time) {
+    const parts: string[] = []
+    if (detail.prep_time) parts.push(`Prepararea dureaz\u0103 ${detail.prep_time}`)
+    if (detail.cook_time) parts.push(`g\u0103titul ${detail.cook_time}`)
+    if (detail.total_time) parts.push(`\u00een total ${detail.total_time}`)
+    const answer = parts.length > 0
+      ? parts.join(', ') + '.'
+      : `Prepararea dureaz\u0103 aproximativ ${detail.total_time || 'necunoscut'}.`
+
+    faqItems.push({
+      '@type': 'Question',
+      name: `C\u00e2t dureaz\u0103 s\u0103 preg\u0103te\u0219ti ${title}?`,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: answer.charAt(0).toUpperCase() + answer.slice(1),
+      },
+    })
+  }
+
+  // Q2: Servings
+  if (detail.servings) {
+    faqItems.push({
+      '@type': 'Question',
+      name: `C\u00e2te por\u021bii ob\u021bii din ${title}?`,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: `Aceast\u0103 re\u021bet\u0103 este pentru ${detail.servings} por\u021bii.`,
+      },
+    })
+  }
+
+  // Q3: Calories (only if nutrition data exists with a positive calorie value)
+  if (nutrition && typeof nutrition.calories === 'number' && nutrition.calories > 0) {
+    faqItems.push({
+      '@type': 'Question',
+      name: `Ce valoare caloric\u0103 are ${title}?`,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: `O por\u021bie con\u021bine aproximativ ${nutrition.calories} kcal.`,
+      },
+    })
+  }
+
+  if (faqItems.length === 0) return null
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems,
+  }
+}
+
+/**
  * Generate JSON-LD structured data for Recipe schema.org
  */
 function generateRecipeJsonLd(recipe: any, detail: any, slug: string) {
@@ -660,6 +725,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
     // Generate JSON-LD for SEO
     const jsonLdData = generateRecipeJsonLd(mockRecipe, detail, slug)
     const breadcrumbJsonLd = generateRecipeBreadcrumbJsonLd(mockRecipe.title, slug)
+    const faqJsonLd = generateFaqJsonLd(mockRecipe.title, detail, detailNutrition)
 
     return (
       <>
@@ -675,6 +741,14 @@ export default async function RecipePage({ params }: RecipePageProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
           strategy="afterInteractive"
         />
+        {faqJsonLd && (
+          <Script
+            id="recipe-faq-jsonld"
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+            strategy="afterInteractive"
+          />
+        )}
         <main className="min-h-screen pb-24 md:pb-8" style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}>
           {/* Hero Section */}
          <div className="relative w-full h-[50vh] min-h-[320px] max-h-[480px] overflow-hidden">
@@ -837,6 +911,15 @@ export default async function RecipePage({ params }: RecipePageProps) {
               <RecipeCommentsClient
                 recipeId={mockRecipe.id}
                 slug={slug}
+              />
+
+              {/* Related Recipes */}
+              <RelatedRecipes
+                slug={slug}
+                diet_tags={dietTags}
+                food_tags={mockRecipe.foodTags || []}
+                meal_type={null}
+                created_by={creator.id}
               />
             </div>
 
@@ -1023,6 +1106,13 @@ export default async function RecipePage({ params }: RecipePageProps) {
   // Generate BreadcrumbList JSON-LD
   const breadcrumbJsonLd = generateRecipeBreadcrumbJsonLd(post.title, slug)
 
+  // Generate FAQ JSON-LD
+  const faqJsonLd = generateFaqJsonLd(
+    post.title,
+    { prep_time: prepTime, cook_time: cookTime, total_time: totalTime, servings },
+    effectiveNutrition || recipeData.nutrition_per_serving as { calories?: number; protein?: number; carbs?: number; fat?: number } | null
+  )
+
   return (
     <>
       <Script
@@ -1037,6 +1127,14 @@ export default async function RecipePage({ params }: RecipePageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
         strategy="afterInteractive"
       />
+      {faqJsonLd && (
+        <Script
+          id="recipe-faq-jsonld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+          strategy="afterInteractive"
+        />
+      )}
        <main className="min-h-screen pb-24 md:pb-8">
        {/* Hero Section */}
         <div className="relative w-full h-[50vh] min-h-[320px] max-h-[480px] overflow-hidden">
@@ -1300,6 +1398,15 @@ export default async function RecipePage({ params }: RecipePageProps) {
             <RecipeCommentsClient
               recipeId={post.id}
               slug={slug}
+            />
+
+            {/* Related Recipes */}
+            <RelatedRecipes
+              slug={slug}
+              diet_tags={post.diet_tags || []}
+              food_tags={post.food_tags || []}
+              meal_type={post.meal_type || null}
+              created_by={creator?.id || null}
             />
           </div>
 
