@@ -213,6 +213,28 @@ export default function MeClientPage() {
                 <span className="text-sm font-medium">Cartea mea de bucate</span>
               </Link>
               <Link
+                href="/me/pantry"
+                className="h-12 px-4 rounded-lg flex items-center gap-3 transition-colors"
+                style={{
+                  color: 'hsl(var(--foreground))',
+                  borderBottom: '1px solid rgba(255,255,255,0.08)'
+                }}
+              >
+                <span className="text-lg">🏠</span>
+                <span className="text-sm font-medium">Cămara mea</span>
+              </Link>
+              <Link
+                href="/me/bar"
+                className="h-12 px-4 rounded-lg flex items-center gap-3 transition-colors"
+                style={{
+                  color: 'hsl(var(--foreground))',
+                  borderBottom: '1px solid rgba(255,255,255,0.08)'
+                }}
+              >
+                <span className="text-lg">🍸</span>
+                <span className="text-sm font-medium">Barul meu</span>
+              </Link>
+              <Link
                 href="/me/shopping-lists"
                 className="h-12 px-4 rounded-lg flex items-center gap-3 transition-colors"
                 style={{

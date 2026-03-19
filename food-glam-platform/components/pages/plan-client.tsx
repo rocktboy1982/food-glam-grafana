@@ -8,6 +8,7 @@ import { useFeatureFlags } from "@/components/feature-flags-provider"
 import { useUserTier } from '@/lib/use-user-tier'
 import ProPaywallModal from '@/components/ui/pro-paywall-modal'
 import { isAlcoholicIngredient, getEmagSearchUrl, getBauturiSearchUrl, parseIngredientString } from '@/lib/normalize-for-search'
+import { resolveIngredientName } from '@/lib/ingredient-aliases'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -398,6 +399,23 @@ export default function PlanClient() {
   const [shopRangeFrom, setShopRangeFrom] = useState(0)
   const [shopRangeTo, setShopRangeTo] = useState(0)
   const [shopSaveState, setShopSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+
+  // Pantry items for "ai în cămară" badges on shopping list
+  const [pantryMap, setPantryMap] = useState<Map<string, { qty: number; unit: string }>>(new Map())
+  useEffect(() => {
+    if (view !== 'shopping') return
+    fetch('/api/pantry?category=pantry')
+      .then(r => r.ok ? r.json() : [])
+      .then((items: Array<{ canonical_name: string; item_name: string; qty_numeric: number | null; unit: string | null }>) => {
+        const map = new Map<string, { qty: number; unit: string }>()
+        for (const item of items) {
+          const key = (item.canonical_name || item.item_name).toLowerCase().trim()
+          map.set(key, { qty: item.qty_numeric ?? 0, unit: item.unit || '' })
+        }
+        setPantryMap(map)
+      })
+      .catch(() => {})
+  }, [view])
   // Persist planner to localStorage whenever it changes (only non-empty weeks)
   useEffect(() => {
     try {
@@ -1005,6 +1023,10 @@ export default function PlanClient() {
                               const emagUrl = getEmagSearchUrl(item.name)
                               const bauturiUrl = getBauturiSearchUrl(item.name)
 
+                              // Check if item exists in pantry
+                              const pantryKey = (resolveIngredientName(item.name.toLowerCase()) || item.name.toLowerCase()).trim()
+                              const inPantry = pantryMap.get(pantryKey) || [...pantryMap.entries()].find(([k]) => pantryKey.includes(k) || k.includes(pantryKey))?.[1]
+
                               return (
                                 <div key={item.id} className="p-4 hover:bg-muted/30 transition-colors">
                                   <div className="flex items-start gap-3">
@@ -1022,6 +1044,11 @@ export default function PlanClient() {
                                         <span className="text-xs text-muted-foreground">
                                           {item.totalQty % 1 === 0 ? item.totalQty : item.totalQty.toFixed(1)} {item.unit}
                                         </span>
+                                        {inPantry && (
+                                          <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                            ✓ în cămară{inPantry.qty > 0 ? ` (${inPantry.qty}${inPantry.unit ? ` ${inPantry.unit}` : ''})` : ''}
+                                          </span>
+                                        )}
                                       </div>
                                       {item.subtypeNote && (
                                         <input
