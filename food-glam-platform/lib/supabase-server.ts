@@ -12,6 +12,22 @@ export function createServerSupabaseClient() {
           const cookieStore = await cookies()
           return cookieStore.get(name)?.value
         },
+        async set(name: string, value: string, options: Record<string, unknown>) {
+          try {
+            const cookieStore = await cookies()
+            cookieStore.set({ name, value, ...options })
+          } catch {
+            // Read-only in Server Components — safe to ignore
+          }
+        },
+        async remove(name: string, options: Record<string, unknown>) {
+          try {
+            const cookieStore = await cookies()
+            cookieStore.set({ name, value: '', ...options })
+          } catch {
+            // Read-only in Server Components — safe to ignore
+          }
+        },
       },
     }
   )
