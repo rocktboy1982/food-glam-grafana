@@ -122,7 +122,7 @@ export default function RootLayout({
                   '@id': 'https://marechef.ro/#website',
                   url: 'https://marechef.ro',
                   name: 'MareChef.ro',
-                  description: 'O platformă culinară elegantă unde poți descoperi rețete din toată lumea. Salvează rețete favorite, creează planuri de masă și generează liste de cumpărături.',
+                  description: 'Descoperă peste 4000 de rețete autentice din toată lumea, traduse în română. Planuri de masă, liste de cumpărături, cocktailuri și rețete tradiționale românești pe MareChef.ro.',
                   inLanguage: 'ro-RO',
                   potentialAction: {
                     '@type': 'SearchAction',
@@ -141,7 +141,7 @@ export default function RootLayout({
                     width: 512,
                     height: 512,
                   },
-                  description: 'O platformă culinară elegantă unde poți descoperi rețete din toată lumea. Salvează rețete favorite, creează planuri de masă și generează liste de cumpărături.',
+                  description: 'Descoperă peste 4000 de rețete autentice din toată lumea, traduse în română. Planuri de masă, liste de cumpărături, cocktailuri și rețete tradiționale românești pe MareChef.ro.',
                   sameAs: [],
                 },
               ],

@@ -36,11 +36,11 @@ const MOCK_RECIPE_DETAILS: Record<string, {
     servings: 4, total_time: '45 min', prep_time: '20 min', cook_time: '25 min',
     ingredients: ['500g pizza dough', '200ml tomato passata', '250g fresh mozzarella, torn', '10 fresh basil leaves', '3 tbsp olive oil', 'Salt and pepper to taste'],
     steps: [
-      'Preheat oven to 250°C (480°F) with a pizza stone or baking tray inside.',
-      'Roll out the dough on a floured surface to a 30cm circle, about 3–4mm thick.',
+      'Preheat oven to 250\u00b0C (480\u00b0F) with a pizza stone or baking tray inside.',
+      'Roll out the dough on a floured surface to a 30cm circle, about 3\u20134mm thick.',
       'Spread the tomato passata evenly, leaving a 2cm border.',
       'Tear the mozzarella and distribute over the sauce.',
-      'Slide onto the hot stone/tray and bake 12–15 min until the crust is golden and cheese is bubbling.',
+      'Slide onto the hot stone/tray and bake 12\u201315 min until the crust is golden and cheese is bubbling.',
       'Remove from oven, scatter fresh basil, drizzle olive oil, season and serve immediately.',
     ],
     nutrition: { calories: 480, protein: 22, carbs: 58, fat: 18 },
@@ -53,7 +53,7 @@ const MOCK_RECIPE_DETAILS: Record<string, {
       'Mix tamarind, fish sauce, and sugar; set aside.',
       'Heat oil in a wok over high heat. Add shrimp and cook 2 min until pink; push to one side.',
       'Crack eggs into the wok, scramble briefly, then combine with the shrimp.',
-      'Add noodles and sauce; toss vigorously 2–3 min.',
+      'Add noodles and sauce; toss vigorously 2\u20133 min.',
       'Add spring onions and bean sprouts; toss 30 sec.',
       'Serve topped with crushed peanuts and a lime wedge.',
     ],
@@ -65,9 +65,9 @@ const MOCK_RECIPE_DETAILS: Record<string, {
     steps: [
       'Season lamb with ras el hanout, cinnamon, and ginger.',
       'Heat oil in a heavy tagine or Dutch oven. Brown the lamb in batches; set aside.',
-      'Sauté onions and garlic until softened, about 8 minutes.',
+      'Saut\u00e9 onions and garlic until softened, about 8 minutes.',
       'Return lamb to the pot; add stock, chickpeas, and apricots.',
-      'Cover and cook on low heat for 1.5–2 hours until lamb is tender.',
+      'Cover and cook on low heat for 1.5\u20132 hours until lamb is tender.',
       'Garnish with fresh cilantro and serve with couscous or flatbread.',
     ],
     nutrition: { calories: 620, protein: 45, carbs: 38, fat: 28 },
@@ -77,7 +77,7 @@ const MOCK_RECIPE_DETAILS: Record<string, {
     ingredients: ['200g quinoa', '1 can chickpeas, drained', '1 sweet potato, cubed', '2 cups kale, massaged', '1 avocado, sliced', '3 tbsp tahini', '2 tbsp lemon juice', '1 garlic clove, minced', 'Olive oil, salt, cumin'],
     steps: [
       'Cook quinoa per package instructions.',
-      'Toss sweet potato and chickpeas with olive oil and cumin; roast at 200°C for 25 min.',
+      'Toss sweet potato and chickpeas with olive oil and cumin; roast at 200\u00b0C for 25 min.',
       'Make tahini dressing: whisk tahini, lemon juice, garlic, 3 tbsp water, salt.',
       'Assemble bowls: quinoa base, then arrange kale, roasted veggies, chickpeas, avocado.',
       'Drizzle generously with tahini dressing and serve.',
@@ -90,7 +90,7 @@ const MOCK_RECIPE_DETAILS: Record<string, {
     steps: [
       'Marinate chicken in yogurt, 1 tsp garam masala, and turmeric for 30 min (or overnight).',
       'Grill or pan-fry the marinated chicken until charred at edges; set aside.',
-      'Melt butter in a pan; sauté onions until golden. Add garlic and ginger paste, cook 2 min.',
+      'Melt butter in a pan; saut\u00e9 onions until golden. Add garlic and ginger paste, cook 2 min.',
       'Add tomato puree, remaining garam masala, cumin; simmer 15 min.',
       'Add cream and chicken; simmer 10 min until sauce coats the chicken.',
       'Serve with naan or basmati rice, garnished with cilantro.',
@@ -102,14 +102,14 @@ const MOCK_RECIPE_DETAILS: Record<string, {
     ingredients: [
       '2 cups natural peanut butter (no sugar)', '400ml vegetable stock', '400g firm tofu, cubed',
       '200g oyster mushrooms, torn', '2 onions, chopped', '3 garlic cloves, minced',
-      '1 tbsp dawadawa (fermented locust beans) — or 1 tsp fish-free miso', '2 tbsp tomato paste',
+      '1 tbsp dawadawa (fermented locust beans) \u2014 or 1 tsp fish-free miso', '2 tbsp tomato paste',
       '1 scotch bonnet or habanero, whole', '2 tbsp palm oil or neutral oil', 'Salt to taste',
       'Cooked rice or fonio to serve',
     ],
     steps: [
       'Press tofu between paper towels for 10 min. Cut into 2 cm cubes.',
       'Heat oil in a heavy pot. Fry tofu until golden on all sides; remove and set aside.',
-      'In the same pot, sauté onions until soft, about 7 min. Add garlic, cook 2 min.',
+      'In the same pot, saut\u00e9 onions until soft, about 7 min. Add garlic, cook 2 min.',
       'Stir in tomato paste and dawadawa; cook 3 min until fragrant.',
       'Whisk peanut butter into the vegetable stock until smooth. Pour into the pot.',
       'Add the whole scotch bonnet and mushrooms. Simmer on low heat 20 min, stirring often to prevent sticking.',
@@ -122,7 +122,7 @@ const MOCK_RECIPE_DETAILS: Record<string, {
     servings: 6, total_time: '1 hr', prep_time: '15 min', cook_time: '45 min',
     ingredients: [
       '500g long-grain parboiled rice', '4 large tomatoes, blended', '2 red bell peppers, blended',
-      '2 scotch bonnets (adjust to heat preference)', '2 onions — 1 blended, 1 sliced',
+      '2 scotch bonnets (adjust to heat preference)', '2 onions \u2014 1 blended, 1 sliced',
       '3 tbsp tomato paste', '500ml vegetable stock', '3 tbsp vegetable oil',
       '2 bay leaves', '1 tsp dried thyme', '1 tsp ground coriander', '1 tsp smoked paprika',
       'Salt and white pepper to taste',
@@ -133,7 +133,7 @@ const MOCK_RECIPE_DETAILS: Record<string, {
       'Add tomato paste; stir and fry 5 min until it darkens slightly.',
       'Pour in the blended tomato mixture. Cook on medium heat 20 min, stirring, until reduced and the raw smell is gone.',
       'Add stock, bay leaves, thyme, coriander, paprika, salt, and pepper. Bring to a boil.',
-      'Wash the rice until the water runs clear. Add to the pot — liquid should just cover the rice.',
+      'Wash the rice until the water runs clear. Add to the pot \u2014 liquid should just cover the rice.',
       'Cover tightly, reduce to the lowest heat, and cook 30 min. Do not lift the lid for the first 20 min.',
       'Check: the rice should be cooked and slightly dry. The bottom crust (kanzo) is intentional and prized.',
       'Remove bay leaves, fluff gently, and serve.',
@@ -143,7 +143,7 @@ const MOCK_RECIPE_DETAILS: Record<string, {
   'ghanaian-red-bean-stew-atidua': {
     servings: 4, total_time: '1 hr 15 min', prep_time: '15 min', cook_time: '1 hr',
     ingredients: [
-      '400g dried red cowpeas (or 2 × 400g cans, drained)', '3 tbsp red palm oil',
+      '400g dried red cowpeas (or 2 \u00d7 400g cans, drained)', '3 tbsp red palm oil',
       '2 onions, sliced', '4 garlic cloves, minced', '2 tbsp dawadawa (fermented locust beans)',
       '2 tomatoes, chopped', '1 scotch bonnet, chopped', '1 tsp ground crayfish (optional)',
       'Salt to taste', 'Cooked rice or boiled yam to serve',
@@ -163,16 +163,16 @@ const MOCK_RECIPE_DETAILS: Record<string, {
     servings: 8, total_time: '1 hr 30 min', prep_time: '1 hr', cook_time: '30 min',
     ingredients: [
       '500g plain flour, plus extra for dusting', '2 tsp instant yeast', '2 tbsp caster sugar',
-      '1 tsp ground cardamom', '½ tsp ground cinnamon', '200ml coconut milk (full-fat)',
+      '1 tsp ground cardamom', '\u00bd tsp ground cinnamon', '200ml coconut milk (full-fat)',
       '60ml warm water', 'Pinch of salt', 'Vegetable oil for deep-frying',
     ],
     steps: [
       'Mix flour, yeast, sugar, cardamom, cinnamon, and salt in a large bowl.',
       'Make a well; pour in coconut milk and warm water. Mix until a soft dough forms.',
-      'Knead on a lightly floured surface for 8–10 min until smooth and elastic.',
+      'Knead on a lightly floured surface for 8\u201310 min until smooth and elastic.',
       'Place in a lightly oiled bowl, cover with a damp cloth, and rest 45 min until doubled.',
       'Divide dough into 4 portions. Roll each into a circle about 5 mm thick, then cut into quarters.',
-      'Heat oil to 170°C (340°F). Fry mandazi in batches 3–4 min per side until puffed and golden.',
+      'Heat oil to 170\u00b0C (340\u00b0F). Fry mandazi in batches 3\u20134 min per side until puffed and golden.',
       'Drain on paper towels. Serve warm, ideally with chai.',
     ],
     nutrition: { calories: 195, protein: 4, carbs: 32, fat: 6 },
@@ -181,15 +181,15 @@ const MOCK_RECIPE_DETAILS: Record<string, {
     servings: 2, total_time: '20 min', prep_time: '5 min', cook_time: '15 min',
     ingredients: [
       '60g sorghum flour', '60g millet flour', '600ml water or oat milk',
-      '1 tsp ground cinnamon', '½ tsp ground ginger', '¼ tsp ground cloves',
-      '¼ tsp ground nutmeg', '2 tbsp coconut sugar or honey', 'Pinch of salt',
+      '1 tsp ground cinnamon', '\u00bd tsp ground ginger', '\u00bc tsp ground cloves',
+      '\u00bc tsp ground nutmeg', '2 tbsp coconut sugar or honey', 'Pinch of salt',
       'To serve: sliced banana, toasted pumpkin seeds, a drizzle of coconut cream',
     ],
     steps: [
       'Whisk sorghum and millet flours with 200ml of the liquid to form a smooth lump-free paste.',
       'Bring remaining 400ml liquid to a gentle boil in a saucepan.',
       'Pour the flour paste into the boiling liquid in a steady stream, whisking constantly.',
-      'Cook on medium-low heat, stirring continuously, for 10–12 min until thick and creamy.',
+      'Cook on medium-low heat, stirring continuously, for 10\u201312 min until thick and creamy.',
       'Add cinnamon, ginger, cloves, nutmeg, sugar, and salt. Stir well and taste.',
       'Pour into bowls. Top with banana, pumpkin seeds, and a swirl of coconut cream. Serve immediately.',
     ],
@@ -198,17 +198,17 @@ const MOCK_RECIPE_DETAILS: Record<string, {
   'waakye-ghanaian-rice-and-beans': {
     servings: 6, total_time: '1 hr 30 min', prep_time: '20 min', cook_time: '1 hr 10 min',
     ingredients: [
-      '400g black-eyed peas', '400g white rice (long-grain)', '6–8 dried sorghum leaf stems (or 1 tsp baking soda for colour)',
+      '400g black-eyed peas', '400g white rice (long-grain)', '6\u20138 dried sorghum leaf stems (or 1 tsp baking soda for colour)',
       '1.2 litres water', '1 tsp salt',
       'To serve: shito (Ghanaian black pepper sauce), fried plantain, boiled egg, gari, spaghetti',
     ],
     steps: [
       'Rinse black-eyed peas. Place in a pot with sorghum stems and 1.2 litres water. Bring to boil.',
-      'Cook the peas on medium heat for 30–40 min until about 70% tender — they should still have some bite.',
-      'Remove and discard the sorghum stems (the liquid will have turned dark reddish-brown — this is correct).',
+      'Cook the peas on medium heat for 30\u201340 min until about 70% tender \u2014 they should still have some bite.',
+      'Remove and discard the sorghum stems (the liquid will have turned dark reddish-brown \u2014 this is correct).',
       'Wash the rice until water runs clear. Add to the pot with the peas and their liquid.',
       'Add salt. If the liquid does not fully cover the rice, add a little more water.',
-      'Cover tightly and cook on low heat 25–30 min until rice is cooked through and liquid is absorbed.',
+      'Cover tightly and cook on low heat 25\u201330 min until rice is cooked through and liquid is absorbed.',
       'Fluff gently and serve with your choice of shito, fried plantain, boiled egg, gari, and spaghetti.',
     ],
     nutrition: { calories: 310, protein: 11, carbs: 62, fat: 3 },
@@ -274,7 +274,7 @@ export async function generateStaticParams() {
     .eq('type', 'recipe')
     .eq('status', 'active')
     .not('slug', 'is', null)
-  
+
   return (data || []).map(post => ({
     slug: post.slug,
   }))
@@ -293,7 +293,7 @@ function VideoEmbed({ url }: { url: string }) {
          className="w-full h-full"
          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
          allowFullScreen
-         title="Videoclip rețetă"
+         title="Videoclip retet\u0103"
        />
     </div>
   )
@@ -315,7 +315,7 @@ function PhotoGallery({ photos }: { photos: string[] }) {
               fill
               className="object-cover hover:scale-105 transition-transform duration-300"
               sizes="200px"
-              fallbackEmoji="🍽️"
+              fallbackEmoji="\ud83c\udf7d\ufe0f"
             />
          </div>
        ))}
@@ -336,6 +336,98 @@ function timeStringToISO8601(timeStr: string): string {
     return `PT${value}H`
   }
   return `PT${value}M`
+}
+
+/**
+ * Map meal_type to Romanian recipeCategory
+ */
+function mealTypeToCategory(mealType?: string | null): string {
+  if (!mealType) return 'Fel principal'
+  const map: Record<string, string> = {
+    breakfast: 'Mic dejun',
+    lunch: 'Pr\u00e2nz',
+    dinner: 'Cin\u0103',
+    dessert: 'Desert',
+    snack: 'Gustare',
+    appetizer: 'Aperitiv',
+    soup: 'Sup\u0103',
+    salad: 'Salat\u0103',
+  }
+  return map[mealType.toLowerCase()] || 'Fel principal'
+}
+
+/**
+ * Derive recipeCuisine from a chef profile display_name.
+ * Example: "Chef Italy" -> "Italian\u0103", "Chef France" -> "Francez\u0103"
+ */
+function chefDisplayNameToCuisine(displayName?: string | null): string | null {
+  if (!displayName) return null
+  const map: Record<string, string> = {
+    italy: 'Italian\u0103',
+    france: 'Francez\u0103',
+    spain: 'Spaniol\u0103',
+    greece: 'Greceasc\u0103',
+    mexico: 'Mexican\u0103',
+    japan: 'Japonez\u0103',
+    china: 'Chinez\u0103',
+    india: 'Indian\u0103',
+    thailand: 'Thailandez\u0103',
+    morocco: 'Marocan\u0103',
+    turkey: 'Turc\u0103',
+    korea: 'Corean\u0103',
+    vietnam: 'Vietnamez\u0103',
+    peru: 'Peruvian\u0103',
+    brazil: 'Brazilian\u0103',
+    lebanon: 'Libanez\u0103',
+    ethiopia: 'Etiopian\u0103',
+    ghana: 'Ghanez\u0103',
+    senegal: 'Senegalez\u0103',
+    nigeria: 'Nigerian\u0103',
+    kenya: 'Kenyan\u0103',
+    portugal: 'Portughez\u0103',
+    germany: 'German\u0103',
+    hungary: 'Ungureasc\u0103',
+    romania: 'Rom\u00e2neasc\u0103',
+    usa: 'American\u0103',
+    uk: 'Britanic\u0103',
+    argentina: 'Argentinian\u0103',
+  }
+  const lower = displayName.toLowerCase()
+  for (const [country, cuisine] of Object.entries(map)) {
+    if (lower.includes(country)) return cuisine
+  }
+  return null
+}
+
+/**
+ * Generate BreadcrumbList JSON-LD for recipe pages
+ */
+function generateRecipeBreadcrumbJsonLd(title: string, slug: string) {
+  const baseUrl = 'https://marechef.ro'
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: baseUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Re\u021bete',
+        item: `${baseUrl}/search`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: title,
+        item: `${baseUrl}/recipes/${slug}`,
+      },
+    ],
+  }
 }
 
 /**
@@ -363,22 +455,31 @@ function generateRecipeJsonLd(recipe: any, detail: any, slug: string) {
   // Build nutrition information
   const nutrition = detail.nutrition || {}
 
+  // Derive recipeCuisine from chef profile display_name, fallback to region, then "Interna\u021bional"
+  const creatorDisplayName = recipe.created_by?.display_name || recipe.profiles?.display_name || null
+  const derivedCuisine = chefDisplayNameToCuisine(creatorDisplayName)
+  const recipeCuisine = derivedCuisine || recipe.region || 'Interna\u021bional'
+
+  // Author: use Organization by default, Person only if a real chef name exists
+  const authorName = creatorDisplayName
+  const isRealChef = authorName && authorName !== 'MareChef' && authorName !== 'MareChef.ro'
+  const author = isRealChef
+    ? { '@type': 'Person' as const, name: authorName }
+    : { '@type': 'Organization' as const, name: 'MareChef.ro' }
+
   const jsonLd: Record<string, any> = {
     '@context': 'https://schema.org',
     '@type': 'Recipe',
     name: recipe.title,
     description: recipe.summary || recipe.title,
     image: recipe.hero_image_url || `${baseUrl}/og-default.jpg`,
-    author: {
-      '@type': 'Person',
-      name: recipe.created_by?.display_name || 'MareChef',
-    },
+    author,
     prepTime,
     cookTime,
     totalTime,
-    recipeYield: `${detail.servings} porții`,
-    recipeCategory: 'Rețetă',
-    recipeCuisine: recipe.region || 'Internațional',
+    recipeYield: `${detail.servings} por\u021bii`,
+    recipeCategory: mealTypeToCategory(recipe.meal_type),
+    recipeCuisine,
     recipeIngredient,
     recipeInstructions,
     nutrition: {
@@ -408,13 +509,16 @@ function generateRecipeJsonLd(recipe: any, detail: any, slug: string) {
     jsonLd.dateModified = new Date(recipe.updated_at).toISOString().split('T')[0]
   }
 
-  // keywords: tags + cuisine — help Google categorize the recipe for related queries
+  // keywords: tags + cuisine \u2014 help Google categorize the recipe for related queries
   const keywordParts: string[] = []
+  if (recipe.diet_tags && Array.isArray(recipe.diet_tags)) keywordParts.push(...recipe.diet_tags)
+  if (recipe.food_tags && Array.isArray(recipe.food_tags)) keywordParts.push(...recipe.food_tags)
   if (recipe.tags && Array.isArray(recipe.tags)) keywordParts.push(...recipe.tags)
   if (recipe.region) keywordParts.push(recipe.region)
+  if (recipe.meal_type) keywordParts.push(recipe.meal_type)
   if (detail.meal_type) keywordParts.push(detail.meal_type)
   if (keywordParts.length > 0) {
-    jsonLd.keywords = keywordParts.join(', ')
+    jsonLd.keywords = [...new Set(keywordParts)].join(', ')
   }
 
   // image as ImageObject for better rich-result eligibility
@@ -444,7 +548,7 @@ export async function generateMetadata({ params }: RecipePageProps): Promise<Met
   // Try Supabase first
   const { data: post } = await supabase
     .from('posts')
-    .select('title, summary, hero_image_url, created_at')
+    .select('title, summary, hero_image_url, created_at, diet_tags, food_tags, meal_type')
     .eq('slug', slug)
     .eq('type', 'recipe')
     .single()
@@ -455,8 +559,8 @@ export async function generateMetadata({ params }: RecipePageProps): Promise<Met
     const mockRecipe = MOCK_RECIPES.find(r => r.slug === slug)
     if (!mockRecipe) {
       return {
-        title: 'Rețeta nu a fost găsită | MareChef.ro',
-        description: 'Rețeta pe care o cauți nu a fost găsită.',
+        title: 'Re\u021beta nu a fost g\u0103sit\u0103 | MareChef.ro',
+        description: 'Re\u021beta pe care o cau\u021bi nu a fost g\u0103sit\u0103.',
       }
     }
     recipe = {
@@ -464,17 +568,27 @@ export async function generateMetadata({ params }: RecipePageProps): Promise<Met
       summary: mockRecipe.summary,
       hero_image_url: mockRecipe.hero_image_url,
       created_at: new Date().toISOString(),
+      diet_tags: (mockRecipe as any).dietTags || null,
+      food_tags: (mockRecipe as any).foodTags || null,
+      meal_type: null,
     }
   }
 
   const title = `${recipe.title} | MareChef.ro`
-  const description = recipe.summary || `Descoperă rețeta pentru ${recipe.title} pe MareChef.ro - o platformă culinară elegantă cu rețete din toată lumea.`
+  const description = recipe.summary || `Descoper\u0103 re\u021beta pentru ${recipe.title} pe MareChef.ro - o platform\u0103 culinar\u0103 elegant\u0103 cu re\u021bete din toat\u0103 lumea.`
   const imageUrl = recipe.hero_image_url || `${baseUrl}/og-default.jpg`
   const canonicalUrl = `${baseUrl}/recipes/${slug}`
+
+  // Build keywords from diet_tags, food_tags, and meal_type
+  const metaKeywords: string[] = []
+  if (recipe.diet_tags && Array.isArray(recipe.diet_tags)) metaKeywords.push(...recipe.diet_tags)
+  if (recipe.food_tags && Array.isArray(recipe.food_tags)) metaKeywords.push(...recipe.food_tags)
+  if (recipe.meal_type) metaKeywords.push(recipe.meal_type)
 
   return {
     title,
     description,
+    keywords: metaKeywords.length > 0 ? metaKeywords : undefined,
     openGraph: {
       title,
       description,
@@ -545,6 +659,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
 
     // Generate JSON-LD for SEO
     const jsonLdData = generateRecipeJsonLd(mockRecipe, detail, slug)
+    const breadcrumbJsonLd = generateRecipeBreadcrumbJsonLd(mockRecipe.title, slug)
 
     return (
       <>
@@ -554,10 +669,16 @@ export default async function RecipePage({ params }: RecipePageProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
           strategy="afterInteractive"
         />
+        <Script
+          id="recipe-breadcrumb-jsonld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+          strategy="afterInteractive"
+        />
         <main className="min-h-screen pb-24 md:pb-8" style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}>
           {/* Hero Section */}
          <div className="relative w-full h-[50vh] min-h-[320px] max-h-[480px] overflow-hidden">
-            <FallbackImage src={heroImage} alt={mockRecipe.title} fill className="object-cover" sizes="100vw" fallbackEmoji="🍽️" />
+            <FallbackImage src={heroImage} alt={mockRecipe.title} fill className="object-cover" sizes="100vw" fallbackEmoji="\ud83c\udf7d\ufe0f" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
             <div className="container mx-auto max-w-4xl">
@@ -570,7 +691,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                        <polyline points="20 6 9 17 4 12"/>
                      </svg>
-                     Testată
+                     Testat\u0103
                    </span>
                  )}
                 {dietTags.map((tag: string) => (
@@ -590,12 +711,12 @@ export default async function RecipePage({ params }: RecipePageProps) {
                   {detail.total_time}
                 </span>
                 <span className="flex items-center gap-1.5">Preparare: {detail.prep_time}</span>
-                <span className="flex items-center gap-1.5">Gătire: {detail.cook_time}</span>
+                <span className="flex items-center gap-1.5">G\u0103tire: {detail.cook_time}</span>
                 <span className="flex items-center gap-1.5">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
                   </svg>
-                   {detail.servings} porții
+                   {detail.servings} por\u021bii
                 </span>
                 <span className="flex items-center gap-1.5">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -689,7 +810,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
                       <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
                       <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
                     </svg>
-                     Instrucțiuni
+                     Instruc\u021biuni
                    </CardTitle>
                  </CardHeader>
                  <CardContent>
@@ -752,7 +873,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Creat de</p>
                     <div className="flex items-center gap-3">
                        {creator.avatar_url ? (
-                         <FallbackImage src={creator.avatar_url} alt={creator.display_name} width={40} height={40} className="w-10 h-10 rounded-full object-cover" fallbackEmoji="👨‍🍳" />
+                         <FallbackImage src={creator.avatar_url} alt={creator.display_name} width={40} height={40} className="w-10 h-10 rounded-full object-cover" fallbackEmoji="\ud83d\udc68\u200d\ud83c\udf73" />
                       ) : (
                         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                           <span className="text-sm font-bold text-primary">{creator.display_name.charAt(0).toUpperCase()}</span>
@@ -771,13 +892,13 @@ export default async function RecipePage({ params }: RecipePageProps) {
                {detailNutrition && (
                  <Card className="shadow-sm">
                    <CardContent className="p-4">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Nutriție per porție</p>
+                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Nutri\u021bie per por\u021bie</p>
                       <div className="grid grid-cols-2 gap-2">
                         {([
                           { label: 'Calorii', value: detailNutrition.calories, unit: 'kcal' },
                           { label: 'Proteine',  value: detailNutrition.protein,  unit: 'g' },
-                          { label: 'Carbohidrați',    value: detailNutrition.carbs,    unit: 'g' },
-                          { label: 'Grăsimi',      value: detailNutrition.fat,      unit: 'g' },
+                          { label: 'Carbohidra\u021bi',    value: detailNutrition.carbs,    unit: 'g' },
+                          { label: 'Gr\u0103simi',      value: detailNutrition.fat,      unit: 'g' },
                        ] as const).map(({ label, value, unit }) => (
                           <div key={label} className="bg-stone-50 dark:bg-white/5 rounded-lg p-2.5 text-center">
                            <p className="text-xs text-muted-foreground mb-0.5">{label}</p>
@@ -794,7 +915,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
 
                 {/* Back to browse */}
                <Link href="/search">
-                 <Button variant="outline" className="w-full">Descoperă mai multe rețete</Button>
+                 <Button variant="outline" className="w-full">Descoper\u0103 mai multe re\u021bete</Button>
                </Link>
            </div>
          </div>
@@ -899,12 +1020,21 @@ export default async function RecipePage({ params }: RecipePageProps) {
     nutrition: effectiveNutrition || recipeData.nutrition_per_serving || {},
   }, slug)
 
+  // Generate BreadcrumbList JSON-LD
+  const breadcrumbJsonLd = generateRecipeBreadcrumbJsonLd(post.title, slug)
+
   return (
     <>
       <Script
         id="recipe-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
+        strategy="afterInteractive"
+      />
+      <Script
+        id="recipe-breadcrumb-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
         strategy="afterInteractive"
       />
        <main className="min-h-screen pb-24 md:pb-8">
@@ -916,7 +1046,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
             fill
             className="object-cover"
             sizes="100vw"
-            fallbackEmoji="🍽️"
+            fallbackEmoji="\ud83c\udf7d\ufe0f"
           />
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
@@ -960,7 +1090,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                      <polyline points="20 6 9 17 4 12"/>
                    </svg>
-                   Testată
+                   Testat\u0103
                  </span>
                )}
               {dietTags.map((tag: string) => (
@@ -989,13 +1119,13 @@ export default async function RecipePage({ params }: RecipePageProps) {
                  <span className="flex items-center gap-1.5">Preparare: {prepTime}</span>
                )}
                {cookTime && (
-                 <span className="flex items-center gap-1.5">Gătire: {cookTime}</span>
+                 <span className="flex items-center gap-1.5">G\u0103tire: {cookTime}</span>
                )}
                <span className="flex items-center gap-1.5">
                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
                  </svg>
-                 {servings} porții
+                 {servings} por\u021bii
                </span>
               <span className="flex items-center gap-1.5">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1017,7 +1147,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
              rel="noopener noreferrer"
              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm transition-colors"
             >
-              Vezi rețeta originală
+              Vezi re\u021beta original\u0103
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
                <polyline points="15 3 21 3 21 9"/>
@@ -1035,7 +1165,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
            {/* Left Column - Recipe Content */}
            <div className="lg:col-span-2 space-y-6">
 
-            {/* Summary / intro — visible to Google as page body text (SEO critical).
+            {/* Summary / intro \u2014 visible to Google as page body text (SEO critical).
                 Google needs 200-300 words of context to rank the page as "relevant".
                 Shown before ingredients so it's high on the page. */}
             {post.summary && (
@@ -1080,7 +1210,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                        <polygon points="5 3 19 12 5 21 5 3"/>
                      </svg>
-                     Vizionează
+                     Vizionaz\u0103
                    </CardTitle>
                  </CardHeader>
                  <CardContent className="px-5 pb-5">
@@ -1138,7 +1268,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
                     <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
                     <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
                   </svg>
-                   Instrucțiuni
+                   Instruc\u021biuni
                  </CardTitle>
                </CardHeader>
                <CardContent>
@@ -1154,7 +1284,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
                      ))}
                    </ol>
                  ) : (
-                   <p className="text-sm text-muted-foreground">Nu sunt pași listați.</p>
+                   <p className="text-sm text-muted-foreground">Nu sunt pa\u0219i lista\u021bi.</p>
                  )}
               </CardContent>
             </Card>
@@ -1196,7 +1326,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
                            width={40}
                            height={40}
                            className="w-10 h-10 rounded-full object-cover"
-                           fallbackEmoji="👨‍🍳"
+                           fallbackEmoji="\ud83d\udc68\u200d\ud83c\udf73"
                          />
                       ) : (
                         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -1220,7 +1350,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
                <Card className="shadow-sm">
                   <CardContent className="p-4">
                     <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-                      Nutriție per porție
+                      Nutri\u021bie per por\u021bie
                       {computedNutrition && !hasStoredNutrition && (
                         <span className="ml-1 text-[9px] font-normal text-amber-500">~ estimat</span>
                       )}
@@ -1229,17 +1359,17 @@ export default async function RecipePage({ params }: RecipePageProps) {
                       {[
                         { label: 'Calorii', value: effectiveNutrition.calories, unit: 'kcal' },
                         { label: 'Proteine', value: effectiveNutrition.protein, unit: 'g' },
-                        { label: 'Carbohidrați', value: effectiveNutrition.carbs, unit: 'g' },
-                        { label: 'Grăsimi', value: effectiveNutrition.fat, unit: 'g' },
+                        { label: 'Carbohidra\u021bi', value: effectiveNutrition.carbs, unit: 'g' },
+                        { label: 'Gr\u0103simi', value: effectiveNutrition.fat, unit: 'g' },
                       ].map((item) => (
                         <div key={item.label} className="text-center p-2 rounded-lg bg-muted/50">
-                          <p className="text-lg font-bold">{item.value || '—'}</p>
+                          <p className="text-lg font-bold">{item.value || '\u2014'}</p>
                           <p className="text-[10px] text-muted-foreground">{item.unit} {item.label.toLowerCase()}</p>
                         </div>
                       ))}
                     </div>
                     <p className="text-[10px] text-muted-foreground mt-2 text-center">
-                      Per porție ({servings} porții în total)
+                      Per por\u021bie ({servings} por\u021bii \u00een total)
                     </p>
                  </CardContent>
                </Card>
@@ -1252,7 +1382,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
             {sourceUrl && (
               <Card className="shadow-sm">
                <CardContent className="p-4">
-                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Rețeta originală</p>
+                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Re\u021beta original\u0103</p>
                    <a
                      href={sourceUrl}
                      target="_blank"
@@ -1273,7 +1403,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
              {/* Similar Recipes */}
              <Card className="shadow-sm">
                <CardHeader className="pb-3">
-                 <CardTitle className="text-base">Rețete similare</CardTitle>
+                 <CardTitle className="text-base">Re\u021bete similare</CardTitle>
               </CardHeader>
               <CardContent>
                 <SimilarRecipesClient id={post.id} />

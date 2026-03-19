@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import Script from 'next/script'
 import type { Metadata } from 'next'
 import FallbackImage from '@/components/FallbackImage'
 import { createServiceSupabaseClient } from '@/lib/supabase-server'
@@ -8,7 +9,7 @@ import { AdInArticle, AdSidebar } from '@/components/ads/ad-placements'
 
 export const dynamic = 'force-dynamic'
 
-/* ── Interfaces ─────────────────────────────────────────────────────────── */
+/* -- Interfaces ----------------------------------------------------------- */
 
 interface CocktailRecipeJson {
   abv?: number
@@ -47,7 +48,7 @@ interface PageProps {
   params: Promise<{ slug: string }>
 }
 
-/* ── Helper Components ──────────────────────────────────────────────────── */
+/* -- Helper Components ---------------------------------------------------- */
 
 function Pill({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
@@ -67,7 +68,7 @@ function StarDisplay({ score }: { score: number | null }) {
     <div className="flex items-center gap-1">
       {[...Array(5)].map((_, i) => (
         <span key={i} style={{ color: i < stars ? '#fbbf24' : '#ddd' }}>
-          ★
+          \u2605
         </span>
       ))}
       <span className="text-xs ml-1" style={{ color: '#888' }}>
@@ -78,12 +79,114 @@ function StarDisplay({ score }: { score: number | null }) {
 }
 
 const DIFFICULTY_LABELS: Record<string, string> = {
-  'easy': 'ușor',
+  'easy': 'u\u0219or',
   'medium': 'mediu',
   'hard': 'greu'
 }
 
-/* ── Static Generation ──────────────────────────────────────────────────── */
+/* -- JSON-LD Helpers ------------------------------------------------------ */
+
+/**
+ * Generate Recipe JSON-LD schema adapted for cocktails
+ */
+function generateCocktailJsonLd(cocktail: CocktailPost, rj: CocktailRecipeJson, slug: string) {
+  const baseUrl = 'https://marechef.ro'
+  const cocktailUrl = `${baseUrl}/cocktails/${slug}`
+
+  const recipeInstructions = (rj.steps || []).map((step, idx) => ({
+    '@type': 'HowToStep',
+    position: idx + 1,
+    text: step,
+  }))
+
+  const jsonLd: Record<string, any> = {
+    '@context': 'https://schema.org',
+    '@type': 'Recipe',
+    name: cocktail.title,
+    description: cocktail.summary || cocktail.title,
+    image: cocktail.hero_image_url || `${baseUrl}/og-default.jpg`,
+    author: {
+      '@type': 'Organization',
+      name: 'MareChef.ro',
+    },
+    recipeCategory: 'Cocktail',
+    recipeCuisine: 'Interna\u021bional',
+    recipeYield: rj.serves ? `${rj.serves} por\u021bii` : '1 por\u021bie',
+    recipeIngredient: rj.ingredients || [],
+    recipeInstructions,
+    url: cocktailUrl,
+  }
+
+  if (cocktail.created_at) {
+    jsonLd.datePublished = new Date(cocktail.created_at).toISOString().split('T')[0]
+  }
+
+  // Build keywords from food_tags + spirit
+  const keywordParts: string[] = []
+  if (cocktail.food_tags && Array.isArray(cocktail.food_tags)) keywordParts.push(...cocktail.food_tags)
+  if (rj.spirit && rj.spirit !== 'none') keywordParts.push(rj.spirit)
+  if (rj.category) keywordParts.push(rj.category === 'alcoholic' ? 'cu alcool' : 'f\u0103r\u0103 alcool')
+  keywordParts.push('cocktail')
+  if (keywordParts.length > 0) {
+    jsonLd.keywords = [...new Set(keywordParts)].join(', ')
+  }
+
+  if (cocktail.quality_score) {
+    jsonLd.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: cocktail.quality_score,
+      bestRating: 5,
+      worstRating: 1,
+      ratingCount: 1,
+    }
+  }
+
+  if (cocktail.hero_image_url) {
+    jsonLd.image = [
+      {
+        '@type': 'ImageObject',
+        url: cocktail.hero_image_url,
+        height: 800,
+        width: 1200,
+      },
+    ]
+  }
+
+  return jsonLd
+}
+
+/**
+ * Generate BreadcrumbList JSON-LD for cocktail pages
+ */
+function generateCocktailBreadcrumbJsonLd(title: string, slug: string) {
+  const baseUrl = 'https://marechef.ro'
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: baseUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Cocktailuri',
+        item: `${baseUrl}/cocktails`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: title,
+        item: `${baseUrl}/cocktails/${slug}`,
+      },
+    ],
+  }
+}
+
+/* -- Static Generation ---------------------------------------------------- */
 
 export async function generateStaticParams() {
   const supabase = createServiceSupabaseClient()
@@ -99,7 +202,7 @@ export async function generateStaticParams() {
 
 export const revalidate = 3600
 
-/* ── Metadata ──────────────────────────────────────────────────────────── */
+/* -- Metadata ------------------------------------------------------------- */
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
@@ -117,7 +220,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     title: `${post.title} | MareChef.ro`,
-    description: post.summary || `Rețetă ${post.title} pe MareChef.ro`,
+    description: post.summary || `Re\u021bet\u0103 ${post.title} pe MareChef.ro`,
     openGraph: {
       title: post.title,
       description: post.summary || '',
@@ -126,10 +229,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       locale: 'ro_RO',
       siteName: 'MareChef.ro',
     },
+    alternates: {
+      canonical: `https://marechef.ro/cocktails/${slug}`,
+    },
   }
 }
 
-/* ── Main Page Component ────────────────────────────────────────────────── */
+/* -- Main Page Component -------------------------------------------------- */
 
 export default async function CocktailDetailPage({ params }: PageProps) {
   const { slug } = await params
@@ -174,19 +280,37 @@ export default async function CocktailDetailPage({ params }: PageProps) {
         ? '#fbbf24'
         : '#f87171'
 
+  // Generate JSON-LD structured data
+  const cocktailJsonLd = generateCocktailJsonLd(cocktail, rj, slug)
+  const breadcrumbJsonLd = generateCocktailBreadcrumbJsonLd(cocktail.title, slug)
+
   return (
     <div
       className="min-h-screen"
       style={{ background: 'hsl(var(--background))', color: 'hsl(var(--foreground))', fontFamily: "'Inter', sans-serif" }}
     >
-       {/* ── Hero ── */}
+       {/* JSON-LD Structured Data */}
+       <Script
+         id="cocktail-jsonld"
+         type="application/ld+json"
+         dangerouslySetInnerHTML={{ __html: JSON.stringify(cocktailJsonLd) }}
+         strategy="afterInteractive"
+       />
+       <Script
+         id="cocktail-breadcrumb-jsonld"
+         type="application/ld+json"
+         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+         strategy="afterInteractive"
+       />
+
+       {/* -- Hero -- */}
        <div className="relative w-full" style={{ maxHeight: 480, overflow: 'hidden' }}>
          <FallbackImage
             src={cocktail.hero_image_url || ''}
             alt={cocktail.title}
             className="w-full object-cover"
             style={{ maxHeight: 480, minHeight: 280 }}
-            fallbackEmoji="🍸"
+            fallbackEmoji="\ud83c\udf78"
             width={1200}
             height={480}
          />
@@ -220,7 +344,7 @@ export default async function CocktailDetailPage({ params }: PageProps) {
         </nav>
       </div>
 
-      {/* ── Main content ── */}
+      {/* -- Main content -- */}
       <div className="container mx-auto px-4 max-w-4xl -mt-20 relative">
         {/* Title + badges */}
         <div className="mb-6">
@@ -240,7 +364,7 @@ export default async function CocktailDetailPage({ params }: PageProps) {
                     }
               }
             >
-               {isAlcoholic ? '🥃 Cu alcool' : '🍃 Fără alcool'}
+               {isAlcoholic ? '\ud83e\udd43 Cu alcool' : '\ud83c\udf3f F\u0103r\u0103 alcool'}
             </Pill>
             {spiritLabel && (
               <Pill style={{ background: 'rgba(0,0,0,0.06)', color: '#555', border: '1px solid rgba(0,0,0,0.1)' }}>
@@ -260,7 +384,7 @@ export default async function CocktailDetailPage({ params }: PageProps) {
                    border: `1px solid ${difficultyColor}40`,
                  }}
                >
-                 {DIFFICULTY_LABELS[rj.difficulty ?? ''] || rj.difficulty || '—'}
+                 {DIFFICULTY_LABELS[rj.difficulty ?? ''] || rj.difficulty || '\u2014'}
                </Pill>
              )}
           </div>
@@ -272,18 +396,18 @@ export default async function CocktailDetailPage({ params }: PageProps) {
           </p>
         </div>
 
-        {/* ── Two-column layout ── */}
+        {/* -- Two-column layout -- */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* ── LEFT: Recipe content ── */}
+          {/* -- LEFT: Recipe content -- */}
           <div className="lg:col-span-2 space-y-8">
             {/* Quick stats */}
             <div className="grid grid-cols-3 gap-3">
               {[
-                 { label: 'Porții', value: rj.serves || '—' },
-                 { label: 'Dificultate', value: DIFFICULTY_LABELS[rj.difficulty ?? ''] || rj.difficulty || '—' },
+                 { label: 'Por\u021bii', value: rj.serves || '\u2014' },
+                 { label: 'Dificultate', value: DIFFICULTY_LABELS[rj.difficulty ?? ''] || rj.difficulty || '\u2014' },
                  {
                    label: 'Calitate',
-                   value: cocktail.quality_score ? `${cocktail.quality_score.toFixed(1)}/5` : '—',
+                   value: cocktail.quality_score ? `${cocktail.quality_score.toFixed(1)}/5` : '\u2014',
                  },
                ].map(stat => (
                 <div
@@ -309,13 +433,13 @@ export default async function CocktailDetailPage({ params }: PageProps) {
               <div className="flex flex-wrap gap-4 text-sm" style={{ color: '#555' }}>
                 {rj.glassware && (
                   <div className="flex items-center gap-1.5">
-                    <span style={{ color: '#888' }}>🥂 Pahar:</span>
+                    <span style={{ color: '#888' }}>\ud83e\udd42 Pahar:</span>
                     <span>{rj.glassware}</span>
                   </div>
                 )}
                 {rj.garnish && (
                   <div className="flex items-center gap-1.5">
-                    <span style={{ color: '#888' }}>🌿 Garnitură:</span>
+                    <span style={{ color: '#888' }}>\ud83c\udf3f Garnitur\u0103:</span>
                     <span>{rj.garnish}</span>
                   </div>
                 )}
@@ -348,7 +472,7 @@ export default async function CocktailDetailPage({ params }: PageProps) {
               <section>
                 <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: '#111' }}>
                   <span className="w-1 h-5 rounded-full inline-block" style={{ background: '#8B1A2B' }} />
-                  Metodă
+                  Metod\u0103
                 </h2>
               {steps.length > 0 ? (
                 <ol className="space-y-5">
@@ -368,7 +492,7 @@ export default async function CocktailDetailPage({ params }: PageProps) {
                 </ol>
               ) : (
                 <p className="text-sm italic" style={{ color: '#888' }}>
-                  Nu sunt pași listați.
+                  Nu sunt pa\u0219i lista\u021bi.
                 </p>
               )}
             </section>
@@ -393,7 +517,7 @@ export default async function CocktailDetailPage({ params }: PageProps) {
             )}
           </div>
 
-          {/* ── RIGHT: Sidebar ── */}
+          {/* -- RIGHT: Sidebar -- */}
           <div className="space-y-5">
             {/* Quality score card */}
             {cocktail.quality_score != null && (
@@ -432,7 +556,7 @@ export default async function CocktailDetailPage({ params }: PageProps) {
                            src={c.hero_image_url}
                            alt={c.title}
                            className="w-12 h-12 rounded object-cover flex-shrink-0"
-                           fallbackEmoji="🍸"
+                           fallbackEmoji="\ud83c\udf78"
                            width={48}
                            height={48}
                          />
@@ -459,14 +583,14 @@ export default async function CocktailDetailPage({ params }: PageProps) {
                     border: '1px solid rgba(139,26,43,0.25)',
                   }}
                >
-                 🍹 Adaugă propriul cocktail
+                 \ud83c\udf79 Adaug\u0103 propriul cocktail
                </Link>
               <Link
                 href="/cocktails"
                 className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold transition-all"
                 style={{ background: '#f5f5f5', color: '#666', border: '1px solid rgba(0,0,0,0.08)' }}
               >
-                Vezi toate cocktailurile →
+                Vezi toate cocktailurile \u2192
               </Link>
             </div>
           </div>
