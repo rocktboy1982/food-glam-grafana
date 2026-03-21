@@ -39,7 +39,7 @@ try {
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
 // ── Config ───────────────────────────────────────────────────────────────────
-const TARGET_PER_COUNTRY = 15;
+const TARGET_PER_COUNTRY = 20;
 const OLLAMA_MODEL = 'aya-expanse:8b';
 const OLLAMA_HARD_TIMEOUT = 180000;
 const PROGRESS_FILE = path.join(__dirname, '.seed-google-v3-progress.json');
@@ -203,18 +203,16 @@ async function fetchSitemapCached(url) {
 }
 
 async function searchForRecipes(countryName, numResults = 40) {
-  // Generate keywords: explicit map + auto from country name
+  // Generate keywords: explicit map + auto from country name — focus on authentic/traditional
   const explicit = COUNTRY_KEYWORDS[countryName] || [];
+  const base = countryName.toLowerCase()
   const autoKw = [
-    countryName.toLowerCase(),
-    countryName.toLowerCase().replace(/ /g, '-'),
-    // Demonym guesses
-    countryName.toLowerCase() + 'n',    // e.g., "egyptian"
-    countryName.toLowerCase() + 'an',   // e.g., "peruvian"
-    countryName.toLowerCase() + 'ese',  // e.g., "japanese"
-    countryName.toLowerCase() + 'i',    // e.g., "iraqi"
-    countryName.toLowerCase() + 'ian',  // e.g., "cambodian"
-    countryName.toLowerCase().slice(0, -1) + 'ian', // e.g., "colombian"
+    base, base.replace(/ /g, '-'),
+    base + 'n', base + 'an', base + 'ese', base + 'i', base + 'ian',
+    base.slice(0, -1) + 'ian',
+    // Add traditional/authentic keywords
+    'traditional-' + base, 'authentic-' + base, base + '-traditional',
+    base + '-national-dish', base + '-street-food',
   ];
   const keywords = [...new Set([...explicit, ...autoKw])];
 
@@ -558,7 +556,13 @@ async function main() {
         continue;
       }
 
-      // Insert
+      // Skip recipes without images
+      if (!raw.imageUrl) {
+        console.log(`  ⚠️ skip (no image)`)
+        continue
+      }
+
+      // Insert — tagged as traditional
       const { error } = await supabase.from('posts').insert({
         id: randomUUID(),
         created_by: country.profileId,
@@ -569,8 +573,9 @@ async function main() {
         summary: translated.summary || raw.summary,
         status: 'active',
         type: 'recipe',
-        hero_image_url: raw.imageUrl || '',
+        hero_image_url: raw.imageUrl,
         source_url: raw.sourceUrl || '',
+        food_tags: ['tradițional', country.name.toLowerCase()],
         recipe_json: {
           ingredients: translated.ingredients,
           instructions: translated.steps,
