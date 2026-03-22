@@ -1,25 +1,28 @@
 /**
- * AI Provider — centralised Claude client for vision & text tasks
+ * AI Provider — centralised Gemini client for vision & text tasks
  *
  * Vision tasks (photo → ingredient recognition):
- *   → claude-haiku-4-5-20251001 (fast, cheap, great vision)
+ *   → gemini-2.0-flash  (excellent vision, cheap)
  *
  * Text tasks (ingredient normalisation, budget optimisation):
- *   → claude-haiku-4-5-20251001
+ *   → gemini-2.0-flash-lite  (fast, cheapest)
  *
  * Fallback: rule-based parser (no API key required)
+ *
+ * Get a free API key at https://aistudio.google.com/apikey
+ * Set GOOGLE_API_KEY in .env.local and Vercel env vars.
  */
 
-import Anthropic from '@anthropic-ai/sdk'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
-const API_KEY = process.env.ANTHROPIC_API_KEY ?? ''
+const API_KEY = process.env.GOOGLE_API_KEY ?? ''
 
-let _client: Anthropic | null = null
+let _client: GoogleGenerativeAI | null = null
 
-function getClient(): Anthropic {
+function getClient(): GoogleGenerativeAI {
   if (!_client) {
-    if (!API_KEY) throw new Error('ANTHROPIC_API_KEY is not set')
-    _client = new Anthropic({ apiKey: API_KEY })
+    if (!API_KEY) throw new Error('GOOGLE_API_KEY is not set')
+    _client = new GoogleGenerativeAI(API_KEY)
   }
   return _client
 }
@@ -28,7 +31,27 @@ export function isAiAvailable(): boolean {
   return !!API_KEY
 }
 
-const MODEL = 'claude-haiku-4-5-20251001'
+/* ─── Text model: Flash-Lite for ingredient normalisation ─────────────────── */
+
+export function getTextModel() {
+  return getClient().getGenerativeModel({
+    model: 'gemini-2.0-flash-lite',
+    generationConfig: {
+      responseMimeType: 'application/json',
+    },
+  })
+}
+
+/* ─── Vision model: Flash for photo recognition ──────────────────────────── */
+
+export function getVisionModel() {
+  return getClient().getGenerativeModel({
+    model: 'gemini-2.0-flash',
+    generationConfig: {
+      responseMimeType: 'application/json',
+    },
+  })
+}
 
 /* ─── Shared types ────────────────────────────────────────────────────────── */
 
@@ -199,9 +222,9 @@ For each ingredient extract:
   For normal/premium tier: always empty array [].
 
 Tier guidance:
-- budget: prefer store-brand search terms, flag expensive items as substitution candidates
+- budget: prefer store-brand search terms, flag expensive items (pine nuts, saffron, truffle) as substitution candidates
 - normal: balanced quality/price search terms, no substitutions
-- premium: named brand search terms, no substitutions
+- premium: named brand search terms (e.g. "Bella Italia mozzarella"), no substitutions
 
 Return ONLY a valid JSON array. No explanation. No markdown.
 
@@ -209,14 +232,9 @@ Ingredients:
 ${JSON.stringify(ingredients)}`
 
   try {
-    const client = getClient()
-    const msg = await client.messages.create({
-      model: MODEL,
-      max_tokens: 4096,
-      messages: [{ role: 'user', content: prompt }],
-    })
-
-    const text = msg.content[0].type === 'text' ? msg.content[0].text : ''
+    const model = getTextModel()
+    const result = await model.generateContent(prompt)
+    const text = result.response.text()
     const parsed = JSON.parse(text)
     if (Array.isArray(parsed)) return parsed as NormalisedIngredient[]
     return ingredients.map(i => ruleBasedNormalise(i, tier))
@@ -277,29 +295,18 @@ Return ONLY valid JSON in this exact shape:
 Be conservative — only include items you are reasonably confident about (confidence > 0.5).`
 
   try {
-    const client = getClient()
-    const mediaType = mimeType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp'
+    const model = getVisionModel()
+    const result = await model.generateContent([
+      prompt,
+      {
+        inlineData: {
+          mimeType,
+          data: imageBase64,
+        },
+      },
+    ])
 
-    const msg = await client.messages.create({
-      model: MODEL,
-      max_tokens: 4096,
-      messages: [{
-        role: 'user',
-        content: [
-          {
-            type: 'image',
-            source: {
-              type: 'base64',
-              media_type: mediaType,
-              data: imageBase64,
-            },
-          },
-          { type: 'text', text: prompt },
-        ],
-      }],
-    })
-
-    const text = msg.content[0].type === 'text' ? msg.content[0].text : ''
+    const text = result.response.text()
     const parsed = JSON.parse(text) as { context: string; ingredients: RecognisedIngredient[] }
 
     const overall = parsed.ingredients.length > 0
