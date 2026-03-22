@@ -10,20 +10,33 @@ import { supabase } from '@/lib/supabase-client'
 
 /* ─── nav items ──────────────────────────────────────────────────────────── */
 
-const NAV_ITEMS = [
-  { href: '/',              label: 'Explorează',    icon: '🏠' },
-  { href: '/cookbooks',     label: 'Cărți de bucate',  icon: '📖' },
-  { href: '/cocktailbooks', label: 'Cocktailuri',  icon: '🍹' },
-  { href: '/plan',          label: 'Plan de masă',  icon: '📅' },
-  { href: '/party',         label: 'Plan de petrecere', icon: '🎉' },
-  { href: '/me/preferred',  label: '⭐ Preferate', icon: '⭐' },
-  { href: '/me/cookbook',   label: 'Cartea mea', icon: '🍴' },
-  { href: '/me/pantry',    label: 'Cămara mea', icon: '🥫' },
-  { href: '/me/bar',       label: 'Barul meu',  icon: '🍸' },
+type NavEntry = { href: string; label: string; icon: string } | { separator: string }
 
-  { href: '/chefs/me/new-post', label: '+ Postare Chef',   icon: '✍️' },
-  { href: '/submit/recipe',    label: '+ Adaugă rețetă',   icon: '🍽️' },
-  { href: '/submit/cocktail',   label: '+ Adaugă băutură', icon: '🍹' },
+const NAV_ITEMS: NavEntry[] = [
+  // ── Descoperă ──
+  { separator: 'Descoperă' },
+  { href: '/',              label: 'Acasă',             icon: '🏠' },
+  { href: '/cookbooks',     label: 'Cărți de bucate',   icon: '📖' },
+  { href: '/cocktailbooks', label: 'Cocktailuri',       icon: '🍹' },
+
+  // ── Planifică ──
+  { separator: 'Planifică' },
+  { href: '/plan',          label: 'Plan de masă',       icon: '📅' },
+  { href: '/party',         label: 'Plan de petrecere',  icon: '🎉' },
+  { href: '/me/scan',       label: 'Scanează ingrediente', icon: '📷' },
+
+  // ── Colecțiile mele ──
+  { separator: 'Colecțiile mele' },
+  { href: '/me/preferred',  label: 'Preferate',          icon: '⭐' },
+  { href: '/me/cookbook',    label: 'Cartea mea',         icon: '🍴' },
+  { href: '/me/pantry',     label: 'Cămara mea',         icon: '🥫' },
+  { href: '/me/bar',        label: 'Barul meu',          icon: '🍸' },
+
+  // ── Creează ──
+  { separator: 'Creează' },
+  { href: '/submit/recipe',    label: 'Adaugă rețetă',   icon: '🍽️' },
+  { href: '/submit/cocktail',  label: 'Adaugă băutură',  icon: '🍹' },
+  { href: '/chefs/me/new-post', label: 'Postare Chef',   icon: '✍️' },
 ]
 
 const MOBILE_TABS = [
@@ -348,7 +361,7 @@ style={{ background: theme === 'dark' ? '#111' : 'rgba(255,255,255,0.2)', border
           className="flex items-center gap-1 px-6 pb-1"
           style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
         >
-          {NAV_ITEMS.map(item => {
+          {NAV_ITEMS.filter((item): item is { href: string; label: string; icon: string } => 'href' in item).map(item => {
             const active = isActive(item.href)
             return (
               <Link
@@ -429,7 +442,19 @@ style={{ background: theme === 'dark' ? '#111' : 'rgba(255,255,255,0.2)', border
             className="md:hidden fixed top-[57px] left-0 right-0 z-[45] py-4"
 style={{ background: theme === 'dark' ? '#000' : '#8B1A2B', borderBottom: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.15)' }}
           >
-          {NAV_ITEMS.map(item => (
+          {NAV_ITEMS.map((item, idx) => {
+            if ('separator' in item) {
+              return (
+                <div
+                  key={`sep-${idx}`}
+                  className="px-5 pt-4 pb-1.5 text-[10px] font-bold tracking-widest uppercase"
+                  style={{ color: theme === 'dark' ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.45)', borderTop: idx > 0 ? `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.12)'}` : 'none' }}
+                >
+                  {item.separator}
+                </div>
+              )
+            }
+            return (
             <Link
               key={item.href}
               href={item.href}
@@ -444,7 +469,8 @@ style={{ background: theme === 'dark' ? '#000' : '#8B1A2B', borderBottom: theme 
               <span className="text-base">{item.icon}</span>
               {item.label}
             </Link>
-          ))}
+            )
+          })}
           <div className="px-5 pt-3 mt-1" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm" style={{ color: '#888' }}>Temă</span>
