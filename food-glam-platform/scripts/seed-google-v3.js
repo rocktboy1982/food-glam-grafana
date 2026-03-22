@@ -573,6 +573,7 @@ async function main() {
         summary: translated.summary || raw.summary,
         status: 'active',
         type: 'recipe',
+        country: country.name,
         hero_image_url: raw.imageUrl,
         source_url: raw.sourceUrl || '',
         food_tags: ['tradițional', country.name.toLowerCase()],
