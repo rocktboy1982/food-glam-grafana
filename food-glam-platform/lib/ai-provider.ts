@@ -35,18 +35,18 @@ export function isAiAvailable(): boolean {
 
 export function getTextModel() {
   return getClient().getGenerativeModel({
-    model: 'gemini-2.0-flash-lite',
+    model: 'gemini-2.5-flash',
     generationConfig: {
       responseMimeType: 'application/json',
     },
   })
 }
 
-/* ─── Vision model: Flash for photo recognition ──────────────────────────── */
+/* ─── Vision model: 2.5 Flash for photo recognition ─────────────────────── */
 
 export function getVisionModel() {
   return getClient().getGenerativeModel({
-    model: 'gemini-2.0-flash',
+    model: 'gemini-2.5-flash',
     generationConfig: {
       responseMimeType: 'application/json',
     },
