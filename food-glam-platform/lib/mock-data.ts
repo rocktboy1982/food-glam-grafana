@@ -14,7 +14,7 @@ export const MOCK_RECIPES = [
   {
      id: 'mock-1',
      slug: 'classic-margherita-pizza',
-     title: 'Classic Margherita Pizza',
+     title: 'Pizza Margherita Clasică',
      summary: 'Pizza italiană tradițională cu mozzarella proaspătă, busuioc și sos de roșii',
      hero_image_url: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=800&q=80',
      region: 'western-europe',
@@ -40,7 +40,7 @@ export const MOCK_RECIPES = [
   {
      id: 'mock-2',
      slug: 'pad-thai-noodles',
-     title: 'Authentic Pad Thai',
+     title: 'Pad Thai Autentic',
      summary: 'Clasic al mâncării de stradă tailandeze cu tăiței de orez, crevete și sos de tamarind',
      hero_image_url: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=800&q=80',
      region: 'southeast-asia',
@@ -66,7 +66,7 @@ export const MOCK_RECIPES = [
    {
      id: 'mock-3',
      slug: 'moroccan-tagine',
-     title: 'Moroccan Lamb Tagine',
+     title: 'Tagine Marocan de Miel',
      summary: 'Mâncare nord-africană gătită lent cu mirodenii aromatice și fructe uscate',
      hero_image_url: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=800&q=80',
      region: 'north-africa',
@@ -92,7 +92,7 @@ export const MOCK_RECIPES = [
   {
     id: 'mock-4',
     slug: 'california-sushi-roll',
-    title: 'California Roll',
+    title: 'Rulou California',
      summary: 'Sushi în stil american cu crab, avocado și castraveți',
      hero_image_url: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?auto=format&fit=crop&w=800&q=80',
      region: 'east-asia',
@@ -118,7 +118,7 @@ export const MOCK_RECIPES = [
    {
      id: 'mock-5',
      slug: 'vegan-buddha-bowl',
-     title: 'Rainbow Buddha Bowl',
+     title: 'Bol Buddha Curcubeu',
      summary: 'Bol colorat pe bază de plante cu quinoa, legume prăjite și sos tahini',
      hero_image_url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80',
      region: 'international',
@@ -144,7 +144,7 @@ export const MOCK_RECIPES = [
   {
     id: 'mock-6',
     slug: 'french-croissants',
-    title: 'Buttery French Croissants',
+    title: 'Croissante Franțuzești cu Unt',
      summary: 'Prăjituri crocante și aurii făcute cu aluat laminat și unt premium',
      hero_image_url: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=800&q=80',
      region: 'western-europe',
@@ -196,7 +196,7 @@ export const MOCK_RECIPES = [
   {
     id: 'mock-8',
     slug: 'greek-moussaka',
-    title: 'Traditional Greek Moussaka',
+    title: 'Musaca Grecească Tradițională',
      summary: 'Casă de vinete în straturi cu carne condimentată și sos béchamel',
      hero_image_url: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=800&q=80',
      region: 'western-europe',
@@ -222,7 +222,7 @@ export const MOCK_RECIPES = [
   {
     id: 'mock-9',
     slug: 'indian-butter-chicken',
-    title: 'Creamy Butter Chicken',
+    title: 'Pui cu Unt Cremos',
      summary: 'Curry nord-indian bogat cu pui fragil în sos de smântână și roșii',
      hero_image_url: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=800&q=80',
      region: 'south-asia',
@@ -248,7 +248,7 @@ export const MOCK_RECIPES = [
   {
     id: 'mock-10',
     slug: 'new-york-cheesecake',
-    title: 'Classic New York Cheesecake',
+    title: 'Cheesecake New York Clasic',
      summary: 'Cheesecake dens și cremos cu crustă de biscuiți graham',
      hero_image_url: 'https://images.unsplash.com/photo-1567171466295-4afa63d45416?auto=format&fit=crop&w=800&q=80',
      region: 'north-america',
@@ -274,7 +274,7 @@ export const MOCK_RECIPES = [
   {
     id: 'mock-11',
     slug: 'korean-bibimbap',
-    title: 'Korean Bibimbap Bowl',
+    title: 'Bol Bibimbap Coreean',
      summary: 'Bol de orez mixt cu legume, ou și sos gochujang',
      hero_image_url: 'https://images.unsplash.com/photo-1553163147-622ab57be1c7?auto=format&fit=crop&w=800&q=80',
      region: 'east-asia',
@@ -300,7 +300,7 @@ export const MOCK_RECIPES = [
   {
     id: 'mock-12',
     slug: 'spanish-paella',
-    title: 'Seafood Paella Valenciana',
+    title: 'Paella cu Fructe de Mare Valenciana',
      summary: 'Mâncare tradițională spaniolă de orez cu șofran, fructe de mare și legume',
      hero_image_url: 'https://images.unsplash.com/photo-1534080564583-6be75777b70a?auto=format&fit=crop&w=800&q=80',
      region: 'western-europe',
@@ -326,7 +326,7 @@ export const MOCK_RECIPES = [
   {
     id: 'mock-13',
     slug: 'vegetarian-senegalese-mafe',
-    title: 'Vegetarian Senegalese Mafé',
+    title: 'Mafé Senegalez Vegetarian',
      summary: 'Mâncare senegaleza iconică pe bază de arahide cu ciuperci, tofu și fasole fermentată',
      hero_image_url: 'https://eatwithafia.com/wp-content/uploads/2025/03/DSC09821-scaled-1.jpg',
      region: 'west-africa',
@@ -352,7 +352,7 @@ export const MOCK_RECIPES = [
   {
     id: 'mock-14',
     slug: 'simple-vegetarian-jollof-rice',
-    title: 'Simple Vegetarian Jollof Rice',
+    title: 'Orez Jollof Vegetarian',
      summary: 'Orez într-o oală pe bază de roșii picante care celebrează Africa de Vest - vegetarian și gata de sărbătoare',
      hero_image_url: 'https://eatwithafia.com/wp-content/uploads/2022/12/DSC_0019.jpg',
      region: 'west-africa',
@@ -378,7 +378,7 @@ export const MOCK_RECIPES = [
   {
     id: 'mock-15',
     slug: 'ghanaian-red-bean-stew-atidua',
-    title: 'Ghanaian Red Bean Stew (Atidua)',
+    title: 'Tocană de Fasole Roșie Ghanez (Atidua)',
      summary: 'Mâncare tradițională de sărbătoare cu mazăre roșie, ulei de palmă roșu și fasole fermentată',
      hero_image_url: 'https://eatwithafia.com/wp-content/uploads/2022/01/DSC09465.jpg',
      region: 'west-africa',
@@ -430,7 +430,7 @@ export const MOCK_RECIPES = [
   {
     id: 'mock-17',
     slug: 'spiced-sorghum-millet-porridge',
-    title: 'Spiced Grain Porridge (Sorghum & Millet)',
+    title: 'Terci de Cereale Condimentat (Sorg și Mei)',
      summary: 'Terci cald și parfumat fără gluten cu cereale africane indigene și mirodenii calde',
      hero_image_url: 'https://eatwithafia.com/wp-content/uploads/2025/03/DSC09643-scaled-3.jpg',
      region: 'west-africa',
@@ -486,7 +486,7 @@ export const MOCK_TRENDING = [...MOCK_RECIPES].sort((a, b) => b.votes - a.votes)
 export const MOCK_COMMUNITY_THREADS = [
   {
     id: 'thread-1',
-    title: 'Best way to achieve crispy pizza crust at home?',
+    title: 'Cum obții o crustă de pizza crocantă acasă?',
     author: 'Chef Mario',
     replies: 12,
     views: 234,
@@ -494,7 +494,7 @@ export const MOCK_COMMUNITY_THREADS = [
   },
   {
     id: 'thread-2',
-    title: 'Substitutes for fish sauce in Thai cooking',
+    title: 'Înlocuitori pentru sosul de pește în bucătăria thailandeză',
     author: 'Thai Kitchen',
     replies: 8,
     views: 156,
@@ -502,7 +502,7 @@ export const MOCK_COMMUNITY_THREADS = [
   },
   {
     id: 'thread-3',
-    title: 'Vegan alternatives to eggs in baking',
+    title: 'Alternative vegane la ouă în panificație',
     author: 'Plant Power',
     replies: 24,
     views: 487,
@@ -510,7 +510,7 @@ export const MOCK_COMMUNITY_THREADS = [
   },
   {
     id: 'thread-4',
-    title: 'How to properly temper chocolate',
+    title: 'Cum temperezi corect ciocolata',
     author: 'Sweet Tooth',
     replies: 15,
     views: 312,
@@ -571,7 +571,7 @@ export const MOCK_COCKTAILS: MockCocktail[] = [
   {
     id: 'cocktail-1',
     slug: 'classic-negroni',
-    title: 'Classic Negroni',
+    title: 'Negroni Clasic',
      summary: 'Iconul italian amar-dulce - părți egale de gin, Campari și vermut dulce, amestecat peste gheață',
      hero_image_url: 'https://images.unsplash.com/photo-1570598912132-0ba1dc952b7d?w=800&q=80',
      category: 'alcoholic',
