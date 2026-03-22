@@ -54,8 +54,10 @@ export async function GET(req: Request) {
         id,
         title,
         slug,
+        hero_image_url,
         type,
-        status
+        status,
+        created_by:profiles(id, display_name, handle, avatar_url)
       `)
       .eq('type', 'recipe')
       .eq('status', 'active')
@@ -83,6 +85,8 @@ export async function GET(req: Request) {
         id: post.id,
         title: post.title,
         slug: post.slug,
+        hero_image_url: post.hero_image_url,
+        created_by: post.created_by,
         votes: voteMap.get(post.id) || 0,
         tag: 'Trending'
       }))
@@ -97,6 +101,8 @@ export async function GET(req: Request) {
         id: post.id,
         title: post.title,
         slug: post.slug,
+        hero_image_url: post.hero_image_url,
+        created_by: post.created_by,
         votes: 0,
         tag: 'Popular'
       }))
