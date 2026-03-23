@@ -3,11 +3,71 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { createServiceSupabaseClient } from '@/lib/supabase-server'
 
+async function upsertProfile(userId: string, email: string | undefined, metadata: Record<string, string | null> | undefined) {
+  const serviceClient = createServiceSupabaseClient()
+
+  const { data: existingProfile } = await serviceClient
+    .from('profiles')
+    .select('id')
+    .eq('id', userId)
+    .single()
+
+  const rawAvatar: string | null = metadata?.avatar_url || null
+  const googleAvatar = rawAvatar
+    ? rawAvatar.replace(/=s\d+-c$/, '=s400-c')
+    : null
+
+  if (!existingProfile) {
+    const baseHandle = email?.split('@')[0] || 'user'
+    let handle = baseHandle
+    let collision = true
+    let attempts = 0
+
+    while (collision && attempts < 5) {
+      const { data: existingHandle } = await serviceClient
+        .from('profiles')
+        .select('id')
+        .eq('handle', handle)
+        .single()
+
+      if (!existingHandle) {
+        collision = false
+      } else {
+        handle = `${baseHandle}_${Math.random().toString(36).substring(2, 6)}`
+        attempts++
+      }
+    }
+
+    await serviceClient.from('profiles').insert({
+      id: userId,
+      email: email || '',
+      display_name: metadata?.full_name || email?.split('@')[0] || 'User',
+      handle,
+      avatar_url: googleAvatar,
+    })
+  } else if (googleAvatar) {
+    const { data: currentProfile } = await serviceClient
+      .from('profiles')
+      .select('avatar_url')
+      .eq('id', userId)
+      .single()
+
+    const currentAvatar = currentProfile?.avatar_url || ''
+    if (!currentAvatar || currentAvatar.includes('googleusercontent.com')) {
+      await serviceClient
+        .from('profiles')
+        .update({ avatar_url: googleAvatar })
+        .eq('id', userId)
+    }
+  }
+}
+
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
   const origin = requestUrl.origin
 
+  // PKCE flow: ?code=... (server-side exchange)
   if (code) {
     const cookieStore = await cookies()
 
@@ -24,10 +84,7 @@ export async function GET(request: Request) {
               cookiesToSet.forEach(({ name, value, options }) =>
                 cookieStore.set(name, value, options)
               )
-            } catch {
-              // The `setAll` method was called from a Server Component.
-              // This can be ignored if you have middleware refreshing user sessions.
-            }
+            } catch {}
           },
         },
       }
@@ -35,83 +92,27 @@ export async function GET(request: Request) {
 
     const { error } = await supabase.auth.exchangeCodeForSession(code)
 
-    if (!error) {
-      // Get the authenticated user
-      const { data: { user } } = await supabase.auth.getUser()
-
-      if (user) {
-        // Check if profile already exists
-        const { data: existingProfile } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('id', user.id)
-          .single()
-
-        const serviceClient = createServiceSupabaseClient()
-
-        // Upgrade Google avatar to higher resolution (s96-c → s400-c)
-        const rawAvatar: string | null = user.user_metadata?.avatar_url || null
-        const googleAvatar = rawAvatar
-          ? rawAvatar.replace(/=s\d+-c$/, '=s400-c')
-          : null
-
-        if (!existingProfile) {
-          // Generate a unique handle from email
-          const baseHandle = user.email?.split('@')[0] || 'user'
-          let handle = baseHandle
-          let collision = true
-          let attempts = 0
-
-          while (collision && attempts < 5) {
-            const { data: existingHandle } = await serviceClient
-              .from('profiles')
-              .select('id')
-              .eq('handle', handle)
-              .single()
-
-            if (!existingHandle) {
-              collision = false
-            } else {
-              const randomSuffix = Math.random().toString(36).substring(2, 6)
-              handle = `${baseHandle}_${randomSuffix}`
-              attempts++
-            }
-          }
-
-          await serviceClient
-            .from('profiles')
-            .insert({
-              id: user.id,
-              email: user.email || '',
-              display_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-              handle: handle,
-              avatar_url: googleAvatar,
-            })
-        } else if (googleAvatar) {
-          const { data: currentProfile } = await serviceClient
-            .from('profiles')
-            .select('avatar_url')
-            .eq('id', user.id)
-            .single()
-
-          const currentAvatar = currentProfile?.avatar_url || ''
-          const isGoogleAvatar = !currentAvatar || currentAvatar.includes('googleusercontent.com')
-
-          if (isGoogleAvatar) {
-            await serviceClient
-              .from('profiles')
-              .update({ avatar_url: googleAvatar })
-              .eq('id', user.id)
-          }
-        }
-      }
-
+    if (error) {
+      console.error('PKCE exchange failed:', error.message)
+      // Redirect to homepage — client-side Supabase may still pick up the session
       const response = NextResponse.redirect(`${origin}/`)
-      response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
+      response.headers.set('Cache-Control', 'no-store')
       return response
     }
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      await upsertProfile(user.id, user.email ?? undefined, user.user_metadata as Record<string, string | null>)
+    }
+
+    const response = NextResponse.redirect(`${origin}/`)
+    response.headers.set('Cache-Control', 'no-store')
+    return response
   }
 
-  // Auth failed, redirect to sign in
-  return NextResponse.redirect(`${origin}/auth/signin`)
+  // No code — might be implicit flow (#access_token=...) or error.
+  // Redirect to homepage where the client-side Supabase JS will handle it.
+  const response = NextResponse.redirect(`${origin}/`)
+  response.headers.set('Cache-Control', 'no-store')
+  return response
 }
