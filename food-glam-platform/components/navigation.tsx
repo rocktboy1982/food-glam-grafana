@@ -105,7 +105,8 @@ function useRealUser() {
   }, [])
 
   const signOut = async () => {
-    await supabase.auth.signOut({ scope: 'local' })
+    // Revoke session on Supabase server
+    await supabase.auth.signOut({ scope: 'global' })
     // Clear ALL Supabase data from localStorage
     Object.keys(localStorage).forEach(key => {
       if (key.startsWith('sb-') || key.includes('supabase')) {
@@ -114,7 +115,8 @@ function useRealUser() {
     })
     localStorage.removeItem('mock_user')
     setUser(null)
-    window.location.href = '/'
+    // Redirect to Google logout to clear Google session, then back to homepage
+    window.location.href = 'https://accounts.google.com/Logout?continue=https://marechef.ro'
   }
 
   return { user, hydrated, signOut }
