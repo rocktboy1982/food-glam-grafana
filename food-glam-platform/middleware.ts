@@ -46,12 +46,9 @@ export async function middleware(request: NextRequest) {
   // It refreshes the auth token and sets updated cookies.
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Protect /me/* routes — redirect to signin if not authenticated
-  if (pathname.startsWith('/me') && !user) {
-    const signinUrl = request.nextUrl.clone()
-    signinUrl.pathname = '/auth/signin'
-    return NextResponse.redirect(signinUrl)
-  }
+  // Note: /me/* auth protection is handled client-side by each page.
+  // The session lives in localStorage (implicit OAuth flow), not cookies,
+  // so middleware can't reliably check auth state.
 
   // Protect /api/admin/* routes
   if (pathname.startsWith('/api/admin') && !user) {
